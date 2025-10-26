@@ -14,179 +14,305 @@
         "A graph is not just a mathematical abstraction—it's a lens for understanding the connected world around us."
     </div>
 
-    <h2 class="section-title">Introduction</h2>
+    <p class="academic-text">Every day, you interact with graphs without even knowing it. When Facebook suggests friends, Google Maps finds routes, or Netflix recommends movies, you're experiencing graph algorithms in action. This chapter introduces the fundamental concepts that power these systems.</p>
+
+    <h2 class="section-title" id="ch1-1">1.1 Definition: Nodes, Edges, and Degrees</h2>
     
-    <p class="academic-text">Every day, you interact with graphs without even knowing it:</p>
+    <p class="academic-text">A <strong>graph</strong> G = (V, E) is a mathematical structure consisting of:</p>
     
     <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text">When <strong>Facebook</strong> suggests friends, it's analyzing your social graph</li>
-        <li class="academic-text">When <strong>Google Maps</strong> finds the fastest route, it's traversing a road graph</li>
-        <li class="academic-text">When <strong>Netflix</strong> recommends movies, it's using a preference graph</li>
-        <li class="academic-text">When you browse the <strong>internet</strong>, you're navigating a web graph</li>
+        <li class="academic-text"><strong>Vertices (V)</strong>: A finite set of nodes representing entities</li>
+        <li class="academic-text"><strong>Edges (E)</strong>: A set of connections between vertices</li>
     </ul>
 
     <div class="definition-box">
-        <strong>Life Insight:</strong> Your relationships, goals, and daily decisions all form invisible graphs. Understanding this structure helps you navigate social networks, career paths, and life choices more effectively.
+        <strong>Formal Definition:</strong> A graph G = (V, E) where V = {v₁, v₂, ..., vₙ} is the vertex set and E ⊆ V × V is the edge set.
     </div>
 
-    <h2 class="section-title">What Is a Graph?</h2>
-    
-    <p class="academic-text">A <strong>graph</strong> is simply a collection of:</p>
-    
-    <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Nodes (or Vertices)</strong>: The "things" in your system</li>
-        <li class="academic-text"><strong>Edges</strong>: The connections between those things</li>
-    </ul>
-
-    <div class="code-block">
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <string>
-
-// Simple friendship network using adjacency list
-std::unordered_map<std::string, std::vector<std::string>> friends = {
-    {"Alice", {"Bob", "Charlie"}},
-    {"Bob", {"Alice", "David"}},
-    {"Charlie", {"Alice", "David"}},
-    {"David", {"Bob", "Charlie"}}
-};
-
-int main() {
-    // Display the graph
-    for (const auto& [person, friendList] : friends) {
-        std::cout << person << " is friends with: ";
-        for (const auto& friendName : friendList) {
-            std::cout << friendName << " ";
-        }
-        std::cout << std::endl;
-    }
-    return 0;
-}
-    </div>
-
-    <h2 class="section-title">Real-World Examples</h2>
-    
-    <p class="academic-text">Graphs are everywhere once you start looking:</p>
-
-    <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 11pt;">
-        <thead>
-            <tr style="border-bottom: 1px solid #000;">
-                <th style="text-align: left; padding: 8px; font-weight: normal;">System</th>
-                <th style="text-align: left; padding: 8px; font-weight: normal;">Nodes</th>
-                <th style="text-align: left; padding: 8px; font-weight: normal;">Edges</th>
-                <th style="text-align: left; padding: 8px; font-weight: normal;">Example</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="padding: 8px;"><strong>Social Network</strong></td>
-                <td style="padding: 8px;">People</td>
-                <td style="padding: 8px;">Friendships</td>
-                <td style="padding: 8px;">Facebook, LinkedIn</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px;"><strong>Transportation</strong></td>
-                <td style="padding: 8px;">Cities/Stops</td>
-                <td style="padding: 8px;">Roads/Routes</td>
-                <td style="padding: 8px;">Google Maps, GPS</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px;"><strong>Internet</strong></td>
-                <td style="padding: 8px;">Web Pages</td>
-                <td style="padding: 8px;">Links</td>
-                <td style="padding: 8px;">Google Search</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px;"><strong>Knowledge</strong></td>
-                <td style="padding: 8px;">Concepts</td>
-                <td style="padding: 8px;">Relationships</td>
-                <td style="padding: 8px;">Wikipedia, Mind Maps</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h2 class="section-title">Graph Components</h2>
-
-    <p class="academic-text"><strong>Nodes (Vertices)</strong></p>
+    <p class="academic-text"><strong>Degree of a Vertex:</strong></p>
     <ul style="margin: 8px 0 16px 24px;">
-        <li class="academic-text">The fundamental units of a graph</li>
-        <li class="academic-text">Can represent anything: people, cities, web pages, concepts</li>
-        <li class="academic-text">Usually labeled with identifiers (0, 1, 2... or "Alice", "Bob", "Charlie")</li>
-    </ul>
-
-    <p class="academic-text"><strong>Edges</strong></p>
-    <ul style="margin: 8px 0 16px 24px;">
-        <li class="academic-text">Connections between nodes</li>
-        <li class="academic-text">Can be <strong>directed</strong> (one-way) or <strong>undirected</strong> (two-way)</li>
-        <li class="academic-text">May have <strong>weights</strong> (costs, distances, strengths)</li>
-    </ul>
-
-    <p class="academic-text"><strong>Degree</strong></p>
-    <ul style="margin: 8px 0 16px 24px;">
-        <li class="academic-text"><strong>Degree of a node</strong>: Number of edges connected to it</li>
-        <li class="academic-text">In directed graphs:
+        <li class="academic-text"><strong>Degree deg(v)</strong>: Number of edges incident to vertex v</li>
+        <li class="academic-text"><strong>In directed graphs:</strong>
             <ul style="margin: 8px 0; padding-left: 20px;">
-                <li class="academic-text"><strong>In-degree</strong>: Number of incoming edges</li>
-                <li class="academic-text"><strong>Out-degree</strong>: Number of outgoing edges</li>
+                <li class="academic-text"><strong>In-degree (deg⁻(v))</strong>: Number of incoming edges</li>
+                <li class="academic-text"><strong>Out-degree (deg⁺(v))</strong>: Number of outgoing edges</li>
             </ul>
         </li>
     </ul>
 
-    <h2 class="section-title">Types of Graphs</h2>
+    <pre class="code-block">// Basic graph representation using adjacency list
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
 
-    <p class="academic-text"><strong>1. Directed vs Undirected</strong></p>
+class Graph {
+private:
+    std::unordered_map&lt;int, std::vector&lt;int&gt;&gt; adjList;
     
-    <p class="academic-text"><strong>Undirected Graph</strong>: Edges have no direction</p>
-    <ul style="margin: 8px 0 16px 24px;">
-        <li class="academic-text">Example: Facebook friendships (mutual)</li>
-        <li class="academic-text">If A is friends with B, then B is friends with A</li>
-    </ul>
+public:
+    void addEdge(int u, int v) {
+        adjList[u].push_back(v);
+        adjList[v].push_back(u); // For undirected graph
+    }
     
-    <p class="academic-text"><strong>Directed Graph (Digraph)</strong>: Edges have direction</p>
+    int getDegree(int vertex) {
+        return adjList[vertex].size();
+    }
+    
+    void printGraph() {
+        for (const auto&amp; [vertex, neighbors] : adjList) {
+            std::cout &lt;&lt; vertex &lt;&lt; ": ";
+            for (int neighbor : neighbors) {
+                std::cout &lt;&lt; neighbor &lt;&lt; " ";
+            }
+            std::cout &lt;&lt; "(degree: " &lt;&lt; getDegree(vertex) &lt;&lt; ")" &lt;&lt; std::endl;
+        }
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch1-2">1.2 Graph Types: Directed, Undirected, Weighted, Unweighted</h2>
+
+    <p class="academic-text"><strong>Undirected Graphs:</strong></p>
     <ul style="margin: 8px 0 16px 24px;">
-        <li class="academic-text">Example: Twitter follows (one-way)</li>
-        <li class="academic-text">A can follow B without B following A back</li>
+        <li class="academic-text">Edges have no direction: if (u,v) ∈ E, then (v,u) ∈ E</li>
+        <li class="academic-text">Examples: Social networks, road networks, molecular structures</li>
+        <li class="academic-text">Represented as unordered pairs: {u, v}</li>
     </ul>
 
-    <p class="academic-text"><strong>2. Weighted vs Unweighted</strong></p>
-    
-    <p class="academic-text"><strong>Unweighted Graph</strong>: All edges are equal</p>
+    <p class="academic-text"><strong>Directed Graphs (Digraphs):</strong></p>
     <ul style="margin: 8px 0 16px 24px;">
-        <li class="academic-text">Example: Simple friendship network</li>
+        <li class="academic-text">Edges have direction: (u,v) ≠ (v,u)</li>
+        <li class="academic-text">Examples: Web links, citation networks, dependency graphs</li>
+        <li class="academic-text">Represented as ordered pairs: (u, v)</li>
     </ul>
-    
-    <p class="academic-text"><strong>Weighted Graph</strong>: Edges have values (weights)</p>
+
+    <p class="academic-text"><strong>Weighted vs Unweighted:</strong></p>
     <ul style="margin: 8px 0 16px 24px;">
-        <li class="academic-text">Example: Road network with distances</li>
-        <li class="academic-text">Example: Social network with relationship strength</li>
+        <li class="academic-text"><strong>Unweighted:</strong> All edges have equal importance</li>
+        <li class="academic-text"><strong>Weighted:</strong> Each edge has an associated weight w(u,v)</li>
+        <li class="academic-text">Weights represent: distance, cost, capacity, strength, etc.</li>
+    </ul>
+
+    <pre class="code-block">// Weighted graph implementation
+class WeightedGraph {
+private:
+    std::unordered_map&lt;int, std::vector&lt;std::pair&lt;int, double&gt;&gt;&gt; adjList;
+    
+public:
+    void addEdge(int u, int v, double weight) {
+        adjList[u].push_back({v, weight});
+        // For directed graph, don't add reverse edge
+    }
+    
+    void printWeightedGraph() {
+        for (const auto&amp; [vertex, edges] : adjList) {
+            std::cout &lt;&lt; vertex &lt;&lt; ": ";
+            for (const auto&amp; [neighbor, weight] : edges) {
+                std::cout &lt;&lt; "(" &lt;&lt; neighbor &lt;&lt; ", " &lt;&lt; weight &lt;&lt; ") ";
+            }
+            std::cout &lt;&lt; std::endl;
+        }
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch1-3">1.3 Cyclic vs Acyclic Structures</h2>
+
+    <p class="academic-text">Understanding cycles is crucial for graph algorithms and applications.</p>
+
+    <p class="academic-text"><strong>Cycles:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Cycle:</strong> A path that starts and ends at the same vertex</li>
+        <li class="academic-text"><strong>Simple cycle:</strong> No repeated vertices except start/end</li>
+        <li class="academic-text"><strong>Self-loop:</strong> An edge from a vertex to itself</li>
+    </ul>
+
+    <p class="academic-text"><strong>Acyclic Graphs:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>DAG (Directed Acyclic Graph):</strong> Directed graph with no cycles</li>
+        <li class="academic-text"><strong>Tree:</strong> Connected acyclic undirected graph</li>
+        <li class="academic-text"><strong>Forest:</strong> Collection of trees (acyclic graph)</li>
     </ul>
 
     <div class="definition-box">
-        <strong>Exercise:</strong> Map Your Social Circle
+        <strong>Important Property:</strong> A tree with n vertices has exactly n-1 edges. Adding any edge creates a cycle; removing any edge disconnects the graph.
+    </div>
+
+    <p class="academic-text"><strong>Applications:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>DAGs:</strong> Task scheduling, dependency resolution, compilation</li>
+        <li class="academic-text"><strong>Trees:</strong> File systems, decision trees, parsing</li>
+        <li class="academic-text"><strong>Cyclic graphs:</strong> Social networks, transportation, circuits</li>
+    </ul>
+
+    <h2 class="section-title" id="ch1-4">1.4 Graph Representations: Adjacency List, Matrix, Edge List</h2>
+
+    <p class="academic-text">Choosing the right representation affects algorithm efficiency and memory usage.</p>
+
+    <p class="academic-text"><strong>1. Adjacency Matrix:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text">2D array A where A[i][j] = 1 if edge (i,j) exists</li>
+        <li class="academic-text"><strong>Space:</strong> O(V²) - inefficient for sparse graphs</li>
+        <li class="academic-text"><strong>Edge lookup:</strong> O(1)</li>
+        <li class="academic-text"><strong>Best for:</strong> Dense graphs, frequent edge queries</li>
+    </ul>
+
+    <pre class="code-block">// Adjacency Matrix representation
+class AdjacencyMatrix {
+private:
+    std::vector&lt;std::vector&lt;int&gt;&gt; matrix;
+    int numVertices;
+    
+public:
+    AdjacencyMatrix(int n) : numVertices(n) {
+        matrix.resize(n, std::vector&lt;int&gt;(n, 0));
+    }
+    
+    void addEdge(int u, int v) {
+        matrix[u][v] = 1;
+        matrix[v][u] = 1; // For undirected graph
+    }
+    
+    bool hasEdge(int u, int v) {
+        return matrix[u][v] == 1;
+    }
+    
+    void printMatrix() {
+        for (int i = 0; i &lt; numVertices; i++) {
+            for (int j = 0; j &lt; numVertices; j++) {
+                std::cout &lt;&lt; matrix[i][j] &lt;&lt; " ";
+            }
+            std::cout &lt;&lt; std::endl;
+        }
+    }
+};</pre>
+
+    <p class="academic-text"><strong>2. Adjacency List:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text">Array of lists, each containing neighbors of a vertex</li>
+        <li class="academic-text"><strong>Space:</strong> O(V + E) - efficient for sparse graphs</li>
+        <li class="academic-text"><strong>Edge lookup:</strong> O(deg(v))</li>
+        <li class="academic-text"><strong>Best for:</strong> Sparse graphs, graph traversals</li>
+    </ul>
+
+    <p class="academic-text"><strong>3. Edge List:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text">Simple list of all edges: [(u₁,v₁), (u₂,v₂), ...]</li>
+        <li class="academic-text"><strong>Space:</strong> O(E)</li>
+        <li class="academic-text"><strong>Best for:</strong> Algorithms that process all edges</li>
+    </ul>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 11pt;">
+        <thead>
+            <tr style="border-bottom: 1px solid #000;">
+                <th style="text-align: left; padding: 8px; font-weight: normal;">Operation</th>
+                <th style="text-align: left; padding: 8px; font-weight: normal;">Adj. Matrix</th>
+                <th style="text-align: left; padding: 8px; font-weight: normal;">Adj. List</th>
+                <th style="text-align: left; padding: 8px; font-weight: normal;">Edge List</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 8px;"><strong>Space</strong></td>
+                <td style="padding: 8px;">O(V²)</td>
+                <td style="padding: 8px;">O(V + E)</td>
+                <td style="padding: 8px;">O(E)</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px;"><strong>Add Edge</strong></td>
+                <td style="padding: 8px;">O(1)</td>
+                <td style="padding: 8px;">O(1)</td>
+                <td style="padding: 8px;">O(1)</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px;"><strong>Check Edge</strong></td>
+                <td style="padding: 8px;">O(1)</td>
+                <td style="padding: 8px;">O(deg(v))</td>
+                <td style="padding: 8px;">O(E)</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px;"><strong>Find Neighbors</strong></td>
+                <td style="padding: 8px;">O(V)</td>
+                <td style="padding: 8px;">O(deg(v))</td>
+                <td style="padding: 8px;">O(E)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 class="section-title" id="ch1-5">1.5 Real-World Examples</h2>
+
+    <p class="academic-text">Understanding how graphs model real systems is key to applying algorithms effectively.</p>
+
+    <p class="academic-text"><strong>Social Networks:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Vertices:</strong> Users, <strong>Edges:</strong> Friendships/Follows</li>
+        <li class="academic-text"><strong>Applications:</strong> Friend recommendations, influence analysis, community detection</li>
+        <li class="academic-text"><strong>Properties:</strong> Small-world, scale-free, high clustering</li>
+    </ul>
+
+    <p class="academic-text"><strong>Transportation Networks:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Vertices:</strong> Locations, <strong>Edges:</strong> Routes with distances/times</li>
+        <li class="academic-text"><strong>Applications:</strong> Shortest path, route optimization, traffic flow</li>
+        <li class="academic-text"><strong>Algorithms:</strong> Dijkstra's, A*, Floyd-Warshall</li>
+    </ul>
+
+    <p class="academic-text"><strong>Computer Networks:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Vertices:</strong> Routers/Computers, <strong>Edges:</strong> Connections</li>
+        <li class="academic-text"><strong>Applications:</strong> Routing protocols, network reliability, bandwidth optimization</li>
+    </ul>
+
+    <p class="academic-text"><strong>Dependency Graphs:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Vertices:</strong> Tasks/Modules, <strong>Edges:</strong> Dependencies</li>
+        <li class="academic-text"><strong>Applications:</strong> Build systems, course prerequisites, project scheduling</li>
+        <li class="academic-text"><strong>Structure:</strong> Must be acyclic (DAG)</li>
+    </ul>
+
+    <pre class="code-block">// Real-world example: Course prerequisite system
+class CourseGraph {
+private:
+    std::unordered_map&lt;std::string, std::vector&lt;std::string&gt;&gt; prerequisites;
+    
+public:
+    void addPrerequisite(const std::string&amp; course, const std::string&amp; prereq) {
+        prerequisites[course].push_back(prereq);
+    }
+    
+    bool canTakeCourse(const std::string&amp; course, 
+                      const std::set&lt;std::string&gt;&amp; completed) {
+        for (const std::string&amp; prereq : prerequisites[course]) {
+            if (completed.find(prereq) == completed.end()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    std::vector&lt;std::string&gt; getAvailableCourses(
+        const std::set&lt;std::string&gt;&amp; completed) {
+        std::vector&lt;std::string&gt; available;
+        for (const auto&amp; [course, prereqs] : prerequisites) {
+            if (completed.find(course) == completed.end() &amp;&amp; 
+                canTakeCourse(course, completed)) {
+                available.push_back(course);
+            }
+        }
+        return available;
+    }
+};</pre>
+
+    <div class="definition-box">
+        <strong>Exercise:</strong> Model Your Environment
         <ol style="margin: 12px 0; padding-left: 20px;">
-            <li>Put yourself in the center</li>
-            <li>Add your closest 5-6 friends as nodes</li>
-            <li>Draw edges between people who know each other</li>
-            <li>Answer: Who has the most connections?</li>
+            <li>Choose a system you interact with daily (social media, transportation, etc.)</li>
+            <li>Identify the vertices and edges</li>
+            <li>Determine if it's directed/undirected, weighted/unweighted</li>
+            <li>Consider what algorithms might be useful for this system</li>
+            <li>Think about the best representation for this graph</li>
         </ol>
-        <strong>Bonus:</strong> Try representing this as both an adjacency list and matrix!
     </div>
 
-    <h2 class="section-title">Key Takeaways</h2>
-    
-    <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Graphs are everywhere</strong> - social networks, maps, internet, knowledge systems</li>
-        <li class="academic-text"><strong>Simple concept</strong> - just nodes (things) connected by edges (relationships)</li>
-        <li class="academic-text"><strong>Two main types</strong> - directed/undirected, weighted/unweighted</li>
-        <li class="academic-text"><strong>Real-world graphs are usually sparse</strong> - most things aren't connected to everything</li>
-        <li class="academic-text"><strong>Graph thinking is systems thinking</strong> - see relationships, not just individual entities</li>
-    </ul>
-
-    <div class="definition-box">
-        <strong>Life Application:</strong> Start seeing your world as graphs: your career network, learning dependencies, daily routines, decision trees. Understanding these structures gives you power to optimize and navigate them more effectively.
-    </div>
-
-    <p class="academic-text">Now that you understand what graphs are, in the next chapter we'll explore <strong>Trees</strong> - special graphs that form hierarchies and are fundamental to computer science. You'll see how trees organize everything from file systems to family genealogies!</p>
+    <p class="academic-text">Understanding these fundamental concepts provides the foundation for all graph algorithms. In the next chapter, we'll explore trees - special graphs that form the backbone of many data structures and algorithms in computer science.</p>
 </body>
 </html>

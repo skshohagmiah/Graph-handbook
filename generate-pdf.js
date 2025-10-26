@@ -34,7 +34,7 @@ async function generatePDF() {
         displayHeaderFooter: true,
         headerTemplate: `
             <div style="font-size: 10px; font-family: Times New Roman; width: 100%; text-align: center; color: #666;">
-                <span>Graphs, Trees & Algorithms Handbook</span>
+                <span>Graph Algorithms Handbook</span>
             </div>
         `,
         footerTemplate: `

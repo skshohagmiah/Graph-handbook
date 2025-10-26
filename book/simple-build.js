@@ -16,7 +16,7 @@ let combinedHTML = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphs, Trees & Algorithms Handbook</title>
+    <title>Graph Algorithms Handbook</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Academic book styling like CPH */
@@ -77,6 +77,8 @@ let combinedHTML = `<!DOCTYPE html>
             font-size: 9pt;
             margin: 16px 0;
             overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
         }
         
         .definition-box {
