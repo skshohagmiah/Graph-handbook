@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2: Graph Properties & Special Types</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Chapter 2</div>
+    <h1 class="chapter-title">Graph Properties & Special Types</h1>
+    
+    <div class="definition-box">
+        "Not all graphs are created equal - understanding their special properties unlocks the right algorithms and solutions."
+    </div>
+
+    <p class="academic-text">Now that you understand basic graphs, let's dive deeper into their special properties. Just like people have different personalities, graphs have characteristics that determine what you can do with them and which algorithms work best.</p>
+    
+    <p class="academic-text">In this chapter, we'll explore the key properties that graph theorists and computer scientists use to classify and analyze graphs:</p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text"><strong>Connectivity:</strong> Can you get from anywhere to anywhere?</li>
+        <li class="academic-text"><strong>Cycles:</strong> Are there circular paths in your graph?</li>
+        <li class="academic-text"><strong>Bipartite structure:</strong> Can you divide nodes into two groups?</li>
+        <li class="academic-text"><strong>Density:</strong> How many connections exist vs. how many could exist?</li>
+    </ul>
+    
+    <p class="academic-text">These properties aren't just academic curiosities - they directly impact which algorithms you can use and how efficiently they'll run. Let's explore each one!</p>
+
+    <h2 class="section-title" id="ch2-1">2.1 Connectivity: The Foundation of Graph Analysis</h2>
+    
+    <p class="academic-text">Connectivity is one of the most fundamental properties in graph theory. It determines whether your graph is "all one piece" or broken into separate components.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🔗 Connected Graph</h3>
+        <p class="academic-text">A graph is <strong>connected</strong> if there exists a path between every pair of vertices.</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Path:</strong> A sequence of edges that connects two vertices</li>
+            <li class="academic-text"><strong>Reachability:</strong> If you can get from A to B, we say B is reachable from A</li>
+            <li class="academic-text"><strong>Examples:</strong> Social networks, transportation systems, communication networks</li>
+        </ul>
+    </div>
+    
+    <p class="academic-text"><strong>Why connectivity matters:</strong> Many graph algorithms only work on connected graphs, or they need to be run separately on each connected component.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Connected Graph (Everyone Can Reach Everyone):</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[Alice] --- B[Bob]
+            B --- C[Carol]
+            C --- D[Dave]
+            A --- D
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style D fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Alice can reach Dave through Bob or Carol - everyone is reachable!</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Technical note:</strong> In a connected graph with n vertices, you need at least n-1 edges. This is because you need enough edges to "link" all vertices together without leaving anyone isolated.
+        </div>
+    </div>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Disconnected Graph (Isolated Groups):</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[Alice] --- B[Bob]
+            C[Carol] --- D[Dave]
+            E[Eve]
+            
+            style A fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style B fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Three separate components - Alice can't reach Carol, and Eve is completely isolated</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Classical Definition:</strong> A graph is disconnected if it contains two or more connected components that are not connected to each other.
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>Real-World Examples:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Connected:</strong> Internet (you can reach any website), highway system, social networks</li>
+        <li class="academic-text"><strong>Disconnected:</strong> Separate friend groups, isolated computer networks, different continents without bridges</li>
+    </ul>
+
+    <pre class="code-block">// Check if a graph is connected using DFS
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+using namespace std;
+
+class ConnectivityChecker {
+private:
+    unordered_map<string, vector<string>> graph;
+    
+    // Depth-First Search to visit all reachable nodes
+    void dfs(const string& node, unordered_set<string>& visited) {
+        visited.insert(node);
+        for (const string& neighbor : graph[node]) {
+            if (visited.find(neighbor) == visited.end()) {
+                dfs(neighbor, visited);
+            }
+        }
+    }
+    
+public:
+    void addEdge(const string& u, const string& v) {
+        graph[u].push_back(v);
+        graph[v].push_back(u);
+    }
+    
+    // Check if the graph is connected
+    bool isConnected() {
+        if (graph.empty()) return true;
+        
+        unordered_set<string> visited;
+        string startNode = graph.begin()->first;
+        
+        // Start DFS from any node
+        dfs(startNode, visited);
+        
+        // If we visited all nodes, the graph is connected
+        return visited.size() == graph.size();
+    }
+    
+    // Find all connected components
+    vector<vector<string>> getConnectedComponents() {
+        vector<vector<string>> components;
+        unordered_set<string> globalVisited;
+        
+        for (const auto& [node, neighbors] : graph) {
+            if (globalVisited.find(node) == globalVisited.end()) {
+                unordered_set<string> componentVisited;
+                dfs(node, componentVisited);
+                
+                vector<string> component;
+                for (const string& n : componentVisited) {
+                    component.push_back(n);
+                    globalVisited.insert(n);
+                }
+                components.push_back(component);
+            }
+        }
+        return components;
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch2-2">2.2 Strongly Connected Components: The Direction Matters</h2>
+
+    <p class="academic-text">In directed graphs, connectivity gets more interesting! A <strong>strongly connected component (SCC)</strong> is a group of nodes where you can get from any node to any other node following the arrow directions.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Strongly Connected Components Example:</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[Alice] --> B[Bob]
+            B --> C[Carol]
+            C --> A
+            
+            D[Dave] --> E[Eve]
+            E --> F[Frank]
+            F --> D
+            
+            B --> D
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+            style B fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+            style C fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
+            style E fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
+            style F fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Two SCCs: {Alice, Bob, Carol} and {Dave, Eve, Frank}. You can go from Alice→Bob→Carol→Alice, but not back from Dave to Bob!</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Classical Definition:</strong> A strongly connected component is a maximal set of vertices such that for every pair of vertices u and v, there is a directed path from u to v and from v to u.
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>Why SCCs Matter:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Web analysis:</strong> Groups of websites that link to each other</li>
+        <li class="academic-text"><strong>Social networks:</strong> Tight-knit communities where everyone follows everyone</li>
+        <li class="academic-text"><strong>Software dependencies:</strong> Circular dependencies that need to be resolved together</li>
+    </ul>
+
+    <h2 class="section-title" id="ch2-3">2.3 Directed Acyclic Graphs (DAGs): No Going in Circles</h2>
+
+    <p class="academic-text">A <strong>Directed Acyclic Graph (DAG)</strong> is a directed graph with no cycles. Think of it as a one-way system where you can never return to where you started by following the arrows.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>DAG Example (Course Prerequisites):</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[Math 101] --> B[Math 201]
+            A --> C[Physics 101]
+            B --> D[Math 301]
+            C --> E[Physics 201]
+            D --> F[Advanced Math]
+            E --> F
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style E fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style F fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Clear progression from basic to advanced courses - no circular prerequisites!</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Classical Definition:</strong> A DAG is a directed graph with no directed cycles. It has a topological ordering where vertices can be arranged so all edges point "forward."
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>DAG Applications:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Task scheduling:</strong> Project tasks with dependencies</li>
+        <li class="academic-text"><strong>Build systems:</strong> Compile order for software modules</li>
+        <li class="academic-text"><strong>Family trees:</strong> Ancestry relationships</li>
+        <li class="academic-text"><strong>Decision trees:</strong> Step-by-step decision making</li>
+    </ul>
+
+    <pre class="code-block">// Simple DAG implementation for task scheduling
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <queue>
+#include <string>
+using namespace std;
+
+class TaskScheduler {
+private:
+    unordered_map<string, vector<string>> dependencies; // task -> list of tasks it depends on
+    unordered_map<string, vector<string>> dependents;   // task -> list of tasks that depend on it
+    unordered_map<string, int> inDegree;               // task -> number of dependencies
+    
+public:
+    void addTask(const string& task) {
+        if (dependencies.find(task) == dependencies.end()) {
+            dependencies[task] = vector<string>();
+            dependents[task] = vector<string>();
+            inDegree[task] = 0;
+        }
+    }
+    
+    // Add dependency: taskB depends on taskA (taskA must be done before taskB)
+    void addDependency(const string& taskA, const string& taskB) {
+        addTask(taskA);
+        addTask(taskB);
+        
+        dependencies[taskB].push_back(taskA);
+        dependents[taskA].push_back(taskB);
+        inDegree[taskB]++;
+    }
+    
+    // Get the order in which tasks should be completed (topological sort)
+    vector<string> getTaskOrder() {
+        vector<string> result;
+        queue<string> readyTasks;
+        unordered_map<string, int> currentInDegree = inDegree;
+        
+        // Find tasks with no dependencies
+        for (const auto& [task, degree] : currentInDegree) {
+            if (degree == 0) {
+                readyTasks.push(task);
+            }
+        }
+        
+        while (!readyTasks.empty()) {
+            string currentTask = readyTasks.front();
+            readyTasks.pop();
+            result.push_back(currentTask);
+            
+            // Remove this task and update dependencies
+            for (const string& dependent : dependents[currentTask]) {
+                currentInDegree[dependent]--;
+                if (currentInDegree[dependent] == 0) {
+                    readyTasks.push(dependent);
+                }
+            }
+        }
+        
+        // Check if we have a cycle (couldn't complete all tasks)
+        if (result.size() != dependencies.size()) {
+            cout << "Error: Circular dependency detected!" << endl;
+            return vector<string>();
+        }
+        
+        return result;
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch2-4">2.4 Bipartite Graphs and Graph Density: Special Structures</h2>
+
+    <p class="academic-text"><strong>Bipartite Graphs: Two Sides of the Story</strong></p>
+    <p class="academic-text">A <strong>bipartite graph</strong> is like a dance where partners can only be from the opposite group. You can divide all nodes into two groups, and edges only connect nodes from different groups - never within the same group.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Bipartite Graph (Students and Courses):</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            subgraph Students
+                A[Alice]
+                B[Bob]
+                C[Carol]
+            end
+            
+            subgraph Courses
+                D[Math]
+                E[Physics]
+                F[Chemistry]
+            end
+            
+            A --- D
+            A --- E
+            B --- D
+            B --- F
+            C --- E
+            C --- F
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style E fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style F fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Students only connect to courses, courses only connect to students - no student-to-student edges!</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Classical Definition:</strong> A bipartite graph G = (V, E) has vertex set V that can be partitioned into two disjoint sets V₁ and V₂ such that every edge connects a vertex in V₁ to a vertex in V₂.
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>Graph Density: How Connected Is Your Graph?</strong></p>
+    <p class="academic-text">Graph density measures how "full" your graph is - what percentage of all possible edges actually exist.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Density Examples:</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            subgraph "Sparse Graph (Low Density)"
+                A1[A] --- B1[B]
+                C1[C] --- D1[D]
+            end
+            
+            subgraph "Dense Graph (High Density)"
+                A2[A] --- B2[B]
+                A2 --- C2[C]
+                A2 --- D2[D]
+                B2 --- C2
+                B2 --- D2
+                C2 --- D2
+            end
+            
+            style A1 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style B1 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style C1 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style D1 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            
+            style A2 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B2 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C2 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style D2 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Sparse: 2 edges out of 6 possible (33% density) vs Dense: 6 edges out of 6 possible (100% density)</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Classical Definition:</strong> For an undirected graph with n vertices, density = 2|E| / (n(n-1)), where |E| is the number of edges. Range: 0 (no edges) to 1 (complete graph).
+        </div>
+    </div>
+
+    <pre class="code-block">// Graph analysis tools
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+using namespace std;
+
+class GraphAnalyzer {
+private:
+    unordered_map<string, vector<string>> graph;
+    
+public:
+    void addEdge(const string& u, const string& v) {
+        graph[u].push_back(v);
+        graph[v].push_back(u);
+    }
+    
+    // Calculate graph density
+    double getDensity() {
+        int n = graph.size();
+        if (n <= 1) return 0.0;
+        
+        int edges = 0;
+        for (const auto& [node, neighbors] : graph) {
+            edges += neighbors.size();
+        }
+        edges /= 2; // Each edge counted twice in undirected graph
+        
+        int maxPossibleEdges = n * (n - 1) / 2;
+        return (double)edges / maxPossibleEdges;
+    }
+    
+    // Check if graph is bipartite using 2-coloring
+    bool isBipartite() {
+        if (graph.empty()) return true;
+        
+        unordered_map<string, int> color; // 0 = uncolored, 1 = red, 2 = blue
+        
+        for (const auto& [startNode, neighbors] : graph) {
+            if (color[startNode] == 0) {
+                // Start BFS/DFS from this component
+                vector<string> queue = {startNode};
+                color[startNode] = 1;
+                
+                for (size_t i = 0; i < queue.size(); i++) {
+                    string current = queue[i];
+                    int currentColor = color[current];
+                    int neighborColor = (currentColor == 1) ? 2 : 1;
+                    
+                    for (const string& neighbor : graph[current]) {
+                        if (color[neighbor] == 0) {
+                            color[neighbor] = neighborColor;
+                            queue.push_back(neighbor);
+                        } else if (color[neighbor] == currentColor) {
+                            return false; // Same color as neighbor - not bipartite!
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
+    void printAnalysis() {
+        cout << "Graph Analysis:" << endl;
+        cout << "Nodes: " << graph.size() << endl;
+        cout << "Density: " << (getDensity() * 100) << "%" << endl;
+        cout << "Bipartite: " << (isBipartite() ? "Yes" : "No") << endl;
+    }
+};</pre>
+
+    <div class="performance-summary">
+        <h3 style="color: #2e7d32; margin-top: 0;">🎯 Quick Reference: Graph Properties</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Connectivity</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text"><strong>Connected:</strong> Path between any two nodes</li>
+                    <li class="academic-text"><strong>SCC:</strong> Directed cycles in directed graphs</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Structure</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text"><strong>DAG:</strong> No cycles, has ordering</li>
+                    <li class="academic-text"><strong>Bipartite:</strong> Two groups, edges between groups</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="completion-summary">
+        <h3 style="color: #1976d2; margin-top: 0;">🎉 Chapter 2 Complete!</h3>
+        <p class="academic-text">You now understand the key properties that make graphs special:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text">✅ <strong>Connectivity</strong> - whether you can reach everywhere</li>
+            <li class="academic-text">✅ <strong>Strong connectivity</strong> - directed graph communities</li>
+            <li class="academic-text">✅ <strong>DAGs</strong> - ordered structures without cycles</li>
+            <li class="academic-text">✅ <strong>Bipartite graphs</strong> - two-sided relationships</li>
+            <li class="academic-text">✅ <strong>Graph density</strong> - how connected your graph is</li>
+        </ul>
+        
+        <p class="academic-text">These properties help you choose the right algorithms and understand what's possible with your graph. Next up: <strong>Trees</strong> - the most important special case of graphs!</p>
+    </div>
+</body>
+</html>

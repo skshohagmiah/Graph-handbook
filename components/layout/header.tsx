@@ -11,20 +11,30 @@ export function Header() {
     <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-50">
       <div className="container-main flex items-center justify-between h-16">
         <Link href="/" className="text-xl font-bold text-primary">
-          Graphs Handbook
+          Graph Algorithms Handbook
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-8">
-          <Link href="/chapters" className="text-sm hover:text-primary transition-colors">
+          <Link href="/chapters/what-are-graphs" className="text-sm hover:text-primary transition-colors">
             Chapters
           </Link>
           <Link href="/about" className="text-sm hover:text-primary transition-colors">
             About
           </Link>
-          <Link href="/download" className="text-sm hover:text-primary transition-colors">
+          <button
+            onClick={() => {
+              const link = document.createElement('a')
+              link.href = '/graphs-handbook.pdf'
+              link.download = 'Graph-Algorithms-Handbook.pdf'
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+            }}
+            className="text-sm hover:text-primary transition-colors"
+          >
             Download
-          </Link>
+          </button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -37,15 +47,25 @@ export function Header() {
       {isOpen && (
         <nav className="md:hidden border-t border-border bg-input">
           <div className="container-main py-4 space-y-2">
-            <Link href="/chapters" className="block py-2 hover:text-primary transition-colors">
+            <Link href="/chapters/what-are-graphs" className="block py-2 hover:text-primary transition-colors">
               Chapters
             </Link>
             <Link href="/about" className="block py-2 hover:text-primary transition-colors">
               About
             </Link>
-            <Link href="/download" className="block py-2 hover:text-primary transition-colors">
+            <button
+              onClick={() => {
+                const link = document.createElement('a')
+                link.href = '/graphs-handbook.pdf'
+                link.download = 'Graph-Algorithms-Handbook.pdf'
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+              }}
+              className="block py-2 hover:text-primary transition-colors text-left"
+            >
               Download
-            </Link>
+            </button>
           </div>
         </nav>
       )}

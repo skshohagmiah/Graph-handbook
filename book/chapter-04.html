@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: Tries and Prefix Structures</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Chapter 4</div>
+    <h1 class="chapter-title">Tries and Prefix Structures</h1>
+    
+    <div class="definition-box">
+        "Tries are the secret behind autocomplete, spell checkers, and fast string searches. They're trees specialized for text!"
+    </div>
+
+    <p class="academic-text">Ever wonder how your phone predicts what you're typing? Or how Google instantly suggests search terms as you type? The answer is <strong>tries</strong> (pronounced "tries" like "tries to help")! They're specialized trees designed specifically for working with strings and text.</p>
+    
+    <p class="academic-text"><strong>Tries solve text problems efficiently:</strong> While regular trees are great for hierarchical data, tries are optimized for string operations like searching, autocomplete, and spell checking.</p>
+    
+    <p class="academic-text"><strong>Where you encounter tries:</strong></p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text"><strong>Search engines:</strong> Google's search suggestions as you type</li>
+        <li class="academic-text"><strong>Text editors:</strong> Autocomplete for code and variable names</li>
+        <li class="academic-text"><strong>Spell checkers:</strong> Finding and suggesting correct spellings</li>
+        <li class="academic-text"><strong>Phone contacts:</strong> T9 predictive text on older phones</li>
+        <li class="academic-text"><strong>IP routing:</strong> Internet routers finding network paths</li>
+    </ul>
+
+    <h2 class="section-title" id="ch4-1">4.1 Trie Data Structure and Operations</h2>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🔤 Trie Definition</h3>
+        <p class="academic-text">A <strong>trie</strong> (prefix tree) is a tree where each path from root represents a string, and each node represents a character.</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Path = Word:</strong> Each root-to-node path spells out a prefix or complete word</li>
+            <li class="academic-text"><strong>Shared Prefixes:</strong> Words with common beginnings share the same path</li>
+            <li class="academic-text"><strong>Marked Endings:</strong> Special markers indicate where complete words end</li>
+        </ul>
+    </div>
+    
+    <p class="academic-text"><strong>Why tries are brilliant:</strong> They store thousands of words efficiently by sharing common prefixes. Instead of storing "CAR", "CARD", and "CARE" separately, they share the "CAR" prefix!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Trie Example (Words: CAT, CAR, CARD, CARE, CAREFUL):</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            Root[ROOT] --> C[C]
+            C --> A[A]
+            A --> T[T*]
+            A --> R[R*]
+            R --> D[D*]
+            R --> E[E*]
+            E --> F[F]
+            F --> U[U]
+            U --> L[L*]
+            
+            style Root fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style A fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style T fill:#ffebee,stroke:#f44336,stroke-width:3px
+            style R fill:#ffebee,stroke:#f44336,stroke-width:3px
+            style D fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+            style E fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+            style F fill:#e1f5fe,stroke:#00bcd4,stroke-width:2px
+            style U fill:#e1f5fe,stroke:#00bcd4,stroke-width:2px
+            style L fill:#f1f8e9,stroke:#8bc34a,stroke-width:3px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">* marks end of word. Path ROOT→C→A→T spells "CAT"</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Classical Definition:</strong> A trie is a tree data structure where each node represents a character and each path from root to a marked node represents a stored string.
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>Why Tries Are Amazing:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Shared prefixes:</strong> "CAR", "CARD", "CARE" share the path C→A→R</li>
+        <li class="academic-text"><strong>Fast lookup:</strong> Find any word in O(word length) time</li>
+        <li class="academic-text"><strong>Prefix magic:</strong> Find all words starting with "CA" instantly</li>
+        <li class="academic-text"><strong>Memory efficient:</strong> Common prefixes stored only once</li>
+    </ul>
+
+    <pre class="code-block">// Simple Trie implementation
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Simple trie node
+struct TrieNode {
+    vector<TrieNode*> children;
+    bool isEndOfWord;
+    char character;
+    
+    TrieNode(char c = '\0') : character(c), isEndOfWord(false) {
+        children.resize(26, nullptr); // for a-z
+    }
+};
+
+class SimpleTrie {
+private:
+    TrieNode* root;
+    
+    int charToIndex(char c) {
+        return c - 'a'; // convert 'a' to 0, 'b' to 1, etc.
+    }
+    
+public:
+    SimpleTrie() {
+        root = new TrieNode();
+    }
+    
+    // Insert a word into the trie
+    void insert(string word) {
+        TrieNode* current = root;
+        
+        for (char c : word) {
+            int index = charToIndex(c);
+            
+            if (current->children[index] == nullptr) {
+                current->children[index] = new TrieNode(c);
+            }
+            current = current->children[index];
+        }
+        current->isEndOfWord = true;
+    }
+    
+    // Search for a word
+    bool search(string word) {
+        TrieNode* current = root;
+        
+        for (char c : word) {
+            int index = charToIndex(c);
+            if (current->children[index] == nullptr) {
+                return false;
+            }
+            current = current->children[index];
+        }
+        return current->isEndOfWord;
+    }
+    
+    // Check if any word starts with this prefix
+    bool startsWith(string prefix) {
+        TrieNode* current = root;
+        
+        for (char c : prefix) {
+            int index = charToIndex(c);
+            if (current->children[index] == nullptr) {
+                return false;
+            }
+            current = current->children[index];
+        }
+        return true; // We found the complete prefix path
+    }
+    
+    // Build a sample trie with common words
+    static SimpleTrie* buildSampleTrie() {
+        SimpleTrie* trie = new SimpleTrie();
+        vector<string> words = {"cat", "car", "card", "care", "careful", "dog", "dodge"};
+        
+        for (string word : words) {
+            trie->insert(word);
+        }
+        return trie;
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch4-2">4.2 String Searching and Autocomplete Systems</h2>
+
+    <p class="academic-text"><strong>Autocomplete Magic</strong></p>
+    <p class="academic-text">When you type "ca" and see suggestions like "cat", "car", "care", that's a trie finding all words with the prefix "ca"!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Autocomplete Example:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            Root[ROOT] --> C[C]
+            Root --> D[D]
+            C --> A[A]
+            A --> T[T*]
+            A --> R[R*]
+            R --> D1[D*]
+            R --> E[E*]
+            D --> O[O]
+            O --> G[G*]
+            
+            style Root fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C fill:#ffeb3b,stroke:#333,stroke-width:4px
+            style A fill:#ffeb3b,stroke:#333,stroke-width:4px
+            style T fill:#ff9800,stroke:#333,stroke-width:2px
+            style R fill:#ff9800,stroke:#333,stroke-width:2px
+            style D1 fill:#ff9800,stroke:#333,stroke-width:2px
+            style E fill:#ff9800,stroke:#333,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style O fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style G fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">User types "CA" → Highlighted path shows all words starting with "CA": CAT, CAR, CARD, CARE</p>
+    </div>
+
+    <p class="academic-text"><strong>How Autocomplete Works:</strong></p>
+    <ol style="margin: 8px 0 16px 24px;">
+        <li class="academic-text">User types a prefix (like "ca")</li>
+        <li class="academic-text">Find the node representing that prefix in the trie</li>
+        <li class="academic-text">Collect all complete words in the subtree below that node</li>
+        <li class="academic-text">Return the suggestions to the user</li>
+    </ol>
+
+    <pre class="code-block">// Autocomplete system using trie
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class AutoComplete {
+private:
+    SimpleTrie* trie;
+    
+    // Helper function to collect all words from a node
+    void collectWords(TrieNode* node, string currentWord, vector<string>& results) {
+        if (node == nullptr) return;
+        
+        if (node->isEndOfWord) {
+            results.push_back(currentWord);
+        }
+        
+        for (int i = 0; i < 26; i++) {
+            if (node->children[i] != nullptr) {
+                char nextChar = 'a' + i;
+                collectWords(node->children[i], currentWord + nextChar, results);
+            }
+        }
+    }
+    
+    // Find the node representing a prefix
+    TrieNode* findPrefixNode(string prefix) {
+        TrieNode* current = trie->root;
+        
+        for (char c : prefix) {
+            int index = c - 'a';
+            if (current->children[index] == nullptr) {
+                return nullptr; // Prefix not found
+            }
+            current = current->children[index];
+        }
+        return current;
+    }
+    
+public:
+    AutoComplete() {
+        trie = SimpleTrie::buildSampleTrie();
+    }
+    
+    // Get autocomplete suggestions for a prefix
+    vector<string> getSuggestions(string prefix) {
+        vector<string> suggestions;
+        
+        TrieNode* prefixNode = findPrefixNode(prefix);
+        if (prefixNode == nullptr) {
+            return suggestions; // No words with this prefix
+        }
+        
+        collectWords(prefixNode, prefix, suggestions);
+        return suggestions;
+    }
+    
+    // Add a new word to the dictionary
+    void addWord(string word) {
+        trie->insert(word);
+    }
+    
+    // Demo function
+    static void demo() {
+        AutoComplete ac;
+        
+        cout << "Autocomplete Demo:" << endl;
+        vector<string> prefixes = {"ca", "car", "d"};
+        
+        for (string prefix : prefixes) {
+            cout << "Typing '" << prefix << "' suggests: ";
+            vector<string> suggestions = ac.getSuggestions(prefix);
+            
+            for (string suggestion : suggestions) {
+                cout << suggestion << " ";
+            }
+            cout << endl;
+        }
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch4-3">4.3 Applications: Spell Checkers, Dictionaries, IP Routing</h2>
+
+    <p class="academic-text">Tries aren't just for autocomplete - they power many systems you use every day!</p>
+
+    <p class="academic-text"><strong>1. Spell Checkers</strong></p>
+    <p class="academic-text">When you misspell "recieve" as "recieve", spell checkers use tries to find similar correct words like "receive".</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Spell Checker Strategy:</strong><br><br>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Dictionary trie:</strong> Contains all correct words</li>
+            <li class="academic-text"><strong>Check word:</strong> Search in trie - if not found, it's misspelled</li>
+            <li class="academic-text"><strong>Find suggestions:</strong> Try small changes (add/remove/change letters)</li>
+            <li class="academic-text"><strong>Rank suggestions:</strong> Prefer words with similar prefixes</li>
+        </ul>
+    </div>
+
+    <p class="academic-text"><strong>2. IP Address Routing</strong></p>
+    <p class="academic-text">Internet routers use tries to quickly find where to send your data packets!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>IP Routing Trie Example:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            Root[ROOT] --> Zero[0]
+            Root --> One[1]
+            Zero --> Z0[0]
+            Zero --> Z1[1]
+            One --> O0[0]
+            One --> O1[1]
+            Z0 --> Route1[Route A*]
+            Z1 --> Route2[Route B*]
+            O0 --> Route3[Route C*]
+            O1 --> Route4[Route D*]
+            
+            style Root fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style Zero fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style One fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style Z0 fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style Z1 fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style O0 fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style O1 fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style Route1 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style Route2 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style Route3 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style Route4 fill:#ffebee,stroke:#f44336,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">IP 192.168.1.1 → Binary 11000000... → Follow path 1→1→0→0... to find route</p>
+    </div>
+
+    <pre class="code-block">// Simple spell checker using trie
+#include <iostream>
+#include <vector>
+#include <string>
+#include <set>
+using namespace std;
+
+class SpellChecker {
+private:
+    SimpleTrie* dictionary;
+    
+    // Generate words with one character changed
+    set<string> generateEdits(string word) {
+        set<string> edits;
+        
+        // Try changing each character
+        for (int i = 0; i < word.length(); i++) {
+            for (char c = 'a'; c <= 'z'; c++) {
+                if (c != word[i]) {
+                    string edited = word;
+                    edited[i] = c;
+                    edits.insert(edited);
+                }
+            }
+        }
+        
+        // Try removing each character
+        for (int i = 0; i < word.length(); i++) {
+            string edited = word.substr(0, i) + word.substr(i + 1);
+            edits.insert(edited);
+        }
+        
+        // Try adding a character at each position
+        for (int i = 0; i <= word.length(); i++) {
+            for (char c = 'a'; c <= 'z'; c++) {
+                string edited = word.substr(0, i) + c + word.substr(i);
+                edits.insert(edited);
+            }
+        }
+        
+        return edits;
+    }
+    
+public:
+    SpellChecker() {
+        dictionary = SimpleTrie::buildSampleTrie();
+        // Add more common words
+        dictionary->insert("hello");
+        dictionary->insert("world");
+        dictionary->insert("computer");
+        dictionary->insert("science");
+    }
+    
+    // Check if word is spelled correctly
+    bool isCorrect(string word) {
+        return dictionary->search(word);
+    }
+    
+    // Get spelling suggestions
+    vector<string> getSuggestions(string misspelledWord) {
+        vector<string> suggestions;
+        
+        if (isCorrect(misspelledWord)) {
+            return suggestions; // Word is already correct
+        }
+        
+        set<string> possibleEdits = generateEdits(misspelledWord);
+        
+        for (string edit : possibleEdits) {
+            if (dictionary->search(edit)) {
+                suggestions.push_back(edit);
+            }
+        }
+        
+        return suggestions;
+    }
+    
+    // Demo function
+    static void demo() {
+        SpellChecker checker;
+        
+        cout << "Spell Checker Demo:" << endl;
+        vector<string> testWords = {"cat", "cta", "carr", "carefull"};
+        
+        for (string word : testWords) {
+            if (checker.isCorrect(word)) {
+                cout << "'" << word << "' is spelled correctly!" << endl;
+            } else {
+                cout << "'" << word << "' is misspelled. Suggestions: ";
+                vector<string> suggestions = checker.getSuggestions(word);
+                for (string suggestion : suggestions) {
+                    cout << suggestion << " ";
+                }
+                cout << endl;
+            }
+        }
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Other Amazing Trie Applications:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Search Engines:</strong> Google uses tries for query suggestions</li>
+        <li class="academic-text"><strong>Code Editors:</strong> Autocomplete for variable names and functions</li>
+        <li class="academic-text"><strong>Phone Contacts:</strong> T9 predictive text on old phones</li>
+        <li class="academic-text"><strong>Bioinformatics:</strong> DNA sequence matching</li>
+        <li class="academic-text"><strong>Compression:</strong> Finding repeated patterns in text</li>
+        <li class="academic-text"><strong>Games:</strong> Word games like Scrabble and Boggle</li>
+    </ul>
+
+    <div class="performance-summary">
+        <h3 style="color: #2e7d32; margin-top: 0;">🔤 Trie Performance Summary</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Time Complexity</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text"><strong>Insert:</strong> O(word length)</li>
+                    <li class="academic-text"><strong>Search:</strong> O(word length)</li>
+                    <li class="academic-text"><strong>Prefix check:</strong> O(prefix length)</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Space Benefits</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text">Shared prefixes save memory</li>
+                    <li class="academic-text">Fast prefix operations</li>
+                    <li class="academic-text">Natural autocomplete structure</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="completion-summary">
+        <h3 style="color: #1976d2; margin-top: 0;">🎉 Chapter 4 Complete!</h3>
+        <p class="academic-text">You now understand tries - specialized trees for text processing:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text">✅ <strong>Trie structure</strong> - character nodes forming word paths</li>
+            <li class="academic-text">✅ <strong>Core operations</strong> - insert, search, prefix checking</li>
+            <li class="academic-text">✅ <strong>Autocomplete systems</strong> - how suggestions work</li>
+            <li class="academic-text">✅ <strong>Real applications</strong> - spell checkers, routing, search engines</li>
+        </ul>
+        
+        <p class="academic-text">Tries show how specialized data structures solve specific problems elegantly. Next: <strong>Heaps</strong> - trees optimized for priority and ordering!</p>
+    </div>
+</body>
+</html>

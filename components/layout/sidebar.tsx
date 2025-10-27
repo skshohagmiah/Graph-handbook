@@ -2,56 +2,104 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { chapters } from "@/lib/chapters"
+import { BookOpen, ChevronRight } from "lucide-react"
 
-interface Chapter {
-  id: string
-  title: string
-  slug: string
-  part: string
-}
-
-interface SidebarProps {
-  chapters: Chapter[]
-}
-
-export function Sidebar({ chapters }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname()
 
-  // Group chapters by part
-  const groupedChapters = chapters.reduce(
-    (acc, chapter) => {
-      if (!acc[chapter.part]) {
-        acc[chapter.part] = []
-      }
-      acc[chapter.part].push(chapter)
-      return acc
-    },
-    {} as Record<string, Chapter[]>,
-  )
-
+  // Group chapters by parts
+  const partI = chapters.filter(ch => ch.number <= 5)
+  const partII = chapters.filter(ch => ch.number >= 6)
   return (
-    <aside className="w-64 border-r border-border bg-input/50 p-6 max-h-screen overflow-y-auto">
-      <nav className="space-y-8">
-        {Object.entries(groupedChapters).map(([part, chapterList]) => (
-          <div key={part}>
-            <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">{part}</h3>
-            <ul className="space-y-1">
-              {chapterList.map((chapter) => {
-                const isActive = pathname === `/chapters/${chapter.slug}`
-                return (
-                  <li key={chapter.slug}>
-                    <Link
-                      href={`/chapters/${chapter.slug}`}
-                      className={`sidebar-nav-item block ${isActive ? "active" : ""}`}
-                    >
-                      {chapter.title}
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
+    <aside className="w-80 border-r border-border  backdrop-blur-sm sticky top-0 h-screen overflow-y-auto">
+      {/* Header */}
+      <div className="p-6 border-b border-border">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <BookOpen className="w-4 h-4 text-white" />
           </div>
-        ))}
+          <div>
+            <h2 className="font-semibold text-foreground">All Chapters</h2>
+            <p className="text-xs text-muted-foreground">Graph Algorithms Handbook</p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="p-6 space-y-8">
+        {/* Part I - Foundations */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-6 h-6 bg-green-500 rounded text-white text-xs font-bold flex items-center justify-center">
+              I
+            </div>
+            <h3 className="text-sm font-semibold text-foreground">Foundations</h3>
+          </div>
+          <ul className="space-y-1">
+            {partI.map((chapter) => {
+              const isActive = pathname === `/chapters/${chapter.id}`
+              return (
+                <li key={chapter.id}>
+                  <Link
+                    href={`/chapters/${chapter.id}`}
+                    className={`group flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                      isActive 
+                        ? "bg-primary/10 text-primary border-l-2 border-primary" 
+                        : "hover:bg-input/50 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <div className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium ${
+                      isActive 
+                        ? "bg-primary text-white" 
+                        : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
+                    }`}>
+                      {chapter.number}
+                    </div>
+                    <span className="flex-1 text-sm font-medium truncate">{chapter.title}</span>
+                    {isActive && <ChevronRight className="w-4 h-4 text-primary" />}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+
+        {/* Part II - Core Algorithms */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-6 h-6 bg-blue-500 rounded text-white text-xs font-bold flex items-center justify-center">
+              II
+            </div>
+            <h3 className="text-sm font-semibold text-foreground">Core Algorithms</h3>
+          </div>
+          <ul className="space-y-1">
+            {partII.map((chapter) => {
+              const isActive = pathname === `/chapters/${chapter.id}`
+              return (
+                <li key={chapter.id}>
+                  <Link
+                    href={`/chapters/${chapter.id}`}
+                    className={`group flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                      isActive 
+                        ? "bg-primary/10 text-primary border-l-2 border-primary" 
+                        : "hover:bg-input/50 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <div className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium ${
+                      isActive 
+                        ? "bg-primary text-white" 
+                        : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
+                    }`}>
+                      {chapter.number}
+                    </div>
+                    <span className="flex-1 text-sm font-medium truncate">{chapter.title}</span>
+                    {isActive && <ChevronRight className="w-4 h-4 text-primary" />}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
       </nav>
     </aside>
   )

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: Trees — The Simplest Graphs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Chapter 3</div>
+    <h1 class="chapter-title">Trees — The Simplest Graphs</h1>
+    
+    <div class="definition-box">
+        "Trees are everywhere - from your family tree to your computer's file system. They're the most useful special case of graphs."
+    </div>
+
+    <p class="academic-text">Trees are the most important special case of graphs. They're connected graphs with no cycles - giving them a perfect balance of structure and simplicity that makes them incredibly useful in computer science.</p>
+    
+    <p class="academic-text"><strong>Why trees matter:</strong> Trees appear everywhere in computing and real life because they naturally represent hierarchical relationships and provide efficient ways to organize and search data.</p>
+    
+    <p class="academic-text"><strong>You interact with trees daily:</strong></p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text"><strong>File systems:</strong> Folders containing subfolders and files</li>
+        <li class="academic-text"><strong>Family trees:</strong> Parents, children, and generational relationships</li>
+        <li class="academic-text"><strong>Organization charts:</strong> Company hierarchies and reporting structures</li>
+        <li class="academic-text"><strong>Decision making:</strong> "If this, then that" branching logic</li>
+        <li class="academic-text"><strong>Web pages:</strong> HTML DOM structure with nested elements</li>
+    </ul>
+
+    <h2 class="section-title" id="ch3-1">3.1 Tree Properties and Terminology</h2>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🌳 Tree Definition</h3>
+        <p class="academic-text">A <strong>tree</strong> is a connected graph with no cycles.</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Connected:</strong> You can reach any node from any other node</li>
+            <li class="academic-text"><strong>Acyclic:</strong> No circular paths - there's exactly one path between any two nodes</li>
+            <li class="academic-text"><strong>Minimal:</strong> Remove any edge and it becomes disconnected</li>
+        </ul>
+    </div>
+    
+    <p class="academic-text"><strong>Amazing tree properties:</strong> This simple definition leads to some remarkable mathematical properties that make trees so useful.</p>
+    
+    <p class="academic-text"><strong>Key tree facts:</strong></p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text">A tree with n vertices has exactly n-1 edges</li>
+        <li class="academic-text">There's exactly one path between any two vertices</li>
+        <li class="academic-text">Adding any edge creates exactly one cycle</li>
+        <li class="academic-text">Removing any edge disconnects the tree</li>
+    </ul>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Tree Example (Family Tree):</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[Grandpa] --> B[Dad]
+            A --> C[Uncle]
+            B --> D[You]
+            B --> E[Sister]
+            C --> F[Cousin]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">6 nodes, 5 edges - exactly n-1 edges for n nodes!</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Classical Definition:</strong> A tree is a connected acyclic graph. For n vertices, it has exactly n-1 edges.
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>Tree Terminology:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Root:</strong> The top node (Grandpa in our example)</li>
+        <li class="academic-text"><strong>Parent:</strong> Node directly above (Dad is parent of You)</li>
+        <li class="academic-text"><strong>Child:</strong> Node directly below (You are child of Dad)</li>
+        <li class="academic-text"><strong>Leaf:</strong> Node with no children (You, Sister, Cousin)</li>
+        <li class="academic-text"><strong>Height:</strong> Longest path from root to leaf (3 levels)</li>
+        <li class="academic-text"><strong>Depth:</strong> Distance from root to a node</li>
+    </ul>
+
+    <pre class="code-block">// Simple Node structure
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Simple node - just holds data and connections
+struct Node {
+    string data;
+    vector<Node*> children;
+    
+    Node(string value) : data(value) {}
+};
+
+// Tree builder functions
+class TreeBuilder {
+public:
+    // Create a simple family tree from arrays
+    static Node* buildFamilyTree() {
+        Node* grandpa = new Node("Grandpa");
+        Node* dad = new Node("Dad");
+        Node* uncle = new Node("Uncle");
+        Node* you = new Node("You");
+        Node* sister = new Node("Sister");
+        Node* cousin = new Node("Cousin");
+        
+        // Build the tree structure
+        grandpa->children = {dad, uncle};
+        dad->children = {you, sister};
+        uncle->children = {cousin};
+        
+        return grandpa;
+    }
+    
+    // Build tree from parent-child pairs
+    static Node* buildFromPairs(vector<pair<string, string>> relationships) {
+        // relationships = {("parent", "child"), ("parent", "child2"), ...}
+        // Implementation would map relationships to tree structure
+        // Simplified for clarity
+        return nullptr;
+    }
+    
+    // Print tree in a simple way
+    static void printTree(Node* root, int indent = 0) {
+        if (root == nullptr) return;
+        
+        for (int i = 0; i < indent; i++) cout << "  ";
+        cout << root->data << endl;
+        
+        for (Node* child : root->children) {
+            printTree(child, indent + 1);
+        }
+    }
+    
+    // Check if node is a leaf (no children)
+    static bool isLeaf(Node* node) {
+        return node->children.empty();
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch3-2">3.2 Binary Trees, N-ary Trees, Binary Search Trees</h2>
+
+    <p class="academic-text"><strong>Binary Trees: Two Children Max</strong></p>
+    <p class="academic-text">A binary tree is a tree where each node has at most 2 children (left and right). They're the most common type of tree in computer science.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Binary Tree Example:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[A] --> B[B]
+            A --> C[C]
+            B --> D[D]
+            B --> E[E]
+            C --> F[F]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Each node has at most 2 children</p>
+    </div>
+
+    <p class="academic-text"><strong>Binary Search Trees: Organized for Fast Search</strong></p>
+    <p class="academic-text">A BST is a binary tree with a special rule: left child < parent < right child. This makes searching super fast!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Binary Search Tree Example:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[50] --> B[30]
+            A --> C[70]
+            B --> D[20]
+            B --> E[40]
+            C --> F[60]
+            C --> G[80]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style G fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Left < Parent < Right rule makes searching O(log n)</p>
+    </div>
+
+    <pre class="code-block">// Simple Binary Search Tree
+#include <iostream>
+using namespace std;
+
+// Simple binary node
+struct BinaryNode {
+    int data;
+    BinaryNode* left;
+    BinaryNode* right;
+    
+    BinaryNode(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+// BST helper functions
+class BST {
+public:
+    // Build a sample BST
+    static BinaryNode* buildSampleBST() {
+        BinaryNode* root = new BinaryNode(50);
+        root->left = new BinaryNode(30);
+        root->right = new BinaryNode(70);
+        root->left->left = new BinaryNode(20);
+        root->left->right = new BinaryNode(40);
+        root->right->left = new BinaryNode(60);
+        root->right->right = new BinaryNode(80);
+        return root;
+    }
+    
+    // Simple search function
+    static bool search(BinaryNode* root, int target) {
+        if (root == nullptr) return false;
+        if (root->data == target) return true;
+        
+        if (target < root->data) {
+            return search(root->left, target);
+        } else {
+            return search(root->right, target);
+        }
+    }
+    
+    // Insert a new value
+    static BinaryNode* insert(BinaryNode* root, int value) {
+        if (root == nullptr) {
+            return new BinaryNode(value);
+        }
+        
+        if (value < root->data) {
+            root->left = insert(root->left, value);
+        } else if (value > root->data) {
+            root->right = insert(root->right, value);
+        }
+        return root;
+    }
+    
+    // Print in sorted order
+    static void printInOrder(BinaryNode* root) {
+        if (root != nullptr) {
+            printInOrder(root->left);
+            cout << root->data << " ";
+            printInOrder(root->right);
+        }
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch3-3">3.3 Tree Traversals: Different Ways to Visit Nodes</h2>
+
+    <p class="academic-text">Tree traversal means visiting every node in the tree. There are different orders you can visit them, each useful for different purposes.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Tree Traversal Orders:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[1] --> B[2]
+            A --> C[3]
+            B --> D[4]
+            B --> E[5]
+            C --> F[6]
+            C --> G[7]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style G fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">
+            <strong>Preorder:</strong> 1, 2, 4, 5, 3, 6, 7 (Root first)<br>
+            <strong>Inorder:</strong> 4, 2, 5, 1, 6, 3, 7 (Left, Root, Right)<br>
+            <strong>Postorder:</strong> 4, 5, 2, 6, 7, 3, 1 (Root last)<br>
+            <strong>Level-order:</strong> 1, 2, 3, 4, 5, 6, 7 (Level by level)
+        </p>
+    </div>
+
+    <p class="academic-text"><strong>When to Use Each Traversal:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Preorder:</strong> Copy/clone tree, prefix expressions</li>
+        <li class="academic-text"><strong>Inorder:</strong> Get sorted order from BST</li>
+        <li class="academic-text"><strong>Postorder:</strong> Delete tree, calculate directory sizes</li>
+        <li class="academic-text"><strong>Level-order:</strong> Print tree level by level, shortest path</li>
+    </ul>
+
+    <pre class="code-block">// Simple tree traversal functions
+#include <iostream>
+#include <queue>
+using namespace std;
+
+class TreeTraversal {
+public:
+    // Preorder: Root -> Left -> Right
+    static void preorder(BinaryNode* node) {
+        if (node == nullptr) return;
+        
+        cout << node->data << " ";  // Visit root first
+        preorder(node->left);       // Then left subtree
+        preorder(node->right);      // Then right subtree
+    }
+    
+    // Inorder: Left -> Root -> Right (gives sorted order for BST)
+    static void inorder(BinaryNode* node) {
+        if (node == nullptr) return;
+        
+        inorder(node->left);        // Visit left subtree first
+        cout << node->data << " ";  // Then root
+        inorder(node->right);       // Then right subtree
+    }
+    
+    // Postorder: Left -> Right -> Root
+    static void postorder(BinaryNode* node) {
+        if (node == nullptr) return;
+        
+        postorder(node->left);      // Visit left subtree first
+        postorder(node->right);     // Then right subtree
+        cout << node->data << " ";  // Then root last
+    }
+    
+    // Level-order: Visit level by level using queue
+    static void levelOrder(BinaryNode* root) {
+        if (root == nullptr) return;
+        
+        queue<BinaryNode*> q;
+        q.push(root);
+        
+        while (!q.empty()) {
+            BinaryNode* current = q.front();
+            q.pop();
+            
+            cout << current->data << " ";
+            
+            if (current->left) q.push(current->left);
+            if (current->right) q.push(current->right);
+        }
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch3-4">3.4 Applications in File Systems and Hierarchies</h2>
+
+    <p class="academic-text">Trees are everywhere in real life! Let's see how they power the systems you use every day.</p>
+
+    <p class="academic-text"><strong>File System Tree</strong></p>
+    <p class="academic-text">Your computer's file system is a tree! Folders are internal nodes, files are leaves.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>File System Example:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[/] --> B[home]
+            A --> C[usr]
+            A --> D[var]
+            B --> E[user1]
+            B --> F[user2]
+            E --> G[Documents]
+            E --> H[Pictures]
+            G --> I[resume.pdf]
+            G --> J[notes.txt]
+            H --> K[vacation.jpg]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style G fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style H fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style I fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+            style J fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+            style K fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Each path from root to file is unique - no cycles!</p>
+    </div>
+
+    <pre class="code-block">// Simple file system tree
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Simple file/folder node
+struct FileNode {
+    string name;
+    bool isFile;
+    vector<FileNode*> children;
+    int size; // for files only
+    
+    FileNode(string n, bool file = false, int s = 0) 
+        : name(n), isFile(file), size(s) {}
+};
+
+class FileSystem {
+public:
+    // Build a sample file system
+    static FileNode* buildSampleFileSystem() {
+        FileNode* root = new FileNode("/", false);
+        FileNode* home = new FileNode("home", false);
+        FileNode* user = new FileNode("user1", false);
+        FileNode* docs = new FileNode("Documents", false);
+        FileNode* pics = new FileNode("Pictures", false);
+        
+        FileNode* resume = new FileNode("resume.pdf", true, 1024);
+        FileNode* notes = new FileNode("notes.txt", true, 512);
+        FileNode* photo = new FileNode("vacation.jpg", true, 2048);
+        
+        // Build the tree structure
+        root->children = {home};
+        home->children = {user};
+        user->children = {docs, pics};
+        docs->children = {resume, notes};
+        pics->children = {photo};
+        
+        return root;
+    }
+    
+    // Print file system tree
+    static void printFileSystem(FileNode* root, int indent = 0) {
+        if (root == nullptr) return;
+        
+        for (int i = 0; i < indent; i++) cout << "  ";
+        cout << root->name;
+        if (root->isFile) {
+            cout << " (" << root->size << " bytes)";
+        } else {
+            cout << "/";
+        }
+        cout << endl;
+        
+        for (FileNode* child : root->children) {
+            printFileSystem(child, indent + 1);
+        }
+    }
+    
+    // Calculate total directory size
+    static int getTotalSize(FileNode* root) {
+        if (root->isFile) return root->size;
+        
+        int total = 0;
+        for (FileNode* child : root->children) {
+            total += getTotalSize(child);
+        }
+        return total;
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Other Tree Applications:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Organization Charts:</strong> Company hierarchy</li>
+        <li class="academic-text"><strong>Decision Trees:</strong> AI and machine learning</li>
+        <li class="academic-text"><strong>Parse Trees:</strong> Compilers and language processing</li>
+        <li class="academic-text"><strong>Game Trees:</strong> Chess, tic-tac-toe game states</li>
+        <li class="academic-text"><strong>Heap Trees:</strong> Priority queues (coming in Chapter 5!)</li>
+    </ul>
+
+    <div class="performance-summary">
+        <h3 style="color: #2e7d32; margin-top: 0;">🌳 Tree Properties Summary</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Key Properties</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text">Connected + No cycles</li>
+                    <li class="academic-text">n nodes = n-1 edges</li>
+                    <li class="academic-text">Unique path between any two nodes</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Common Types</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text">Binary Tree (≤2 children)</li>
+                    <li class="academic-text">BST (ordered binary tree)</li>
+                    <li class="academic-text">N-ary Tree (any # children)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="completion-summary">
+        <h3 style="color: #1976d2; margin-top: 0;">🎉 Chapter 3 Complete!</h3>
+        <p class="academic-text">You now understand trees - the most important special graphs:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text">✅ <strong>Tree properties</strong> - connected, acyclic, n-1 edges</li>
+            <li class="academic-text">✅ <strong>Binary trees & BSTs</strong> - organized for fast operations</li>
+            <li class="academic-text">✅ <strong>Tree traversals</strong> - different ways to visit nodes</li>
+            <li class="academic-text">✅ <strong>Real applications</strong> - file systems, hierarchies</li>
+        </ul>
+        
+        <p class="academic-text">Trees are the foundation for many advanced data structures. Next: <strong>Tries</strong> - specialized trees for string processing!</p>
+    </div>
+</body>
+</html>

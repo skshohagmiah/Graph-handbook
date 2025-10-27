@@ -1,6 +1,8 @@
 import { Header } from "@/components/layout/header"
 import { Sidebar } from "@/components/layout/sidebar"
 import { chapters, getChapterBySlug, getPreviousChapter, getNextChapter } from "@/lib/content"
+import { getChapterHtmlContent } from "@/lib/load-chapter-content"
+import { MermaidWrapper } from "@/components/mermaid-wrapper"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -19,6 +21,7 @@ export default async function ChapterPage({ params }: PageProps) {
   const chapter = getChapterBySlug(slug)
   const prevChapter = getPreviousChapter(slug)
   const nextChapter = getNextChapter(slug)
+  const htmlContent = getChapterHtmlContent(slug)
 
   if (!chapter) {
     return (
@@ -33,62 +36,70 @@ export default async function ChapterPage({ params }: PageProps) {
 
   return (
     <>
+      <MermaidWrapper />
       <Header />
-      <div className="flex">
-        <Sidebar chapters={chapters} />
-        <main className="flex-1 min-h-screen">
-          <article className="max-w-4xl mx-auto px-6 py-12">
+      <div className="container mx-auto max-w-7xl">
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1 min-h-screen">
+            <article className="max-w-4xl mx-auto px-6 py-12">
             {/* Chapter Header */}
             <div className="mb-12">
-              <p className="text-sm text-muted mb-2">{chapter.part}</p>
-              <h1 className="text-5xl font-bold mb-4">
+              <p className="text-sm text-muted-foreground font-medium mb-2">{chapter.part}</p>
+              <h1 className="text-5xl font-bold mb-4 text-foreground">
                 Chapter {chapter.chapter}: {chapter.title}
               </h1>
-              <p className="text-lg text-muted mb-6">{chapter.description}</p>
-              <div className="flex gap-6 text-sm text-muted">
-                <span>{chapter.pages} pages</span>
-                <span>{chapter.readingTime} min read</span>
-                <span>{chapter.exercises} exercises</span>
-                <span className="capitalize">{chapter.difficulty}</span>
+              <p className="text-lg text-foreground/80 mb-6">{chapter.description}</p>
+              <div className="flex gap-6 text-sm text-foreground/70">
+                <span className="font-medium">{chapter.pages} pages</span>
+                <span className="font-medium">{chapter.readingTime} min read</span>
+                <span className="font-medium">{chapter.exercises} exercises</span>
+                <span className="capitalize font-medium px-2 py-1 bg-primary/10 text-primary rounded">{chapter.difficulty}</span>
               </div>
             </div>
 
             {/* Life Insight Box */}
-            <div className="insight-box mb-8">
-              <p className="font-semibold text-primary mb-2">Life Insight</p>
-              <p>{chapter.lifeInsight}</p>
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8">
+              <p className="font-semibold text-primary mb-2">💡 Life Insight</p>
+              <p className="text-foreground/90">{chapter.lifeInsight}</p>
             </div>
 
             {/* Learning Objectives */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold mb-4">Learning Objectives</h2>
-              <ul className="space-y-2">
+              <h2 className="text-2xl font-bold mb-4 text-foreground">Learning Objectives</h2>
+              <ul className="space-y-3">
                 {chapter.objectives.map((obj, i) => (
                   <li key={i} className="flex gap-3">
-                    <span className="text-primary font-bold">•</span>
-                    <span>{obj}</span>
+                    <span className="text-primary font-bold text-lg">•</span>
+                    <span className="text-foreground/90 font-medium">{obj}</span>
                   </li>
                 ))}
               </ul>
             </section>
 
-            {/* Placeholder Content */}
-            <section className="prose-content mb-12 bg-input/50 p-8 rounded-lg border border-border">
-              <p className="text-muted italic">
-                Chapter content will be loaded from markdown files. This is a placeholder showing the chapter structure.
-              </p>
-              <p className="text-muted italic mt-4">
-                The actual content includes detailed explanations, code examples, diagrams, and exercises.
-              </p>
+            {/* Chapter Content */}
+            <section className="prose-content mb-12">
+              {htmlContent ? (
+                <div 
+                  className="chapter-html-content"
+                  dangerouslySetInnerHTML={{ __html: htmlContent }}
+                />
+              ) : (
+                <div className="bg-input/50 p-8 rounded-lg border border-border">
+                  <p className="text-muted italic">
+                    Chapter content not found. Please check if the HTML file exists.
+                  </p>
+                </div>
+              )}
             </section>
 
             {/* Prerequisites */}
             {chapter.prerequisites.length > 0 && (
               <section className="mb-12">
-                <h3 className="text-lg font-semibold mb-3">Prerequisites</h3>
+                <h3 className="text-lg font-semibold mb-3 text-foreground">Prerequisites</h3>
                 <ul className="space-y-2">
                   {chapter.prerequisites.map((prereq, i) => (
-                    <li key={i} className="text-muted">
+                    <li key={i} className="text-foreground/80 font-medium">
                       • {prereq}
                     </li>
                   ))}
@@ -123,6 +134,7 @@ export default async function ChapterPage({ params }: PageProps) {
             </div>
           </article>
         </main>
+        </div>
       </div>
     </>
   )
