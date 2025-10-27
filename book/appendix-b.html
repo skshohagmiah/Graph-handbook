@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix B: Algorithm Complexity Table</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Appendix B</div>
+    <h1 class="chapter-title">Algorithm Complexity Table</h1>
+    
+    <div class="definition-box">
+        "Quick reference for time and space complexity of all graph algorithms - know your performance guarantees."
+    </div>
+
+    <h2 class="section-title" id="appb-1">B.1 Time and Space Complexity for All Algorithms</h2>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto;">
+        <h3 style="margin-top: 0; color: #1976d2;">Traversal Algorithms</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt;">
+            <thead>
+                <tr style="border-bottom: 2px solid #333; background-color: #e3f2fd;">
+                    <th style="text-align: left; padding: 12px;">Algorithm</th>
+                    <th style="text-align: left; padding: 12px;">Time Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Space Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Use Case</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>BFS</strong></td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Shortest path (unweighted), level-order</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>DFS</strong></td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Cycle detection, topological sort</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto;">
+        <h3 style="margin-top: 0; color: #1976d2;">Shortest Path Algorithms</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt;">
+            <thead>
+                <tr style="border-bottom: 2px solid #333; background-color: #e3f2fd;">
+                    <th style="text-align: left; padding: 12px;">Algorithm</th>
+                    <th style="text-align: left; padding: 12px;">Time Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Space Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Constraints</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Dijkstra's</strong></td>
+                    <td style="padding: 12px;">O((V + E) log V)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Non-negative weights only</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Bellman-Ford</strong></td>
+                    <td style="padding: 12px;">O(VE)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Handles negative weights</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Floyd-Warshall</strong></td>
+                    <td style="padding: 12px;">O(V³)</td>
+                    <td style="padding: 12px;">O(V²)</td>
+                    <td style="padding: 12px;">All-pairs shortest paths</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>A*</strong></td>
+                    <td style="padding: 12px;">O(E) best case</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Requires good heuristic</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto;">
+        <h3 style="margin-top: 0; color: #1976d2;">Minimum Spanning Tree</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt;">
+            <thead>
+                <tr style="border-bottom: 2px solid #333; background-color: #e3f2fd;">
+                    <th style="text-align: left; padding: 12px;">Algorithm</th>
+                    <th style="text-align: left; padding: 12px;">Time Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Space Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Approach</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Kruskal's</strong></td>
+                    <td style="padding: 12px;">O(E log E)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Edge-based, uses Union-Find</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Prim's</strong></td>
+                    <td style="padding: 12px;">O((V + E) log V)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Vertex-based, uses priority queue</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto;">
+        <h3 style="margin-top: 0; color: #1976d2;">Network Flow</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt;">
+            <thead>
+                <tr style="border-bottom: 2px solid #333; background-color: #e3f2fd;">
+                    <th style="text-align: left; padding: 12px;">Algorithm</th>
+                    <th style="text-align: left; padding: 12px;">Time Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Space Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Ford-Fulkerson</strong></td>
+                    <td style="padding: 12px;">O(E × max_flow)</td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">Depends on max flow value</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Edmonds-Karp</strong></td>
+                    <td style="padding: 12px;">O(VE²)</td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">Uses BFS for augmenting paths</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Dinic's</strong></td>
+                    <td style="padding: 12px;">O(V²E)</td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">Faster in practice</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto;">
+        <h3 style="margin-top: 0; color: #1976d2;">Other Important Algorithms</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt;">
+            <thead>
+                <tr style="border-bottom: 2px solid #333; background-color: #e3f2fd;">
+                    <th style="text-align: left; padding: 12px;">Algorithm</th>
+                    <th style="text-align: left; padding: 12px;">Time Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Space Complexity</th>
+                    <th style="text-align: left; padding: 12px;">Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Topological Sort</strong></td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Order vertices in DAG</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Tarjan's SCC</strong></td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Find strongly connected components</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Kosaraju's SCC</strong></td>
+                    <td style="padding: 12px;">O(V + E)</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Find strongly connected components</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Graph Coloring</strong></td>
+                    <td style="padding: 12px;">O(V + E) greedy</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Approximate coloring</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Union-Find</strong></td>
+                    <td style="padding: 12px;">O(α(n)) per op</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Disjoint set operations</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Bron-Kerbosch</strong></td>
+                    <td style="padding: 12px;">O(3^(V/3))</td>
+                    <td style="padding: 12px;">O(V)</td>
+                    <td style="padding: 12px;">Find all maximal cliques</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="section-title" id="appb-2">B.2 Algorithm Decision Matrix</h2>
+    
+    <p class="academic-text">Use this decision tree to choose the right algorithm for your problem:</p>
+
+    <div style="background-color: #e8f5e9; border: 2px solid #4caf50; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #2e7d32;">🎯 Algorithm Selection Guide</h3>
+        
+        <p style="margin: 15px 0 10px 0; font-family: sans-serif; font-size: 13pt;"><strong>Need to find a path?</strong></p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li style="margin-bottom: 8px;"><strong>Unweighted graph?</strong> → BFS (O(V + E))</li>
+            <li style="margin-bottom: 8px;"><strong>Weighted, non-negative?</strong> → Dijkstra's (O((V + E) log V))</li>
+            <li style="margin-bottom: 8px;"><strong>Negative weights?</strong> → Bellman-Ford (O(VE))</li>
+            <li style="margin-bottom: 8px;"><strong>All pairs?</strong> → Floyd-Warshall (O(V³))</li>
+            <li style="margin-bottom: 8px;"><strong>Have heuristic?</strong> → A* (O(E) best case)</li>
+        </ul>
+        
+        <p style="margin: 15px 0 10px 0; font-family: sans-serif; font-size: 13pt;"><strong>Need to connect all vertices?</strong></p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li style="margin-bottom: 8px;"><strong>Minimum cost?</strong> → MST (Kruskal's or Prim's)</li>
+            <li style="margin-bottom: 8px;"><strong>Sparse graph?</strong> → Kruskal's (O(E log E))</li>
+            <li style="margin-bottom: 8px;"><strong>Dense graph?</strong> → Prim's (O((V + E) log V))</li>
+        </ul>
+        
+        <p style="margin: 15px 0 10px 0; font-family: sans-serif; font-size: 13pt;"><strong>Need to order tasks?</strong></p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li style="margin-bottom: 8px;"><strong>Has dependencies?</strong> → Topological Sort (O(V + E))</li>
+            <li style="margin-bottom: 8px;"><strong>Detect cycle?</strong> → DFS (O(V + E))</li>
+        </ul>
+        
+        <p style="margin: 15px 0 10px 0; font-family: sans-serif; font-size: 13pt;"><strong>Need to find flow?</strong></p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li style="margin-bottom: 8px;"><strong>Maximum flow?</strong> → Ford-Fulkerson or Edmonds-Karp</li>
+            <li style="margin-bottom: 8px;"><strong>Bipartite matching?</strong> → Max flow algorithms</li>
+        </ul>
+        
+        <p style="margin: 15px 0 10px 0; font-family: sans-serif; font-size: 13pt;"><strong>Need to color graph?</strong></p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li style="margin-bottom: 8px;"><strong>Scheduling problem?</strong> → Graph coloring (greedy)</li>
+            <li style="margin-bottom: 8px;"><strong>Bipartite check?</strong> → 2-coloring with BFS</li>
+        </ul>
+        
+        <p style="margin: 15px 0 10px 0; font-family: sans-serif; font-size: 13pt;"><strong>Need to find components?</strong></p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li style="margin-bottom: 8px;"><strong>Connected components?</strong> → DFS/BFS (O(V + E))</li>
+            <li style="margin-bottom: 8px;"><strong>Strongly connected?</strong> → Tarjan's or Kosaraju's (O(V + E))</li>
+            <li style="margin-bottom: 8px;"><strong>Bridges/articulation points?</strong> → Tarjan's algorithm</li>
+        </ul>
+    </div>
+
+    <div style="background-color: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; margin: 20px 0;">
+        <p style="margin: 0; font-family: sans-serif; font-size: 12pt;"><strong>💡 Pro Tip:</strong> When in doubt, start with BFS/DFS. They're O(V + E) and solve many problems. Optimize only if needed!</p>
+    </div>
+</body>
+</html>

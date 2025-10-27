@@ -11,7 +11,19 @@ const chapterFileMap: Record<string, string> = {
   'traversal-algorithms': 'chapter-06.html',
   'shortest-path-algorithms': 'chapter-07.html',
   'minimum-spanning-trees': 'chapter-08.html',
-  'topological-sorting': 'chapter-09.html'
+  'topological-sorting': 'chapter-09.html',
+  'flow-networks': 'chapter-10.html',
+  'graph-coloring': 'chapter-11.html',
+  'advanced-concepts': 'chapter-12.html',
+  'graphs-in-cs': 'chapter-13.html',
+  'pattern-recognition': 'chapter-14.html',
+  'real-life-decisions': 'chapter-15.html',
+  'graph-mindset': 'chapter-16.html',
+  'terminology-reference': 'appendix-a.html',
+  'complexity-table': 'appendix-b.html',
+  'practice-problems': 'appendix-c.html',
+  'visual-cheatsheet': 'appendix-d.html',
+  'further-reading': 'appendix-e.html'
 }
 
 export function getChapterHtmlContent(slug: string): string | null {

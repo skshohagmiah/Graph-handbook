@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix D: Visual Cheatsheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Appendix D</div>
+    <h1 class="chapter-title">Visual Cheatsheet</h1>
+    
+    <div class="definition-box">
+        "One-page visual summaries - your quick reference for graph types, algorithms, and patterns."
+    </div>
+
+    <h2 class="section-title" id="appd-1">D.1 One-Page Summary of Graph Types</h2>
+    
+    <div style="background-color: #f8f9fa; border: 2px solid #333; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2; text-align: center;">Graph Types Quick Reference</h3>
+        
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt; margin-top: 20px;">
+            <thead>
+                <tr style="border-bottom: 2px solid #333; background-color: #e3f2fd;">
+                    <th style="text-align: left; padding: 12px;">Type</th>
+                    <th style="text-align: left; padding: 12px;">Properties</th>
+                    <th style="text-align: left; padding: 12px;">Use Cases</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Undirected</strong></td>
+                    <td style="padding: 12px;">Edges have no direction</td>
+                    <td style="padding: 12px;">Social networks, roads</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Directed (Digraph)</strong></td>
+                    <td style="padding: 12px;">Edges have direction</td>
+                    <td style="padding: 12px;">Web pages, dependencies</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Weighted</strong></td>
+                    <td style="padding: 12px;">Edges have costs/weights</td>
+                    <td style="padding: 12px;">Maps, networks</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Tree</strong></td>
+                    <td style="padding: 12px;">Connected, acyclic, V-1 edges</td>
+                    <td style="padding: 12px;">Hierarchies, file systems</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>DAG</strong></td>
+                    <td style="padding: 12px;">Directed, no cycles</td>
+                    <td style="padding: 12px;">Task scheduling, builds</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Bipartite</strong></td>
+                    <td style="padding: 12px;">Two sets, edges between sets</td>
+                    <td style="padding: 12px;">Matching problems</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px;"><strong>Complete K<sub>n</sub></strong></td>
+                    <td style="padding: 12px;">All vertices connected</td>
+                    <td style="padding: 12px;">Worst-case analysis</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="section-title" id="appd-2">D.2 Algorithm Decision Tree Flowchart</h2>
+    
+    <div style="background-color: #e8f5e9; border: 2px solid #4caf50; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #2e7d32; text-align: center;">Which Algorithm Should I Use?</h3>
+        
+        <div style="margin: 20px 0;">
+            <p style="font-weight: bold; margin: 15px 0;">🎯 NEED TO TRAVERSE?</p>
+            <ul style="margin: 8px 0 0 40px;">
+                <li style="margin-bottom: 8px;">Level by level? → <strong>BFS</strong></li>
+                <li style="margin-bottom: 8px;">Deep exploration? → <strong>DFS</strong></li>
+            </ul>
+            
+            <p style="font-weight: bold; margin: 15px 0;">🛣️ NEED SHORTEST PATH?</p>
+            <ul style="margin: 8px 0 0 40px;">
+                <li style="margin-bottom: 8px;">Unweighted? → <strong>BFS</strong></li>
+                <li style="margin-bottom: 8px;">Weighted, non-negative? → <strong>Dijkstra's</strong></li>
+                <li style="margin-bottom: 8px;">Negative weights? → <strong>Bellman-Ford</strong></li>
+                <li style="margin-bottom: 8px;">All pairs? → <strong>Floyd-Warshall</strong></li>
+            </ul>
+            
+            <p style="font-weight: bold; margin: 15px 0;">🌳 NEED TO CONNECT ALL?</p>
+            <ul style="margin: 8px 0 0 40px;">
+                <li style="margin-bottom: 8px;">Minimum cost? → <strong>MST (Kruskal's/Prim's)</strong></li>
+            </ul>
+            
+            <p style="font-weight: bold; margin: 15px 0;">📋 NEED TO ORDER TASKS?</p>
+            <ul style="margin: 8px 0 0 40px;">
+                <li style="margin-bottom: 8px;">With dependencies? → <strong>Topological Sort</strong></li>
+                <li style="margin-bottom: 8px;">Check for cycle? → <strong>DFS cycle detection</strong></li>
+            </ul>
+            
+            <p style="font-weight: bold; margin: 15px 0;">🌊 NEED MAXIMUM FLOW?</p>
+            <ul style="margin: 8px 0 0 40px;">
+                <li style="margin-bottom: 8px;">Network flow? → <strong>Ford-Fulkerson/Edmonds-Karp</strong></li>
+            </ul>
+            
+            <p style="font-weight: bold; margin: 15px 0;">🎨 NEED TO COLOR?</p>
+            <ul style="margin: 8px 0 0 40px;">
+                <li style="margin-bottom: 8px;">Scheduling? → <strong>Greedy Coloring</strong></li>
+                <li style="margin-bottom: 8px;">Check bipartite? → <strong>2-coloring with BFS</strong></li>
+            </ul>
+            
+            <p style="font-weight: bold; margin: 15px 0;">🔍 NEED TO FIND COMPONENTS?</p>
+            <ul style="margin: 8px 0 0 40px;">
+                <li style="margin-bottom: 8px;">Connected? → <strong>DFS/BFS</strong></li>
+                <li style="margin-bottom: 8px;">Strongly connected? → <strong>Tarjan's/Kosaraju's</strong></li>
+                <li style="margin-bottom: 8px;">Bridges? → <strong>Tarjan's algorithm</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="section-title" id="appd-3">D.3 Common Patterns and Solutions</h2>
+    
+    <div style="background-color: #fff3e0; border: 2px solid #ff9800; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #e65100;">📚 Pattern Recognition Guide</h3>
+        
+        <div style="margin: 15px 0; padding: 15px; background-color: white; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Pattern: Grid/Matrix Problems</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Recognition:</strong> 2D array, need to explore cells</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Solution:</strong> DFS/BFS with 4 or 8 directions</p>
+            <p style="margin: 0; font-size: 10pt; color: #666;"><strong>Examples:</strong> Number of Islands, Flood Fill</p>
+        </div>
+        
+        <div style="margin: 15px 0; padding: 15px; background-color: white; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Pattern: Prerequisites/Dependencies</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Recognition:</strong> Task A must come before B</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Solution:</strong> Topological Sort (Kahn's or DFS)</p>
+            <p style="margin: 0; font-size: 10pt; color: #666;"><strong>Examples:</strong> Course Schedule, Build Order</p>
+        </div>
+        
+        <div style="margin: 15px 0; padding: 15px; background-color: white; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Pattern: Shortest Distance</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Recognition:</strong> Find minimum steps/cost</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Solution:</strong> BFS (unweighted) or Dijkstra's (weighted)</p>
+            <p style="margin: 0; font-size: 10pt; color: #666;"><strong>Examples:</strong> Word Ladder, Network Delay</p>
+        </div>
+        
+        <div style="margin: 15px 0; padding: 15px; background-color: white; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Pattern: Connected Components</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Recognition:</strong> Count groups/clusters</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Solution:</strong> DFS/BFS or Union-Find</p>
+            <p style="margin: 0; font-size: 10pt; color: #666;"><strong>Examples:</strong> Number of Islands, Friend Circles</p>
+        </div>
+        
+        <div style="margin: 15px 0; padding: 15px; background-color: white; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Pattern: Cycle Detection</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Recognition:</strong> Check if graph has cycle</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Solution:</strong> DFS with visited/recursion stack</p>
+            <p style="margin: 0; font-size: 10pt; color: #666;"><strong>Examples:</strong> Course Schedule, Detect Cycle</p>
+        </div>
+        
+        <div style="margin: 15px 0; padding: 15px; background-color: white; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Pattern: Minimum Spanning Tree</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Recognition:</strong> Connect all with minimum cost</p>
+            <p style="margin: 0 0 8px 0; font-size: 11pt;"><strong>Solution:</strong> Kruskal's or Prim's algorithm</p>
+            <p style="margin: 0; font-size: 10pt; color: #666;"><strong>Examples:</strong> Min Cost to Connect Points</p>
+        </div>
+    </div>
+
+    <div style="background-color: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin: 30px 0;">
+        <h3 style="margin-top: 0; color: #1976d2; text-align: center;">⚡ Quick Complexity Reference</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt; margin-top: 15px;">
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;"><strong>BFS/DFS:</strong></td>
+                <td style="padding: 8px;">O(V + E)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;"><strong>Dijkstra's:</strong></td>
+                <td style="padding: 8px;">O((V + E) log V)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;"><strong>Bellman-Ford:</strong></td>
+                <td style="padding: 8px;">O(VE)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;"><strong>Floyd-Warshall:</strong></td>
+                <td style="padding: 8px;">O(V³)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;"><strong>Kruskal's:</strong></td>
+                <td style="padding: 8px;">O(E log E)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;"><strong>Prim's:</strong></td>
+                <td style="padding: 8px;">O((V + E) log V)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;"><strong>Topological Sort:</strong></td>
+                <td style="padding: 8px;">O(V + E)</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 11: Graph Coloring & Matching</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Chapter 11</div>
+    <h1 class="chapter-title">Graph Coloring & Matching</h1>
+    
+    <div class="definition-box">
+        "Graph coloring solves scheduling conflicts, while matching pairs resources optimally - two fundamental problems that power everything from exam scheduling to job assignments."
+    </div>
+
+    <p class="academic-text">Graph coloring and matching are two of the most practical graph problems you'll encounter. Coloring asks "how can we assign labels to vertices so that no two adjacent vertices share the same label?" while matching asks "how can we pair up vertices optimally?"</p>
+    
+    <p class="academic-text"><strong>Real-world problems solved by coloring and matching:</strong></p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text"><strong>Exam scheduling:</strong> Assign time slots so no student has conflicts</li>
+        <li class="academic-text"><strong>Register allocation:</strong> Assign CPU registers to variables in compilers</li>
+        <li class="academic-text"><strong>Map coloring:</strong> Color countries so neighbors have different colors</li>
+        <li class="academic-text"><strong>Job assignment:</strong> Match workers to jobs based on skills</li>
+        <li class="academic-text"><strong>Dating apps:</strong> Match users based on preferences</li>
+        <li class="academic-text"><strong>Organ donation:</strong> Match donors to recipients</li>
+    </ul>
+    
+    <p class="academic-text">This chapter explores both problems, from theoretical foundations to practical algorithms you can implement today.</p>
+
+    <h2 class="section-title" id="ch11-1">11.1 Greedy Coloring Algorithms</h2>
+    
+    <p class="academic-text">The <strong>graph coloring problem</strong> asks: what's the minimum number of colors needed to color all vertices such that no two adjacent vertices have the same color?</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🎨 Graph Coloring Definition</h3>
+        <p class="academic-text">A <strong>k-coloring</strong> of graph G = (V, E) is an assignment of k colors to vertices such that:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Valid coloring:</strong> No two adjacent vertices have the same color</li>
+            <li class="academic-text"><strong>Chromatic number χ(G):</strong> Minimum k for which a k-coloring exists</li>
+            <li class="academic-text"><strong>NP-complete:</strong> Finding χ(G) is computationally hard for general graphs</li>
+        </ul>
+    </div>
+    
+    <p class="academic-text"><strong>Special Cases with Known Chromatic Numbers:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Bipartite graphs:</strong> χ(G) = 2 (two colors suffice)</li>
+        <li class="academic-text"><strong>Trees:</strong> χ(G) = 2 (also bipartite)</li>
+        <li class="academic-text"><strong>Complete graphs K<sub>n</sub>:</strong> χ(G) = n (every vertex needs unique color)</li>
+        <li class="academic-text"><strong>Cycle C<sub>n</sub>:</strong> χ(G) = 2 if n is even, 3 if n is odd</li>
+    </ul>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Graph Coloring Example (Exam Scheduling):</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[Math] --- B[Physics]
+            A --- C[Chemistry]
+            B --- C
+            B --- D[Biology]
+            C --- D
+            D --- E[History]
+            
+            style A fill:#ff6b6b,stroke:#333,stroke-width:2px
+            style B fill:#4ecdc4,stroke:#333,stroke-width:2px
+            style C fill:#ffe66d,stroke:#333,stroke-width:2px
+            style D fill:#ff6b6b,stroke:#333,stroke-width:2px
+            style E fill:#4ecdc4,stroke:#333,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">3 colors needed: Red (Math, Biology), Blue (Physics, History), Yellow (Chemistry)</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Interpretation:</strong> Edges connect courses with common students. Same color = same time slot. This graph needs 3 time slots minimum.
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>Greedy Coloring Algorithm</strong></p>
+    <p class="academic-text">The simplest approach: process vertices one by one, assigning each vertex the smallest color not used by its neighbors. While not optimal, it's fast and gives reasonable results!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Greedy Algorithm Steps:</strong><br><br>
+        <ol style="margin: 10px 0 10px 24px; font-family: sans-serif; font-size: 12pt;">
+            <li style="margin-bottom: 8px;"><strong>Order vertices:</strong> Choose an ordering (different orders give different results)</li>
+            <li style="margin-bottom: 8px;"><strong>Process each vertex:</strong> Go through vertices in order</li>
+            <li style="margin-bottom: 8px;"><strong>Find available color:</strong> Check which colors are used by neighbors</li>
+            <li style="margin-bottom: 8px;"><strong>Assign smallest available:</strong> Use the smallest color number not taken</li>
+        </ol>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Time Complexity:</strong> O(V + E) - very fast! Space: O(V). Upper bound: Uses at most Δ + 1 colors, where Δ is maximum degree.
+        </div>
+    </div>
+
+    <pre class="code-block">// Greedy Graph Coloring Implementation
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_set&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+class GraphColoring {
+private:
+    int V; // Number of vertices
+    vector&lt;vector&lt;int&gt;&gt; adj; // Adjacency list
+    
+public:
+    GraphColoring(int vertices) : V(vertices) {
+        adj.resize(V);
+    }
+    
+    void addEdge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    // Greedy coloring algorithm
+    vector&lt;int&gt; greedyColoring() {
+        vector&lt;int&gt; color(V, -1); // -1 means uncolored
+        
+        // Color first vertex with color 0
+        color[0] = 0;
+        
+        // Color remaining vertices
+        for (int u = 1; u &lt; V; u++) {
+            // Find colors used by neighbors
+            unordered_set&lt;int&gt; usedColors;
+            for (int neighbor : adj[u]) {
+                if (color[neighbor] != -1) {
+                    usedColors.insert(color[neighbor]);
+                }
+            }
+            
+            // Find smallest available color
+            int availableColor = 0;
+            while (usedColors.count(availableColor)) {
+                availableColor++;
+            }
+            
+            color[u] = availableColor;
+        }
+        
+        return color;
+    }
+    
+    // Improved: Order by degree (largest first)
+    vector&lt;int&gt; greedyColoringLargestFirst() {
+        // Create vertex ordering by degree (descending)
+        vector&lt;pair&lt;int, int&gt;&gt; degreeVertex;
+        for (int i = 0; i &lt; V; i++) {
+            degreeVertex.push_back({adj[i].size(), i});
+        }
+        sort(degreeVertex.rbegin(), degreeVertex.rend());
+        
+        vector&lt;int&gt; color(V, -1);
+        
+        // Color vertices in degree order
+        for (auto [degree, u] : degreeVertex) {
+            unordered_set&lt;int&gt; usedColors;
+            for (int neighbor : adj[u]) {
+                if (color[neighbor] != -1) {
+                    usedColors.insert(color[neighbor]);
+                }
+            }
+            
+            int availableColor = 0;
+            while (usedColors.count(availableColor)) {
+                availableColor++;
+            }
+            
+            color[u] = availableColor;
+        }
+        
+        return color;
+    }
+    
+    // Get chromatic number (number of colors used)
+    int getChromaticNumber(const vector&lt;int&gt;&amp; coloring) {
+        if (coloring.empty()) return 0;
+        return *max_element(coloring.begin(), coloring.end()) + 1;
+    }
+    
+    // Print coloring result
+    void printColoring(const vector&lt;int&gt;&amp; coloring) {
+        cout &lt;&lt; "Vertex Coloring:" &lt;&lt; endl;
+        for (int i = 0; i &lt; V; i++) {
+            cout &lt;&lt; "Vertex " &lt;&lt; i &lt;&lt; " -> Color " &lt;&lt; coloring[i] &lt;&lt; endl;
+        }
+        cout &lt;&lt; "Total colors used: " &lt;&lt; getChromaticNumber(coloring) &lt;&lt; endl;
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Vertex Ordering Strategies</strong></p>
+    <p class="academic-text">The order in which we process vertices dramatically affects the result! Here are common strategies:</p>
+    
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Natural order:</strong> Process vertices 0, 1, 2, ... (simplest, often worst)</li>
+        <li class="academic-text"><strong>Largest degree first:</strong> Color high-degree vertices first (often better)</li>
+        <li class="academic-text"><strong>Smallest degree last:</strong> Recursively remove smallest degree vertex (Welsh-Powell)</li>
+        <li class="academic-text"><strong>Random order:</strong> Try multiple random orderings, keep best</li>
+    </ul>
+
+    <h2 class="section-title" id="ch11-2">11.2 Bipartite Matching and Maximum Matching</h2>
+
+    <p class="academic-text">A <strong>matching</strong> in a graph is a set of edges with no common vertices. Think of it as pairing up vertices where each vertex is in at most one pair.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">💑 Matching Definitions</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Matching M:</strong> Set of edges where no two edges share a vertex</li>
+            <li class="academic-text"><strong>Maximum matching:</strong> Matching with the largest possible number of edges</li>
+            <li class="academic-text"><strong>Perfect matching:</strong> Every vertex is matched (only possible if |V| is even)</li>
+            <li class="academic-text"><strong>Maximal matching:</strong> Can't add any more edges (but may not be maximum)</li>
+        </ul>
+    </div>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Matching Example (Job Assignment):</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            subgraph Workers
+                W1[Alice]
+                W2[Bob]
+                W3[Carol]
+            end
+            
+            subgraph Jobs
+                J1[Designer]
+                J2[Developer]
+                J3[Manager]
+            end
+            
+            W1 ---|matched| J1
+            W1 --- J2
+            W2 ---|matched| J2
+            W2 --- J3
+            W3 ---|matched| J3
+            
+            style W1 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style W2 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style W3 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style J1 fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style J2 fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style J3 fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Perfect matching: All 3 workers assigned to jobs. Bold edges show the matching.</p>
+    </div>
+
+    <p class="academic-text"><strong>Bipartite Matching via Maximum Flow</strong></p>
+    <p class="academic-text">For bipartite graphs, we can find maximum matching using max flow! Convert the matching problem to a flow problem:</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Flow Network Construction:</strong><br><br>
+        <ol style="margin: 10px 0 10px 24px; font-family: sans-serif; font-size: 12pt;">
+            <li style="margin-bottom: 8px;"><strong>Add source s:</strong> Connect to all left vertices with capacity 1</li>
+            <li style="margin-bottom: 8px;"><strong>Add sink t:</strong> Connect all right vertices to sink with capacity 1</li>
+            <li style="margin-bottom: 8px;"><strong>Direct edges:</strong> Make all edges go left → right with capacity 1</li>
+            <li style="margin-bottom: 8px;"><strong>Run max flow:</strong> Max flow value = maximum matching size!</li>
+        </ol>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Why it works:</strong> Capacity 1 ensures each vertex is matched at most once. Integer flow = valid matching.
+        </div>
+    </div>
+
+    <pre class="code-block">// Bipartite Matching using DFS (Hungarian Algorithm variant)
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;cstring&gt;
+using namespace std;
+
+class BipartiteMatching {
+private:
+    int leftSize, rightSize;
+    vector&lt;vector&lt;int&gt;&gt; adj; // adj[left] = list of compatible right vertices
+    vector&lt;int&gt; match; // match[right] = matched left vertex (-1 if unmatched)
+    vector&lt;bool&gt; visited;
+    
+    // Try to find augmenting path from left vertex u
+    bool dfs(int u) {
+        for (int v : adj[u]) {
+            if (visited[v]) continue;
+            visited[v] = true;
+            
+            // If v is unmatched or we can find alternate match for match[v]
+            if (match[v] == -1 || dfs(match[v])) {
+                match[v] = u;
+                return true;
+            }
+        }
+        return false;
+    }
+    
+public:
+    BipartiteMatching(int left, int right) 
+        : leftSize(left), rightSize(right) {
+        adj.resize(left);
+        match.resize(right, -1);
+    }
+    
+    // Add edge from left vertex u to right vertex v
+    void addEdge(int u, int v) {
+        adj[u].push_back(v);
+    }
+    
+    // Find maximum matching
+    int maxMatching() {
+        int result = 0;
+        
+        // Try to find augmenting path for each left vertex
+        for (int u = 0; u &lt; leftSize; u++) {
+            visited.assign(rightSize, false);
+            if (dfs(u)) {
+                result++;
+            }
+        }
+        
+        return result;
+    }
+    
+    // Get the matching edges
+    vector&lt;pair&lt;int, int&gt;&gt; getMatching() {
+        vector&lt;pair&lt;int, int&gt;&gt; matching;
+        for (int v = 0; v &lt; rightSize; v++) {
+            if (match[v] != -1) {
+                matching.push_back({match[v], v});
+            }
+        }
+        return matching;
+    }
+    
+    // Check if perfect matching exists
+    bool hasPerfectMatching() {
+        return maxMatching() == min(leftSize, rightSize);
+    }
+};</pre>
+
+    <p class="academic-text"><strong>General Graph Matching: Blossom Algorithm</strong></p>
+    <p class="academic-text">For non-bipartite graphs, matching is harder! The <strong>Blossom algorithm</strong> (Edmonds, 1965) finds maximum matching in general graphs by handling odd cycles cleverly.</p>
+    
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Key insight:</strong> Odd cycles (blossoms) can be contracted into single vertices</li>
+        <li class="academic-text"><strong>Time complexity:</strong> O(V²E) - polynomial but complex to implement</li>
+        <li class="academic-text"><strong>Applications:</strong> Protein docking, chess tournament pairing, kidney exchange</li>
+    </ul>
+
+    <h2 class="section-title" id="ch11-3">11.3 Applications in Scheduling and Resource Allocation</h2>
+
+    <p class="academic-text">Graph coloring and matching solve countless real-world problems. Let's explore practical applications you can implement today!</p>
+
+    <p class="academic-text"><strong>Application 1: Exam Scheduling</strong></p>
+    <p class="academic-text">Schedule exams so no student has two exams at the same time. Model as graph coloring!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Exam Scheduling Algorithm:</strong><br><br>
+        <ol style="margin: 10px 0 10px 24px; font-family: sans-serif; font-size: 12pt;">
+            <li style="margin-bottom: 8px;"><strong>Build conflict graph:</strong> Vertices = exams, edges = common students</li>
+            <li style="margin-bottom: 8px;"><strong>Color the graph:</strong> Each color = one time slot</li>
+            <li style="margin-bottom: 8px;"><strong>Minimize colors:</strong> Fewer colors = fewer time slots needed</li>
+        </ol>
+    </div>
+
+    <pre class="code-block">// Exam Scheduling using Graph Coloring
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+using namespace std;
+
+class ExamScheduler {
+private:
+    vector&lt;string&gt; exams;
+    unordered_map&lt;string, int&gt; examIndex;
+    GraphColoring graph;
+    
+public:
+    ExamScheduler(const vector&lt;string&gt;&amp; examList) 
+        : exams(examList), graph(examList.size()) {
+        for (int i = 0; i &lt; exams.size(); i++) {
+            examIndex[exams[i]] = i;
+        }
+    }
+    
+    // Add conflict: two exams have common students
+    void addConflict(const string&amp; exam1, const string&amp; exam2) {
+        int u = examIndex[exam1];
+        int v = examIndex[exam2];
+        graph.addEdge(u, v);
+    }
+    
+    // Schedule exams and return time slots
+    unordered_map&lt;string, int&gt; scheduleExams() {
+        vector&lt;int&gt; coloring = graph.greedyColoringLargestFirst();
+        
+        unordered_map&lt;string, int&gt; schedule;
+        for (int i = 0; i &lt; exams.size(); i++) {
+            schedule[exams[i]] = coloring[i];
+        }
+        
+        return schedule;
+    }
+    
+    // Print schedule by time slot
+    void printSchedule() {
+        auto schedule = scheduleExams();
+        
+        // Group by time slot
+        unordered_map&lt;int, vector&lt;string&gt;&gt; slots;
+        for (const auto&amp; [exam, slot] : schedule) {
+            slots[slot].push_back(exam);
+        }
+        
+        cout &lt;&lt; "Exam Schedule:" &lt;&lt; endl;
+        for (const auto&amp; [slot, examList] : slots) {
+            cout &lt;&lt; "Time Slot " &lt;&lt; slot &lt;&lt; ": ";
+            for (const string&amp; exam : examList) {
+                cout &lt;&lt; exam &lt;&lt; " ";
+            }
+            cout &lt;&lt; endl;
+        }
+        cout &lt;&lt; "Total time slots needed: " &lt;&lt; slots.size() &lt;&lt; endl;
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Application 2: Register Allocation in Compilers</strong></p>
+    <p class="academic-text">CPUs have limited registers. Compilers use graph coloring to assign variables to registers!</p>
+    
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Vertices:</strong> Program variables</li>
+        <li class="academic-text"><strong>Edges:</strong> Variables that are "live" at the same time (can't share register)</li>
+        <li class="academic-text"><strong>Colors:</strong> CPU registers (typically 8-32 available)</li>
+        <li class="academic-text"><strong>Spilling:</strong> If not enough colors, store some variables in memory</li>
+    </ul>
+
+    <p class="academic-text"><strong>Application 3: Task Scheduling with Dependencies</strong></p>
+    <p class="academic-text">Schedule tasks on multiple processors, respecting dependencies and resource constraints.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Scheduling Strategy:</strong><br><br>
+        <ul style="margin: 10px 0 10px 24px; font-family: sans-serif; font-size: 12pt;">
+            <li style="margin-bottom: 8px;"><strong>Topological sort:</strong> Order tasks by dependencies</li>
+            <li style="margin-bottom: 8px;"><strong>Build conflict graph:</strong> Tasks that can't run simultaneously</li>
+            <li style="margin-bottom: 8px;"><strong>Color graph:</strong> Each color = one processor/time slot</li>
+            <li style="margin-bottom: 8px;"><strong>Assign tasks:</strong> Schedule according to coloring</li>
+        </ul>
+    </div>
+
+    <p class="academic-text"><strong>Application 4: Frequency Assignment in Wireless Networks</strong></p>
+    <p class="academic-text">Assign radio frequencies to cell towers so nearby towers don't interfere.</p>
+    
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Vertices:</strong> Cell towers</li>
+        <li class="academic-text"><strong>Edges:</strong> Towers within interference range</li>
+        <li class="academic-text"><strong>Colors:</strong> Radio frequencies</li>
+        <li class="academic-text"><strong>Goal:</strong> Minimize frequencies used (expensive resource!)</li>
+    </ul>
+
+    <pre class="code-block">// Job Assignment using Bipartite Matching
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+using namespace std;
+
+class JobAssignment {
+private:
+    vector&lt;string&gt; workers;
+    vector&lt;string&gt; jobs;
+    unordered_map&lt;string, int&gt; workerIndex;
+    unordered_map&lt;string, int&gt; jobIndex;
+    BipartiteMatching matcher;
+    
+public:
+    JobAssignment(const vector&lt;string&gt;&amp; workerList, 
+                  const vector&lt;string&gt;&amp; jobList)
+        : workers(workerList), jobs(jobList),
+          matcher(workerList.size(), jobList.size()) {
+        
+        for (int i = 0; i &lt; workers.size(); i++) {
+            workerIndex[workers[i]] = i;
+        }
+        for (int i = 0; i &lt; jobs.size(); i++) {
+            jobIndex[jobs[i]] = i;
+        }
+    }
+    
+    // Add skill: worker can do this job
+    void addSkill(const string&amp; worker, const string&amp; job) {
+        int w = workerIndex[worker];
+        int j = jobIndex[job];
+        matcher.addEdge(w, j);
+    }
+    
+    // Find optimal assignment
+    vector&lt;pair&lt;string, string&gt;&gt; assignJobs() {
+        auto matching = matcher.getMatching();
+        
+        vector&lt;pair&lt;string, string&gt;&gt; assignment;
+        for (auto [w, j] : matching) {
+            assignment.push_back({workers[w], jobs[j]});
+        }
+        
+        return assignment;
+    }
+    
+    // Print assignment
+    void printAssignment() {
+        auto assignment = assignJobs();
+        
+        cout &lt;&lt; "Job Assignments:" &lt;&lt; endl;
+        for (const auto&amp; [worker, job] : assignment) {
+            cout &lt;&lt; worker &lt;&lt; " -> " &lt;&lt; job &lt;&lt; endl;
+        }
+        
+        int unassigned = workers.size() - assignment.size();
+        if (unassigned &gt; 0) {
+            cout &lt;&lt; unassigned &lt;&lt; " workers remain unassigned" &lt;&lt; endl;
+        }
+    }
+};</pre>
+
+    <div class="performance-summary">
+        <h3 style="color: #2e7d32; margin-top: 0;">⚡ Algorithm Comparison</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Graph Coloring</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text"><strong>Greedy:</strong> O(V + E), fast but approximate</li>
+                    <li class="academic-text"><strong>Optimal:</strong> NP-complete in general</li>
+                    <li class="academic-text"><strong>Use case:</strong> Scheduling, register allocation</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Matching</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text"><strong>Bipartite:</strong> O(V²E), polynomial</li>
+                    <li class="academic-text"><strong>General:</strong> O(V²E) with Blossom</li>
+                    <li class="academic-text"><strong>Use case:</strong> Assignment, pairing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="completion-summary">
+        <h3 style="color: #1976d2; margin-top: 0;">🎉 Chapter 11 Complete!</h3>
+        <p class="academic-text">You now understand graph coloring and matching:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text">✅ <strong>Graph coloring</strong> - assign labels to avoid conflicts</li>
+            <li class="academic-text">✅ <strong>Greedy algorithms</strong> - fast approximate coloring methods</li>
+            <li class="academic-text">✅ <strong>Bipartite matching</strong> - optimal pairing in two-sided graphs</li>
+            <li class="academic-text">✅ <strong>Maximum matching</strong> - finding largest possible matchings</li>
+            <li class="academic-text">✅ <strong>Real applications</strong> - scheduling, resource allocation, job assignment</li>
+        </ul>
+        
+        <p class="academic-text">These problems appear everywhere in computer science and operations research. From exam scheduling to compiler optimization to dating apps, coloring and matching provide elegant solutions to complex pairing and assignment problems!</p>
+    </div>
+</body>
+</html>

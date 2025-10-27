@@ -15,8 +15,19 @@ const files = [
     'chapter-06.html',
     'chapter-07.html',
     'chapter-08.html',
-    'chapter-09.html'
-    // Add more files as you create them
+    'chapter-09.html',
+    'chapter-10.html',
+    'chapter-11.html',
+    'chapter-12.html',
+    'chapter-13.html',
+    'chapter-14.html',
+    'chapter-15.html',
+    'chapter-16.html',
+    'appendix-a.html',
+    'appendix-b.html',
+    'appendix-c.html',
+    'appendix-d.html',
+    'appendix-e.html'
 ];
 
 let combinedHTML = `<!DOCTYPE html>
@@ -353,6 +364,18 @@ files.forEach((filename, index) => {
             else if (filename === 'chapter-07.html') pageId = 'ch7';
             else if (filename === 'chapter-08.html') pageId = 'ch8';
             else if (filename === 'chapter-09.html') pageId = 'ch9';
+            else if (filename === 'chapter-10.html') pageId = 'ch10';
+            else if (filename === 'chapter-11.html') pageId = 'ch11';
+            else if (filename === 'chapter-12.html') pageId = 'ch12';
+            else if (filename === 'chapter-13.html') pageId = 'ch13';
+            else if (filename === 'chapter-14.html') pageId = 'ch14';
+            else if (filename === 'chapter-15.html') pageId = 'ch15';
+            else if (filename === 'chapter-16.html') pageId = 'ch16';
+            else if (filename === 'appendix-a.html') pageId = 'appa';
+            else if (filename === 'appendix-b.html') pageId = 'appb';
+            else if (filename === 'appendix-c.html') pageId = 'appc';
+            else if (filename === 'appendix-d.html') pageId = 'appd';
+            else if (filename === 'appendix-e.html') pageId = 'appe';
 
             // Add appropriate container classes based on file type
             let containerClass = "min-h-screen";

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix A: Graph Terminology Reference</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Appendix A</div>
+    <h1 class="chapter-title">Graph Terminology Reference</h1>
+    
+    <div class="definition-box">
+        "A comprehensive glossary of graph theory terms - your quick reference for all things graphs."
+    </div>
+
+    <h2 class="section-title" id="appa-1">A.1 Complete Glossary of Graph Theory Terms</h2>
+    
+    <p class="academic-text">This glossary provides definitions for all graph theory terms used throughout this handbook, organized alphabetically for quick reference.</p>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">A</h3>
+        
+        <p style="margin: 10px 0;"><strong>Acyclic Graph:</strong> A graph with no cycles. Trees are acyclic.</p>
+        
+        <p style="margin: 10px 0;"><strong>Adjacent Vertices:</strong> Two vertices connected by an edge. Also called neighbors.</p>
+        
+        <p style="margin: 10px 0;"><strong>Adjacency List:</strong> Graph representation using lists of neighbors for each vertex. Space: O(V + E).</p>
+        
+        <p style="margin: 10px 0;"><strong>Adjacency Matrix:</strong> Graph representation using a 2D matrix. Space: O(V²).</p>
+        
+        <p style="margin: 10px 0;"><strong>Articulation Point:</strong> A vertex whose removal increases the number of connected components. Also called cut vertex.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">B</h3>
+        
+        <p style="margin: 10px 0;"><strong>Bipartite Graph:</strong> A graph whose vertices can be divided into two disjoint sets where edges only connect vertices from different sets.</p>
+        
+        <p style="margin: 10px 0;"><strong>Bridge:</strong> An edge whose removal increases the number of connected components. Also called cut edge.</p>
+        
+        <p style="margin: 10px 0;"><strong>BFS (Breadth-First Search):</strong> Graph traversal algorithm that explores level by level. Time: O(V + E).</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">C</h3>
+        
+        <p style="margin: 10px 0;"><strong>Chromatic Number χ(G):</strong> Minimum number of colors needed to color a graph.</p>
+        
+        <p style="margin: 10px 0;"><strong>Clique:</strong> A complete subgraph where every pair of vertices is connected.</p>
+        
+        <p style="margin: 10px 0;"><strong>Complete Graph K<sub>n</sub>:</strong> A graph where every pair of vertices is connected. Has n(n-1)/2 edges.</p>
+        
+        <p style="margin: 10px 0;"><strong>Connected Component:</strong> A maximal connected subgraph.</p>
+        
+        <p style="margin: 10px 0;"><strong>Connected Graph:</strong> A graph where there exists a path between every pair of vertices.</p>
+        
+        <p style="margin: 10px 0;"><strong>Cycle:</strong> A path that starts and ends at the same vertex with no repeated edges.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">D</h3>
+        
+        <p style="margin: 10px 0;"><strong>DAG (Directed Acyclic Graph):</strong> A directed graph with no cycles. Used for dependency ordering.</p>
+        
+        <p style="margin: 10px 0;"><strong>Degree:</strong> Number of edges incident to a vertex. In directed graphs: in-degree + out-degree.</p>
+        
+        <p style="margin: 10px 0;"><strong>DFS (Depth-First Search):</strong> Graph traversal algorithm that explores as deep as possible. Time: O(V + E).</p>
+        
+        <p style="margin: 10px 0;"><strong>Dijkstra's Algorithm:</strong> Finds shortest paths from a source to all vertices in weighted graphs with non-negative weights. Time: O((V + E) log V) with priority queue.</p>
+        
+        <p style="margin: 10px 0;"><strong>Directed Graph (Digraph):</strong> A graph where edges have direction (arrows).</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">E</h3>
+        
+        <p style="margin: 10px 0;"><strong>Edge:</strong> A connection between two vertices. Can be directed or undirected, weighted or unweighted.</p>
+        
+        <p style="margin: 10px 0;"><strong>Eulerian Path:</strong> A path that visits every edge exactly once.</p>
+        
+        <p style="margin: 10px 0;"><strong>Eulerian Circuit:</strong> An Eulerian path that starts and ends at the same vertex.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">F</h3>
+        
+        <p style="margin: 10px 0;"><strong>Flow Network:</strong> A directed graph where each edge has a capacity. Used for max flow problems.</p>
+        
+        <p style="margin: 10px 0;"><strong>Forest:</strong> A disjoint union of trees (acyclic graph with multiple components).</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">G</h3>
+        
+        <p style="margin: 10px 0;"><strong>Graph:</strong> A mathematical structure G = (V, E) consisting of vertices V and edges E.</p>
+        
+        <p style="margin: 10px 0;"><strong>Graph Coloring:</strong> Assigning colors to vertices such that no adjacent vertices share the same color.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">H</h3>
+        
+        <p style="margin: 10px 0;"><strong>Hamiltonian Path:</strong> A path that visits every vertex exactly once.</p>
+        
+        <p style="margin: 10px 0;"><strong>Hamiltonian Cycle:</strong> A Hamiltonian path that starts and ends at the same vertex.</p>
+        
+        <p style="margin: 10px 0;"><strong>Heap:</strong> A complete binary tree with heap property. Used in priority queues for graph algorithms.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">I</h3>
+        
+        <p style="margin: 10px 0;"><strong>In-degree:</strong> Number of edges coming into a vertex in a directed graph.</p>
+        
+        <p style="margin: 10px 0;"><strong>Independent Set:</strong> A set of vertices with no edges between them.</p>
+        
+        <p style="margin: 10px 0;"><strong>Isomorphic Graphs:</strong> Two graphs with the same structure (can be relabeled to be identical).</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">K</h3>
+        
+        <p style="margin: 10px 0;"><strong>Kruskal's Algorithm:</strong> Finds MST by sorting edges and adding them greedily. Time: O(E log E).</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">L</h3>
+        
+        <p style="margin: 10px 0;"><strong>Leaf Node:</strong> A vertex with degree 1 in a tree.</p>
+        
+        <p style="margin: 10px 0;"><strong>Loop:</strong> An edge that connects a vertex to itself.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">M</h3>
+        
+        <p style="margin: 10px 0;"><strong>Matching:</strong> A set of edges with no common vertices.</p>
+        
+        <p style="margin: 10px 0;"><strong>MST (Minimum Spanning Tree):</strong> A tree that connects all vertices with minimum total edge weight.</p>
+        
+        <p style="margin: 10px 0;"><strong>Multigraph:</strong> A graph that allows multiple edges between the same pair of vertices.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">N</h3>
+        
+        <p style="margin: 10px 0;"><strong>Neighbor:</strong> A vertex adjacent to another vertex.</p>
+        
+        <p style="margin: 10px 0;"><strong>Network Flow:</strong> The amount of flow passing through edges in a flow network.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">O</h3>
+        
+        <p style="margin: 10px 0;"><strong>Out-degree:</strong> Number of edges going out from a vertex in a directed graph.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">P</h3>
+        
+        <p style="margin: 10px 0;"><strong>Path:</strong> A sequence of vertices where each adjacent pair is connected by an edge.</p>
+        
+        <p style="margin: 10px 0;"><strong>Planar Graph:</strong> A graph that can be drawn on a plane without edge crossings.</p>
+        
+        <p style="margin: 10px 0;"><strong>Prim's Algorithm:</strong> Finds MST by growing tree from a starting vertex. Time: O((V + E) log V).</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">S</h3>
+        
+        <p style="margin: 10px 0;"><strong>SCC (Strongly Connected Component):</strong> A maximal subgraph where every vertex is reachable from every other vertex.</p>
+        
+        <p style="margin: 10px 0;"><strong>Simple Graph:</strong> A graph with no loops or multiple edges.</p>
+        
+        <p style="margin: 10px 0;"><strong>Spanning Tree:</strong> A subgraph that includes all vertices and is a tree.</p>
+        
+        <p style="margin: 10px 0;"><strong>Subgraph:</strong> A graph formed from a subset of vertices and edges of another graph.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">T</h3>
+        
+        <p style="margin: 10px 0;"><strong>Topological Sort:</strong> A linear ordering of vertices in a DAG where all edges point forward. Time: O(V + E).</p>
+        
+        <p style="margin: 10px 0;"><strong>Tree:</strong> A connected acyclic graph. Has exactly V - 1 edges.</p>
+        
+        <p style="margin: 10px 0;"><strong>Trie:</strong> A tree structure for storing strings, where each path represents a string.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">U</h3>
+        
+        <p style="margin: 10px 0;"><strong>Undirected Graph:</strong> A graph where edges have no direction (bidirectional).</p>
+        
+        <p style="margin: 10px 0;"><strong>Union-Find:</strong> Data structure for tracking disjoint sets. Used in Kruskal's algorithm.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">V</h3>
+        
+        <p style="margin: 10px 0;"><strong>Vertex (Node):</strong> A fundamental unit in a graph. Plural: vertices.</p>
+        
+        <h3 style="margin-top: 20px; color: #1976d2;">W</h3>
+        
+        <p style="margin: 10px 0;"><strong>Walk:</strong> A sequence of vertices and edges (edges can repeat).</p>
+        
+        <p style="margin: 10px 0;"><strong>Weighted Graph:</strong> A graph where edges have associated weights/costs.</p>
+    </div>
+
+    <div style="background-color: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin: 30px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">📚 Quick Reference Tips</h3>
+        <ul style="margin: 8px 0 0 24px;">
+            <li style="margin-bottom: 8px;"><strong>V:</strong> Number of vertices</li>
+            <li style="margin-bottom: 8px;"><strong>E:</strong> Number of edges</li>
+            <li style="margin-bottom: 8px;"><strong>O(V + E):</strong> Linear time in graph size</li>
+            <li style="margin-bottom: 8px;"><strong>O(V²):</strong> Quadratic time (often adjacency matrix)</li>
+            <li style="margin-bottom: 8px;"><strong>O(E log V):</strong> Common for MST and shortest path algorithms</li>
+        </ul>
+    </div>
+</body>
+</html>

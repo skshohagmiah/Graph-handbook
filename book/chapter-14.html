@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 14: Pattern Recognition in Graphs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Chapter 14</div>
+    <h1 class="chapter-title">Pattern Recognition in Graphs</h1>
+    
+    <div class="definition-box">
+        "Finding patterns in graphs reveals hidden structures - from tight-knit communities to influential clusters, these patterns unlock insights about complex networks."
+    </div>
+
+    <p class="academic-text">Graphs aren't just about individual nodes and edges - the real power comes from recognizing patterns and structures within them. This chapter explores how to find cliques, detect communities, cluster similar nodes, and extract meaningful insights from network data.</p>
+    
+    <p class="academic-text"><strong>Why pattern recognition matters:</strong></p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text"><strong>Social networks:</strong> Find friend groups, influencer communities, echo chambers</li>
+        <li class="academic-text"><strong>Biology:</strong> Discover protein complexes, gene regulatory modules</li>
+        <li class="academic-text"><strong>Marketing:</strong> Identify customer segments, viral spread patterns</li>
+        <li class="academic-text"><strong>Fraud detection:</strong> Spot suspicious transaction rings and collusion networks</li>
+        <li class="academic-text"><strong>Recommendation systems:</strong> Group similar users or items for better suggestions</li>
+    </ul>
+    
+    <p class="academic-text">Understanding these patterns transforms raw graph data into actionable intelligence about the systems they represent.</p>
+
+    <h2 class="section-title" id="ch14-1">14.1 Cliques and Complete Subgraphs</h2>
+    
+    <p class="academic-text">A <strong>clique</strong> is a subset of vertices where every pair is connected - everyone knows everyone! Cliques represent the tightest possible groups in a network and are fundamental to understanding network cohesion.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">👥 Clique Definitions</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Clique:</strong> A complete subgraph where all vertices are pairwise adjacent</li>
+            <li class="academic-text"><strong>Maximal clique:</strong> Cannot be extended by adding another vertex</li>
+            <li class="academic-text"><strong>Maximum clique:</strong> Largest clique in the graph (by vertex count)</li>
+            <li class="academic-text"><strong>Clique number ω(G):</strong> Size of the maximum clique</li>
+        </ul>
+    </div>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Clique Example (Friend Groups):</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[Alice] --- B[Bob]
+            A --- C[Carol]
+            B --- C
+            A --- D[Dave]
+            B --- D
+            C --- D
+            D --- E[Eve]
+            E --- F[Frank]
+            
+            style A fill:#ff6b6b,stroke:#333,stroke-width:3px
+            style B fill:#ff6b6b,stroke:#333,stroke-width:3px
+            style C fill:#ff6b6b,stroke:#333,stroke-width:3px
+            style D fill:#ff6b6b,stroke:#333,stroke-width:3px
+            style E fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style F fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Red nodes form a 4-clique: {Alice, Bob, Carol, Dave} - everyone is friends with everyone!</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Why cliques matter:</strong> In social networks, cliques represent tight-knit friend groups. In biology, they represent protein complexes. In collaboration networks, they show research teams.
+        </div>
+    </div>
+
+    <p class="academic-text"><strong>Finding Cliques: The Challenge</strong></p>
+    <p class="academic-text">Finding the maximum clique is NP-complete - one of the hardest problems in computer science! However, we can find all maximal cliques efficiently using the Bron-Kerbosch algorithm.</p>
+    
+    <pre class="code-block">// Clique Detection using Bron-Kerbosch Algorithm
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_set&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+class CliqueFinder {
+private:
+    int V;
+    vector&lt;vector&lt;int&gt;&gt; adj;
+    vector&lt;vector&lt;int&gt;&gt; allCliques;
+    
+    void bronKerbosch(unordered_set&lt;int&gt; R,
+                      unordered_set&lt;int&gt; P,
+                      unordered_set&lt;int&gt; X) {
+        if (P.empty() && X.empty()) {
+            vector&lt;int&gt; clique(R.begin(), R.end());
+            allCliques.push_back(clique);
+            return;
+        }
+        
+        unordered_set&lt;int&gt; candidates = P;
+        for (int v : candidates) {
+            unordered_set&lt;int&gt; neighbors;
+            for (int u : adj[v]) neighbors.insert(u);
+            
+            unordered_set&lt;int&gt; newR = R;
+            newR.insert(v);
+            
+            unordered_set&lt;int&gt; newP, newX;
+            for (int u : P) {
+                if (neighbors.count(u)) newP.insert(u);
+            }
+            for (int u : X) {
+                if (neighbors.count(u)) newX.insert(u);
+            }
+            
+            bronKerbosch(newR, newP, newX);
+            P.erase(v);
+            X.insert(v);
+        }
+    }
+    
+public:
+    CliqueFinder(int vertices) : V(vertices) {
+        adj.resize(V);
+    }
+    
+    void addEdge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    vector&lt;vector&lt;int&gt;&gt; findAllMaximalCliques() {
+        allCliques.clear();
+        unordered_set&lt;int&gt; R, P, X;
+        for (int i = 0; i &lt; V; i++) P.insert(i);
+        bronKerbosch(R, P, X);
+        return allCliques;
+    }
+    
+    vector&lt;int&gt; findMaximumClique() {
+        auto cliques = findAllMaximalCliques();
+        vector&lt;int&gt; maxClique;
+        for (const auto&amp; clique : cliques) {
+            if (clique.size() &gt; maxClique.size()) {
+                maxClique = clique;
+            }
+        }
+        return maxClique;
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Applications of Clique Detection:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Social networks:</strong> Find tight-knit friend groups</li>
+        <li class="academic-text"><strong>Bioinformatics:</strong> Discover protein complexes</li>
+        <li class="academic-text"><strong>Collaboration networks:</strong> Identify research teams</li>
+        <li class="academic-text"><strong>Fraud detection:</strong> Detect collusion rings</li>
+    </ul>
+
+    <h2 class="section-title" id="ch14-2">14.2 Community Detection Algorithms</h2>
+
+    <p class="academic-text">While cliques are perfectly connected, <strong>communities</strong> are more loosely defined groups with more internal connections than external ones. Community detection reveals the modular structure of networks.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🏘️ Community Structure</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Community:</strong> Group of nodes with dense internal connections</li>
+            <li class="academic-text"><strong>Modularity:</strong> Measure of community quality</li>
+            <li class="academic-text"><strong>Overlapping communities:</strong> Nodes can belong to multiple groups</li>
+        </ul>
+    </div>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Community Structure:</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[A] --- B[B]
+            A --- C[C]
+            B --- C
+            D[D] --- E[E]
+            D --- F[F]
+            E --- F
+            C --- D
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style E fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style F fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Two communities with dense internal connections</p>
+    </div>
+
+    <pre class="code-block">// Louvain Method for Community Detection
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+using namespace std;
+
+class CommunityDetector {
+private:
+    int V;
+    vector&lt;vector&lt;int&gt;&gt; adj;
+    vector&lt;int&gt; community;
+    double totalEdges;
+    
+    double calculateModularity() {
+        double Q = 0.0;
+        double m2 = 2.0 * totalEdges;
+        
+        for (int i = 0; i &lt; V; i++) {
+            for (int j : adj[i]) {
+                if (community[i] == community[j]) {
+                    double kikj = adj[i].size() * adj[j].size();
+                    Q += (1.0 - kikj / m2);
+                }
+            }
+        }
+        return Q / m2;
+    }
+    
+public:
+    CommunityDetector(int vertices) : V(vertices), totalEdges(0) {
+        adj.resize(V);
+        community.resize(V);
+        for (int i = 0; i &lt; V; i++) community[i] = i;
+    }
+    
+    void addEdge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+        totalEdges++;
+    }
+    
+    vector&lt;int&gt; detectCommunities() {
+        bool improved = true;
+        while (improved) {
+            improved = false;
+            for (int node = 0; node &lt; V; node++) {
+                int bestCommunity = community[node];
+                // Try moving to neighbor communities
+                for (int neighbor : adj[node]) {
+                    int newComm = community[neighbor];
+                    if (newComm != community[node]) {
+                        community[node] = newComm;
+                        improved = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return community;
+    }
+};</pre>
+
+    <h2 class="section-title" id="ch14-3">14.3 Graph Clustering Techniques</h2>
+
+    <p class="academic-text">Graph clustering groups similar nodes together based on various similarity metrics. Unlike community detection which focuses on connectivity patterns, clustering can use node attributes, structural roles, or hybrid approaches.</p>
+    
+    <p class="academic-text"><strong>Spectral Clustering</strong></p>
+    <p class="academic-text">Spectral clustering uses eigenvalues and eigenvectors of the graph Laplacian matrix to find clusters.</p>
+    
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Build adjacency matrix:</strong> Represent graph connections</li>
+        <li class="academic-text"><strong>Compute Laplacian:</strong> L = D - A</li>
+        <li class="academic-text"><strong>Find eigenvectors:</strong> Use k smallest eigenvalues</li>
+        <li class="academic-text"><strong>Cluster in eigenspace:</strong> Apply k-means</li>
+    </ul>
+
+    <h2 class="section-title" id="ch14-4">14.4 Applications in Social Network Analysis</h2>
+
+    <p class="academic-text">Pattern recognition in graphs powers modern social network analysis, from finding influencers to detecting fake news spread.</p>
+    
+    <p class="academic-text"><strong>Key Applications:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Influencer detection:</strong> Find users with high centrality</li>
+        <li class="academic-text"><strong>Community discovery:</strong> Identify interest groups</li>
+        <li class="academic-text"><strong>Echo chamber detection:</strong> Find isolated communities</li>
+        <li class="academic-text"><strong>Viral content tracking:</strong> Analyze spread patterns</li>
+        <li class="academic-text"><strong>Bot detection:</strong> Identify suspicious cliques</li>
+    </ul>
+
+    <div class="completion-summary">
+        <h3 style="color: #1976d2; margin-top: 0;">🎉 Chapter 14 Complete!</h3>
+        <p class="academic-text">You now understand pattern recognition in graphs:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text">✅ <strong>Cliques</strong> - finding complete subgraphs</li>
+            <li class="academic-text">✅ <strong>Community detection</strong> - discovering modular structure</li>
+            <li class="academic-text">✅ <strong>Graph clustering</strong> - grouping similar nodes</li>
+            <li class="academic-text">✅ <strong>Social network analysis</strong> - real-world applications</li>
+        </ul>
+        
+        <p class="academic-text">These pattern recognition techniques unlock insights hidden in complex networks!</p>
+    </div>
+</body>
+</html>

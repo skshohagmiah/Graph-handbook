@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 13: Graphs in Computer Science</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Chapter 13</div>
+    <h1 class="chapter-title">Graphs in Computer Science</h1>
+    
+    <div class="definition-box">
+        "Graphs are the invisible backbone of computer science - from compilers to operating systems to AI, they power the systems you use every day."
+    </div>
+
+    <p class="academic-text">Graphs aren't just theoretical constructs - they're fundamental to how computers work! Every time you compile code, browse the web, or use a neural network, you're leveraging sophisticated graph algorithms. This chapter explores how graph theory powers the core systems of computer science, from the low-level compiler optimizations to high-level AI systems.</p>
+    
+    <p class="academic-text"><strong>Why graphs dominate computer science:</strong></p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text"><strong>Natural representation:</strong> Many computational problems have inherent graph structure</li>
+        <li class="academic-text"><strong>Efficient algorithms:</strong> Decades of research have produced powerful graph algorithms</li>
+        <li class="academic-text"><strong>Composability:</strong> Graph operations can be combined to solve complex problems</li>
+        <li class="academic-text"><strong>Visualization:</strong> Graph structure makes systems easier to understand and debug</li>
+    </ul>
+    
+    <p class="academic-text">Understanding these applications will transform how you think about computer systems and give you powerful tools for solving real-world problems.</p>
+
+    <h2 class="section-title" id="ch13-1">13.1 Compilers and Abstract Syntax Trees</h2>
+    
+    <p class="academic-text">When you write code and hit compile, the compiler performs an intricate dance of graph transformations. It builds multiple interconnected graph structures - Abstract Syntax Trees, Control Flow Graphs, Data Dependency Graphs, and Call Graphs - each revealing different aspects of your program's structure and behavior.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🌳 Compiler Graph Structures</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Abstract Syntax Tree (AST):</strong> Hierarchical tree representing program structure and operator precedence</li>
+            <li class="academic-text"><strong>Control Flow Graph (CFG):</strong> Directed graph showing all possible execution paths through code</li>
+            <li class="academic-text"><strong>Data Dependency Graph:</strong> Shows which operations depend on results of other operations</li>
+            <li class="academic-text"><strong>Call Graph:</strong> Directed graph of function call relationships</li>
+            <li class="academic-text"><strong>Interference Graph:</strong> Used for register allocation via graph coloring</li>
+        </ul>
+    </div>
+    
+    <p class="academic-text"><strong>Abstract Syntax Trees: The Foundation</strong></p>
+    <p class="academic-text">An AST is the first major graph structure a compiler builds. It transforms your linear source code into a tree that captures the hierarchical structure of expressions, statements, and declarations. Each node represents a construct in your code - operators, literals, variables, function calls - and edges represent the relationships between them.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>AST Example: Expression "a + b * c"</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[+ operator] --> B[variable: a]
+            A --> C[* operator]
+            C --> D[variable: b]
+            C --> E[variable: c]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style B fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Tree structure automatically respects operator precedence: * is evaluated before +</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Why trees?</strong> The tree structure naturally represents nested expressions and operator precedence. Post-order traversal gives us the evaluation order!
+        </div>
+    </div>
+
+    <pre class="code-block">// Comprehensive AST Implementation
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+using namespace std;
+
+enum class NodeType {
+    NUMBER, VARIABLE, BINARY_OP, UNARY_OP, 
+    ASSIGNMENT, IF_STMT, WHILE_LOOP, FUNCTION_CALL
+};
+
+class ASTNode {
+public:
+    NodeType type;
+    string value;
+    vector&lt;shared_ptr&lt;ASTNode&gt;&gt; children;
+    
+    ASTNode(NodeType t, string v = "") : type(t), value(v) {}
+    
+    void addChild(shared_ptr&lt;ASTNode&gt; child) {
+        children.push_back(child);
+    }
+    
+    // Evaluate expression tree with variable context
+    double evaluate(unordered_map&lt;string, double&gt;&amp; variables) {
+        switch (type) {
+            case NodeType::NUMBER:
+                return stod(value);
+                
+            case NodeType::VARIABLE:
+                if (variables.find(value) != variables.end()) {
+                    return variables[value];
+                }
+                throw runtime_error("Undefined variable: " + value);
+                
+            case NodeType::BINARY_OP: {
+                double left = children[0]-&gt;evaluate(variables);
+                double right = children[1]-&gt;evaluate(variables);
+                
+                if (value == "+") return left + right;
+                if (value == "-") return left - right;
+                if (value == "*") return left * right;
+                if (value == "/") {
+                    if (right == 0) throw runtime_error("Division by zero");
+                    return left / right;
+                }
+                if (value == "^") return pow(left, right);
+                break;
+            }
+            
+            case NodeType::UNARY_OP: {
+                double operand = children[0]-&gt;evaluate(variables);
+                if (value == "-") return -operand;
+                if (value == "!") return !operand;
+                break;
+            }
+            
+            case NodeType::ASSIGNMENT: {
+                double val = children[0]-&gt;evaluate(variables);
+                variables[value] = val;
+                return val;
+            }
+            
+            default:
+                break;
+        }
+        return 0;
+    }
+    
+    // Generate code from AST (simple example)
+    string generateCode(int indent = 0) {
+        string indentation(indent * 2, ' ');
+        string code;
+        
+        switch (type) {
+            case NodeType::BINARY_OP:
+                code = "(" + children[0]-&gt;generateCode() + " " + 
+                       value + " " + children[1]-&gt;generateCode() + ")";
+                break;
+                
+            case NodeType::NUMBER:
+            case NodeType::VARIABLE:
+                code = value;
+                break;
+                
+            case NodeType::ASSIGNMENT:
+                code = value + " = " + children[0]-&gt;generateCode();
+                break;
+                
+            default:
+                code = "/* unhandled */";
+        }
+        return code;
+    }
+    
+    // Pretty print the tree structure
+    void print(int depth = 0) {
+        for (int i = 0; i &lt; depth; i++) cout &lt;&lt; "  ";
+        
+        cout &lt;&lt; "[" &lt;&lt; typeToString(type) &lt;&lt; "] ";
+        if (!value.empty()) cout &lt;&lt; value;
+        cout &lt;&lt; endl;
+        
+        for (auto&amp; child : children) {
+            child-&gt;print(depth + 1);
+        }
+    }
+    
+private:
+    string typeToString(NodeType t) {
+        switch (t) {
+            case NodeType::NUMBER: return "NUM";
+            case NodeType::VARIABLE: return "VAR";
+            case NodeType::BINARY_OP: return "BINOP";
+            case NodeType::UNARY_OP: return "UNOP";
+            case NodeType::ASSIGNMENT: return "ASSIGN";
+            default: return "UNKNOWN";
+        }
+    }
+};
+
+// Build AST for: result = a + b * c
+shared_ptr&lt;ASTNode&gt; buildExampleAST() {
+    // Create assignment node
+    auto assignment = make_shared&lt;ASTNode&gt;(NodeType::ASSIGNMENT, "result");
+    
+    // Create expression: a + (b * c)
+    auto plus = make_shared&lt;ASTNode&gt;(NodeType::BINARY_OP, "+");
+    auto a = make_shared&lt;ASTNode&gt;(NodeType::VARIABLE, "a");
+    auto mult = make_shared&lt;ASTNode&gt;(NodeType::BINARY_OP, "*");
+    auto b = make_shared&lt;ASTNode&gt;(NodeType::VARIABLE, "b");
+    auto c = make_shared&lt;ASTNode&gt;(NodeType::VARIABLE, "c");
+    
+    // Build tree structure
+    mult-&gt;addChild(b);
+    mult-&gt;addChild(c);
+    plus-&gt;addChild(a);
+    plus-&gt;addChild(mult);
+    assignment-&gt;addChild(plus);
+    
+    return assignment;
+}</pre>
+
+    <p class="academic-text"><strong>Control Flow Graphs: Execution Paths</strong></p>
+    <p class="academic-text">While ASTs represent program structure, Control Flow Graphs (CFGs) represent program behavior. A CFG is a directed graph where each node is a basic block (sequence of instructions with no branches except at the end), and edges represent possible control flow between blocks.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>CFG Example: If-Else with Loop</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[Entry] --> B{if x &gt; 0}
+            B -->|true| C[y = x * 2]
+            B -->|false| D[y = -x]
+            C --> E{while y &gt; 10}
+            D --> E
+            E -->|true| F[y = y - 1]
+            F --> E
+            E -->|false| G[return y]
+            G --> H[Exit]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style H fill:#ffebee,stroke:#f44336,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">CFG shows all possible execution paths. Notice the loop creates a cycle!</p>
+    </div>
+
+    <p class="academic-text"><strong>Compiler Optimizations Using Graphs:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Dead code elimination:</strong> Find unreachable nodes in CFG using DFS</li>
+        <li class="academic-text"><strong>Loop detection:</strong> Find cycles in CFG using cycle detection algorithms</li>
+        <li class="academic-text"><strong>Register allocation:</strong> Build interference graph, color it to assign registers</li>
+        <li class="academic-text"><strong>Constant propagation:</strong> Data flow analysis through CFG</li>
+        <li class="academic-text"><strong>Common subexpression elimination:</strong> Find duplicate subtrees in AST</li>
+        <li class="academic-text"><strong>Inlining:</strong> Merge call graph nodes to eliminate function call overhead</li>
+    </ul>
+
+    <h2 class="section-title" id="ch13-2">13.2 Operating Systems: Scheduling and Deadlock Detection</h2>
+
+    <p class="academic-text">Operating systems are masters of graph algorithms! They use graphs to manage resources, detect deadlocks, schedule processes, and ensure system stability. Understanding these graph-based techniques is crucial for building reliable concurrent systems.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">⚙️ OS Graph Applications</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Resource Allocation Graph:</strong> Tracks which processes hold which resources</li>
+            <li class="academic-text"><strong>Wait-For Graph:</strong> Shows which processes are waiting for others</li>
+            <li class="academic-text"><strong>Process Dependency Graph:</strong> Models task dependencies for scheduling</li>
+            <li class="academic-text"><strong>Deadlock Detection:</strong> Cycle detection in resource graphs</li>
+        </ul>
+    </div>
+
+    <p class="academic-text"><strong>Resource Allocation Graphs</strong></p>
+    <p class="academic-text">A Resource Allocation Graph (RAG) is a directed bipartite graph with two types of nodes: processes and resources. Edges represent either resource requests or allocations. A cycle in this graph indicates potential deadlock!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Resource Allocation Graph (Deadlock Scenario):</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            P1[Process 1] -->|requests| R2[Resource 2]
+            R2 -->|held by| P2[Process 2]
+            P2 -->|requests| R1[Resource 1]
+            R1 -->|held by| P1
+            
+            style P1 fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
+            style P2 fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
+            style R1 fill:#ffebee,stroke:#f44336,stroke-width:2px
+            style R2 fill:#ffebee,stroke:#f44336,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Cycle detected: P1 → R2 → P2 → R1 → P1. This is a deadlock!</p>
+        
+        <div class="definition-box" style="margin-top: 15px;">
+            <strong>Deadlock conditions:</strong> A cycle in the RAG indicates deadlock when resources have single instances. With multiple instances, we need Banker's algorithm for detection.
+        </div>
+    </div>
+
+    <pre class="code-block">// Comprehensive Deadlock Detection System
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_set&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+class DeadlockDetector {
+private:
+    int numProcesses, numResources;
+    vector&lt;vector&lt;int&gt;&gt; waitForGraph;
+    vector&lt;int&gt; available;
+    vector&lt;vector&lt;int&gt;&gt; allocation, request;
+    
+    bool hasCycleDFS(int node, vector&lt;bool&gt;&amp; visited, 
+                     vector&lt;bool&gt;&amp; recStack, vector&lt;int&gt;&amp; cycle) {
+        visited[node] = true;
+        recStack[node] = true;
+        cycle.push_back(node);
+        
+        for (int neighbor : waitForGraph[node]) {
+            if (!visited[neighbor]) {
+                if (hasCycleDFS(neighbor, visited, recStack, cycle))
+                    return true;
+            }
+            else if (recStack[neighbor]) {
+                auto it = find(cycle.begin(), cycle.end(), neighbor);
+                cycle.erase(cycle.begin(), it);
+                return true;
+            }
+        }
+        
+        recStack[node] = false;
+        cycle.pop_back();
+        return false;
+    }
+    
+public:
+    DeadlockDetector(int processes, int resources) 
+        : numProcesses(processes), numResources(resources) {
+        waitForGraph.resize(processes);
+        available.resize(resources);
+        allocation.resize(processes, vector&lt;int&gt;(resources, 0));
+        request.resize(processes, vector&lt;int&gt;(resources, 0));
+    }
+    
+    void addWaitFor(int p1, int p2) {
+        waitForGraph[p1].push_back(p2);
+    }
+    
+    bool detectDeadlock(vector&lt;int&gt;&amp; deadlockedProcesses) {
+        vector&lt;bool&gt; visited(numProcesses, false);
+        vector&lt;bool&gt; recStack(numProcesses, false);
+        
+        for (int i = 0; i &lt; numProcesses; i++) {
+            if (!visited[i]) {
+                if (hasCycleDFS(i, visited, recStack, deadlockedProcesses))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    // Banker's Algorithm for deadlock avoidance
+    bool isSafeState() {
+        vector&lt;int&gt; work = available;
+        vector&lt;bool&gt; finish(numProcesses, false);
+        
+        for (int count = 0; count &lt; numProcesses; count++) {
+            bool found = false;
+            for (int p = 0; p &lt; numProcesses; p++) {
+                if (!finish[p]) {
+                    bool canFinish = true;
+                    for (int r = 0; r &lt; numResources; r++) {
+                        if (request[p][r] &gt; work[r]) {
+                            canFinish = false;
+                            break;
+                        }
+                    }
+                    
+                    if (canFinish) {
+                        for (int r = 0; r &lt; numResources; r++)
+                            work[r] += allocation[p][r];
+                        finish[p] = true;
+                        found = true;
+                    }
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
+    }
+    
+    void printStatus() {
+        vector&lt;int&gt; deadlocked;
+        if (detectDeadlock(deadlocked)) {
+            cout &lt;&lt; "⚠️  DEADLOCK DETECTED!" &lt;&lt; endl;
+            cout &lt;&lt; "Deadlocked processes: ";
+            for (int p : deadlocked) cout &lt;&lt; "P" &lt;&lt; p &lt;&lt; " ";
+            cout &lt;&lt; endl;
+        } else {
+            cout &lt;&lt; "✓ No deadlock. System safe." &lt;&lt; endl;
+        }
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Process Scheduling with Dependencies</strong></p>
+    <p class="academic-text">When processes have dependencies, we model this as a DAG and use topological sorting to determine execution order. This is crucial for parallel task scheduling!</p>
+    
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Task graph:</strong> Vertices = tasks, edges = dependencies</li>
+        <li class="academic-text"><strong>Topological sort:</strong> Gives valid execution order</li>
+        <li class="academic-text"><strong>Critical path:</strong> Longest path determines minimum time</li>
+        <li class="academic-text"><strong>Parallel execution:</strong> Tasks at same level run concurrently</li>
+    </ul>
+
+    <h2 class="section-title" id="ch13-3">13.3 Databases and Graph Databases</h2>
+
+    <p class="academic-text">Traditional relational databases struggle with relationship queries - joining tables is expensive! Graph databases solve this by storing data as nodes and edges natively, making traversals orders of magnitude faster.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">💾 Graph Database Concepts</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Nodes:</strong> Entities with properties (people, products, places)</li>
+            <li class="academic-text"><strong>Edges:</strong> Relationships with properties (knows, bought, located_in)</li>
+            <li class="academic-text"><strong>Labels:</strong> Types/categories for nodes and relationships</li>
+            <li class="academic-text"><strong>Index-free adjacency:</strong> Each node directly references neighbors - O(1) traversal!</li>
+        </ul>
+    </div>
+
+    <p class="academic-text"><strong>Query Execution Plans in Relational Databases</strong></p>
+    <p class="academic-text">Before graph databases, let's see how traditional databases use trees! Query optimizers build execution plan trees to find the most efficient way to execute SQL queries.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Query Execution Plan Tree:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            A[JOIN Users-Orders] --> B[SELECT age &gt; 25]
+            A --> C[SELECT city = NYC]
+            B --> D[SCAN Users Table]
+            C --> E[SCAN Orders Table]
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Optimizer chooses order: filter first (reduces data), then join</p>
+    </div>
+
+    <p class="academic-text"><strong>Graph Databases: Native Graph Storage</strong></p>
+    <p class="academic-text">Graph databases like Neo4j, Amazon Neptune, and ArangoDB store data as graphs natively. This makes relationship traversals extremely fast - O(1) to find neighbors instead of O(log n) joins!</p>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Social Network in Graph Database:</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[Alice] -->|KNOWS| B[Bob]
+            A -->|KNOWS| C[Carol]
+            B -->|KNOWS| C
+            B -->|WORKS_AT| D[TechCorp]
+            C -->|WORKS_AT| D
+            A -->|LIKES| E[Product X]
+            B -->|BOUGHT| E
+            
+            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style B fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style C fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Nodes have labels (Person, Company, Product), edges have types (KNOWS, WORKS_AT, LIKES)</p>
+    </div>
+
+    <pre class="code-block">// Simple Graph Database Implementation
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+#include &lt;queue&gt;
+using namespace std;
+
+class GraphDatabase {
+private:
+    struct Node {
+        string id, label;
+        unordered_map&lt;string, string&gt; properties;
+    };
+    
+    struct Edge {
+        string from, to, type;
+        unordered_map&lt;string, string&gt; properties;
+    };
+    
+    unordered_map&lt;string, Node&gt; nodes;
+    vector&lt;Edge&gt; edges;
+    unordered_map&lt;string, vector&lt;Edge*&gt;&gt; outgoing, incoming;
+    
+public:
+    void createNode(string id, string label, 
+                    unordered_map&lt;string, string&gt; props = {}) {
+        nodes[id] = {id, label, props};
+    }
+    
+    void createRelationship(string from, string to, string type,
+                           unordered_map&lt;string, string&gt; props = {}) {
+        edges.push_back({from, to, type, props});
+        outgoing[from].push_back(&amp;edges.back());
+        incoming[to].push_back(&amp;edges.back());
+    }
+    
+    // Find friends of friends (2-hop traversal)
+    vector&lt;string&gt; findFriendsOfFriends(string personId) {
+        unordered_set&lt;string&gt; result, directFriends;
+        
+        // Get direct friends
+        for (Edge* edge : outgoing[personId]) {
+            if (edge-&gt;type == "KNOWS") {
+                directFriends.insert(edge-&gt;to);
+            }
+        }
+        
+        // Get friends of friends
+        for (const string&amp; friendId : directFriends) {
+            for (Edge* edge : outgoing[friendId]) {
+                if (edge-&gt;type == "KNOWS" &amp;&amp; 
+                    edge-&gt;to != personId &amp;&amp;
+                    directFriends.find(edge-&gt;to) == directFriends.end()) {
+                    result.insert(edge-&gt;to);
+                }
+            }
+        }
+        
+        return vector&lt;string&gt;(result.begin(), result.end());
+    }
+    
+    // Shortest path (degrees of separation)
+    int degreeOfSeparation(string person1, string person2) {
+        if (person1 == person2) return 0;
+        
+        queue&lt;pair&lt;string, int&gt;&gt; q;
+        unordered_set&lt;string&gt; visited;
+        
+        q.push({person1, 0});
+        visited.insert(person1);
+        
+        while (!q.empty()) {
+            auto [current, distance] = q.front();
+            q.pop();
+            
+            for (Edge* edge : outgoing[current]) {
+                if (edge-&gt;type == "KNOWS") {
+                    if (edge-&gt;to == person2) return distance + 1;
+                    
+                    if (visited.find(edge-&gt;to) == visited.end()) {
+                        visited.insert(edge-&gt;to);
+                        q.push({edge-&gt;to, distance + 1});
+                    }
+                }
+            }
+        }
+        return -1; // Not connected
+    }
+    
+    // Recommendation: Products bought by friends
+    vector&lt;string&gt; recommendProducts(string personId) {
+        unordered_map&lt;string, int&gt; productCount;
+        unordered_set&lt;string&gt; alreadyBought;
+        
+        // Get products this person already bought
+        for (Edge* edge : outgoing[personId]) {
+            if (edge-&gt;type == "BOUGHT") {
+                alreadyBought.insert(edge-&gt;to);
+            }
+        }
+        
+        // Get friends
+        for (Edge* edge : outgoing[personId]) {
+            if (edge-&gt;type == "KNOWS") {
+                string friendId = edge-&gt;to;
+                
+                // Get products bought by friend
+                for (Edge* friendEdge : outgoing[friendId]) {
+                    if (friendEdge-&gt;type == "BOUGHT") {
+                        string productId = friendEdge-&gt;to;
+                        if (alreadyBought.find(productId) == alreadyBought.end()) {
+                            productCount[productId]++;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Sort by popularity
+        vector&lt;pair&lt;int, string&gt;&gt; recommendations;
+        for (auto&amp; [product, count] : productCount) {
+            recommendations.push_back({count, product});
+        }
+        sort(recommendations.rbegin(), recommendations.rend());
+        
+        vector&lt;string&gt; result;
+        for (auto&amp; [count, product] : recommendations) {
+            result.push_back(product);
+        }
+        return result;
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Graph Database Use Cases:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Social networks:</strong> Friend recommendations, influence analysis, community detection</li>
+        <li class="academic-text"><strong>Fraud detection:</strong> Find suspicious transaction patterns and networks</li>
+        <li class="academic-text"><strong>Knowledge graphs:</strong> Google's knowledge graph, Wikipedia connections</li>
+        <li class="academic-text"><strong>Recommendation engines:</strong> "People who bought X also bought Y"</li>
+        <li class="academic-text"><strong>Network management:</strong> IT infrastructure, dependency tracking</li>
+    </ul>
+
+    <h2 class="section-title" id="ch13-4">13.4 AI Search and Machine Learning Computation Graphs</h2>
+
+    <p class="academic-text">AI and machine learning heavily rely on graphs! From search algorithms that explore state spaces to neural networks represented as computation graphs, graphs are fundamental to modern AI.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🤖 AI Graph Applications</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>State space search:</strong> AI problems modeled as graphs of states</li>
+            <li class="academic-text"><strong>Computation graphs:</strong> Neural networks as DAGs</li>
+            <li class="academic-text"><strong>Game trees:</strong> Minimax for chess, tic-tac-toe</li>
+            <li class="academic-text"><strong>Planning:</strong> Action sequences as graph paths</li>
+        </ul>
+    </div>
+
+    <p class="academic-text"><strong>Neural Networks as Computation Graphs</strong></p>
+    <p class="academic-text">Modern deep learning frameworks (TensorFlow, PyTorch) represent neural networks as directed acyclic graphs! Each node is an operation, edges carry data tensors.</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Neural Network as DAG:</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            I1[Input 1] --> H1[Hidden 1]
+            I2[Input 2] --> H1
+            I1 --> H2[Hidden 2]
+            I2 --> H2
+            H1 --> O[Output]
+            H2 --> O
+            
+            style I1 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style I2 fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+            style O fill:#ffebee,stroke:#f44336,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Topological sort gives execution order!</p>
+    </div>
+
+    <p class="academic-text"><strong>Why Graphs for Neural Networks?</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Forward pass:</strong> Topological sort determines computation order</li>
+        <li class="academic-text"><strong>Backward pass:</strong> Reverse topological order for backpropagation</li>
+        <li class="academic-text"><strong>Automatic differentiation:</strong> Build computation graph, compute gradients automatically</li>
+        <li class="academic-text"><strong>Optimization:</strong> Graph transformations optimize execution (fusion, pruning)</li>
+        <li class="academic-text"><strong>Parallelization:</strong> Independent nodes can compute in parallel</li>
+    </ul>
+
+    <pre class="code-block">// Simple Computation Graph for Neural Network
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;memory&gt;
+#include &lt;cmath&gt;
+using namespace std;
+
+class ComputationNode {
+public:
+    string name;
+    double value;
+    double gradient;
+    vector&lt;shared_ptr&lt;ComputationNode&gt;&gt; inputs;
+    
+    ComputationNode(string n) : name(n), value(0), gradient(0) {}
+    
+    virtual double forward() = 0;
+    virtual void backward() = 0;
+};
+
+class InputNode : public ComputationNode {
+public:
+    InputNode(string name, double val) : ComputationNode(name) {
+        value = val;
+    }
+    
+    double forward() override { return value; }
+    void backward() override {} // Inputs don't backpropagate
+};
+
+class AddNode : public ComputationNode {
+public:
+    AddNode(string name, shared_ptr&lt;ComputationNode&gt; a, 
+            shared_ptr&lt;ComputationNode&gt; b) : ComputationNode(name) {
+        inputs = {a, b};
+    }
+    
+    double forward() override {
+        value = inputs[0]-&gt;value + inputs[1]-&gt;value;
+        return value;
+    }
+    
+    void backward() override {
+        // d(a+b)/da = 1, d(a+b)/db = 1
+        inputs[0]-&gt;gradient += gradient * 1.0;
+        inputs[1]-&gt;gradient += gradient * 1.0;
+    }
+};
+
+class MultiplyNode : public ComputationNode {
+public:
+    MultiplyNode(string name, shared_ptr&lt;ComputationNode&gt; a,
+                 shared_ptr&lt;ComputationNode&gt; b) : ComputationNode(name) {
+        inputs = {a, b};
+    }
+    
+    double forward() override {
+        value = inputs[0]-&gt;value * inputs[1]-&gt;value;
+        return value;
+    }
+    
+    void backward() override {
+        // d(a*b)/da = b, d(a*b)/db = a
+        inputs[0]-&gt;gradient += gradient * inputs[1]-&gt;value;
+        inputs[1]-&gt;gradient += gradient * inputs[0]-&gt;value;
+    }
+};
+
+// Example: Build computation graph for f(x,y) = (x + y) * x
+void buildAndExecuteGraph() {
+    auto x = make_shared&lt;InputNode&gt;("x", 3.0);
+    auto y = make_shared&lt;InputNode&gt;("y", 2.0);
+    auto sum = make_shared&lt;AddNode&gt;("x+y", x, y);
+    auto result = make_shared&lt;MultiplyNode&gt;("(x+y)*x", sum, x);
+    
+    // Forward pass (topological order)
+    x-&gt;forward();
+    y-&gt;forward();
+    sum-&gt;forward();
+    result-&gt;forward();
+    
+    cout &lt;&lt; "f(3, 2) = " &lt;&lt; result-&gt;value &lt;&lt; endl; // 15
+    
+    // Backward pass (reverse topological order)
+    result-&gt;gradient = 1.0; // df/df = 1
+    result-&gt;backward();
+    sum-&gt;backward();
+    
+    cout &lt;&lt; "df/dx = " &lt;&lt; x-&gt;gradient &lt;&lt; endl; // 8
+    cout &lt;&lt; "df/dy = " &lt;&lt; y-&gt;gradient &lt;&lt; endl; // 3
+}</pre>
+
+    <p class="academic-text"><strong>AI Search Algorithms</strong></p>
+    <p class="academic-text">AI search problems model states as graph nodes and actions as edges. A* search uses heuristics to efficiently find paths!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>A* Search State Space:</strong><br><br>
+        <div class="mermaid">
+        graph TD
+            S[Start] -->|cost 1| A[State A]
+            S -->|cost 4| B[State B]
+            A -->|cost 2| C[State C]
+            A -->|cost 3| D[State D]
+            B -->|cost 1| D
+            C -->|cost 1| G[Goal]
+            D -->|cost 2| G
+            
+            style S fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
+            style G fill:#ffebee,stroke:#f44336,stroke-width:3px
+            style A fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">A* finds optimal path S → A → C → G using heuristic guidance</p>
+    </div>
+
+    <h2 class="section-title" id="ch13-5">13.5 Web: PageRank and Social Media Algorithms</h2>
+
+    <p class="academic-text">The web is a massive directed graph with billions of nodes (pages) and edges (links). Google's PageRank revolutionized search by treating link structure as votes of importance!</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🔗 PageRank Intuition</h3>
+        <p class="academic-text">A page is important if:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Many pages link to it</strong> (high in-degree)</li>
+            <li class="academic-text"><strong>Important pages link to it</strong> (recursive definition!)</li>
+        </ul>
+        <p class="academic-text">PageRank models a "random surfer" clicking links. A page's rank is the probability the surfer ends up there.</p>
+    </div>
+
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Web Graph Example:</strong><br><br>
+        <div class="mermaid">
+        graph LR
+            A[Page A] --> B[Page B]
+            A --> C[Page C]
+            B --> C
+            C --> A
+            D[Page D] --> C
+            
+            style C fill:#ff6b6b,stroke:#333,stroke-width:3px
+            style A fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+        </div>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Page C has highest PageRank - many pages link to it, including important ones!</p>
+    </div>
+
+    <pre class="code-block">// Complete PageRank Implementation
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
+using namespace std;
+
+class PageRank {
+private:
+    int numPages;
+    vector&lt;vector&lt;int&gt;&gt; graph;  // graph[i] = pages that i links to
+    vector&lt;int&gt; outDegree;
+    
+public:
+    PageRank(int pages) : numPages(pages) {
+        graph.resize(pages);
+        outDegree.resize(pages, 0);
+    }
+    
+    void addLink(int from, int to) {
+        graph[from].push_back(to);
+        outDegree[from]++;
+    }
+    
+    vector&lt;double&gt; calculate(int iterations = 20, 
+                              double dampingFactor = 0.85) {
+        vector&lt;double&gt; rank(numPages, 1.0 / numPages);
+        vector&lt;double&gt; newRank(numPages);
+        
+        for (int iter = 0; iter &lt; iterations; iter++) {
+            // Initialize with teleportation probability
+            fill(newRank.begin(), newRank.end(), 
+                 (1.0 - dampingFactor) / numPages);
+            
+            // Distribute rank from each page
+            for (int page = 0; page &lt; numPages; page++) {
+                if (outDegree[page] &gt; 0) {
+                    double contribution = dampingFactor * rank[page] / 
+                                         outDegree[page];
+                    for (int linkedPage : graph[page]) {
+                        newRank[linkedPage] += contribution;
+                    }
+                } else {
+                    // Dangling node - distribute to all pages
+                    double contribution = dampingFactor * rank[page] / 
+                                         numPages;
+                    for (int i = 0; i &lt; numPages; i++) {
+                        newRank[i] += contribution;
+                    }
+                }
+            }
+            
+            // Check convergence
+            double diff = 0;
+            for (int i = 0; i &lt; numPages; i++) {
+                diff += abs(newRank[i] - rank[i]);
+            }
+            
+            rank = newRank;
+            
+            if (diff &lt; 1e-6) {
+                cout &lt;&lt; "Converged after " &lt;&lt; (iter + 1) 
+                     &lt;&lt; " iterations" &lt;&lt; endl;
+                break;
+            }
+        }
+        
+        return rank;
+    }
+    
+    void printRanks() {
+        auto ranks = calculate();
+        cout &lt;&lt; "PageRank scores:" &lt;&lt; endl;
+        for (int i = 0; i &lt; numPages; i++) {
+            cout &lt;&lt; "Page " &lt;&lt; i &lt;&lt; ": " &lt;&lt; ranks[i] &lt;&lt; endl;
+        }
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Social Media Graph Algorithms</strong></p>
+    <p class="academic-text">Social networks are graphs where users are nodes and relationships are edges. Graph algorithms power every feature you use!</p>
+    
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <strong>Social Network Features & Algorithms:</strong><br><br>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11pt;">
+            <thead>
+                <tr style="border-bottom: 2px solid #333;">
+                    <th style="text-align: left; padding: 8px;">Feature</th>
+                    <th style="text-align: left; padding: 8px;">Graph Algorithm</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 8px;">Friend suggestions</td>
+                    <td style="padding: 8px;">Friends of friends (2-hop BFS)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Influencer detection</td>
+                    <td style="padding: 8px;">PageRank, degree centrality</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Community detection</td>
+                    <td style="padding: 8px;">Strongly connected components</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Content viral spread</td>
+                    <td style="padding: 8px;">BFS from source node</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Degrees of separation</td>
+                    <td style="padding: 8px;">Shortest path (BFS)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Feed ranking</td>
+                    <td style="padding: 8px;">Personalized PageRank</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="academic-text"><strong>Real-World Impact:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Facebook:</strong> Friend suggestions use graph algorithms on 3+ billion users</li>
+        <li class="academic-text"><strong>Twitter:</strong> Trending topics spread through the social graph via BFS</li>
+        <li class="academic-text"><strong>LinkedIn:</strong> "People you may know" finds 2nd and 3rd degree connections</li>
+        <li class="academic-text"><strong>Instagram:</strong> Explore page uses graph-based recommendations</li>
+        <li class="academic-text"><strong>TikTok:</strong> Content recommendation via graph neural networks</li>
+    </ul>
+
+    <div class="performance-summary">
+        <h3 style="color: #2e7d32; margin-top: 0;">💡 Key Insights</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Systems</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text">Compilers use AST & CFG</li>
+                    <li class="academic-text">OS uses graphs for deadlock detection</li>
+                    <li class="academic-text">Databases optimize with query trees</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">AI & Web</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text">Neural networks are computation DAGs</li>
+                    <li class="academic-text">PageRank ranks web pages</li>
+                    <li class="academic-text">Social media powered by graph algorithms</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="completion-summary">
+        <h3 style="color: #1976d2; margin-top: 0;">🎉 Chapter 13 Complete!</h3>
+        <p class="academic-text">You now understand how graphs power computer science:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text">✅ <strong>Compilers</strong> - AST and CFG for code optimization</li>
+            <li class="academic-text">✅ <strong>Operating systems</strong> - deadlock detection and scheduling</li>
+            <li class="academic-text">✅ <strong>Databases</strong> - graph databases and query optimization</li>
+            <li class="academic-text">✅ <strong>AI/ML</strong> - neural networks as computation graphs</li>
+            <li class="academic-text">✅ <strong>Web</strong> - PageRank and social media algorithms</li>
+        </ul>
+        
+        <p class="academic-text">Graphs are everywhere in computing - understanding them gives you insight into how modern systems work!</p>
+    </div>
+</body>
+</html>
