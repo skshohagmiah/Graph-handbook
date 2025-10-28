@@ -320,16 +320,18 @@ let combinedHTML = `<!DOCTYPE html>
             
             pre, .code-block {
                 font-family: 'Courier New', Courier, monospace !important;
-                font-size: 11pt !important;
+                font-size: 9pt !important;
                 line-height: 1.3 !important;
-                background: #f8f8f8 !important;
-                color: #000000 !important;
-                border: 2pt solid #666666 !important;
-                padding: 12pt !important;
+                background-color: #1a1a1a !important;
+                color: #f0f0f0 !important;
+                border: 2pt solid #444444 !important;
+                padding: 10pt !important;
                 margin: 12pt 0 !important;
                 page-break-inside: avoid !important;
                 white-space: pre-wrap !important;
                 word-wrap: break-word !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             
             ul, ol {
@@ -352,38 +354,51 @@ let combinedHTML = `<!DOCTYPE html>
                 margin: 10pt 0 !important;
             }
             
-            /* Ultra-simple cover page - force everything together */
-            .cover-container, .cover-content {
+            /* Cover page with author/year at bottom */
+            .cover-container {
                 page-break-inside: avoid !important;
                 page-break-after: always !important;
+                page-break-before: auto !important;
                 text-align: center !important;
                 padding: 30pt !important;
+                min-height: calc(100vh - 60pt) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+            }
+            
+            .cover-container * {
+                page-break-inside: avoid !important;
+                page-break-before: avoid !important;
+                page-break-after: avoid !important;
             }
             
             .cover-title {
-                font-size: 28pt !important;
+                font-size: 26pt !important;
                 font-weight: bold !important;
                 margin: 10pt 0 15pt 0 !important;
+                line-height: 1.1 !important;
+                text-align: center !important;
             }
             
             .cover-subtitle {
                 font-size: 14pt !important;
-                margin: 0 0 40pt 0 !important;
-            }
-            
-            .cover-footer {
-                margin-top: 40pt !important;
+                margin: 0 0 20pt 0 !important;
+                line-height: 1.3 !important;
+                text-align: center !important;
             }
             
             .cover-author {
                 font-size: 16pt !important;
                 font-weight: bold !important;
-                margin: 0 0 5pt 0 !important;
+                margin: auto 0 5pt 0 !important;
+                text-align: center !important;
             }
             
             .cover-year {
                 font-size: 14pt !important;
                 margin: 0 !important;
+                text-align: center !important;
             }
         }
         }

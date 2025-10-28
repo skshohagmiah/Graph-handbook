@@ -287,16 +287,18 @@
             
             pre, .code-block {
                 font-family: 'Courier New', Courier, monospace !important;
-                font-size: 11pt !important;
+                font-size: 9pt !important;
                 line-height: 1.3 !important;
-                background: #f8f8f8 !important;
-                color: #000000 !important;
-                border: 2pt solid #666666 !important;
-                padding: 12pt !important;
+                background-color: #1a1a1a !important;
+                color: #f0f0f0 !important;
+                border: 2pt solid #444444 !important;
+                padding: 10pt !important;
                 margin: 12pt 0 !important;
                 page-break-inside: avoid !important;
                 white-space: pre-wrap !important;
                 word-wrap: break-word !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             
             ul, ol {
@@ -319,38 +321,51 @@
                 margin: 10pt 0 !important;
             }
             
-            /* Ultra-simple cover page - force everything together */
-            .cover-container, .cover-content {
+            /* Cover page with author/year at bottom */
+            .cover-container {
                 page-break-inside: avoid !important;
                 page-break-after: always !important;
+                page-break-before: auto !important;
                 text-align: center !important;
                 padding: 30pt !important;
+                min-height: calc(100vh - 60pt) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+            }
+            
+            .cover-container * {
+                page-break-inside: avoid !important;
+                page-break-before: avoid !important;
+                page-break-after: avoid !important;
             }
             
             .cover-title {
-                font-size: 28pt !important;
+                font-size: 26pt !important;
                 font-weight: bold !important;
                 margin: 10pt 0 15pt 0 !important;
+                line-height: 1.1 !important;
+                text-align: center !important;
             }
             
             .cover-subtitle {
                 font-size: 14pt !important;
-                margin: 0 0 40pt 0 !important;
-            }
-            
-            .cover-footer {
-                margin-top: 40pt !important;
+                margin: 0 0 20pt 0 !important;
+                line-height: 1.3 !important;
+                text-align: center !important;
             }
             
             .cover-author {
                 font-size: 16pt !important;
                 font-weight: bold !important;
-                margin: 0 0 5pt 0 !important;
+                margin: auto 0 5pt 0 !important;
+                text-align: center !important;
             }
             
             .cover-year {
                 font-size: 14pt !important;
                 margin: 0 !important;
+                text-align: center !important;
             }
         }
         }
@@ -360,23 +375,17 @@
 
     <div class="cover-page " id="cover">
         
-    <div class="cover-container cover-content">
-        <div class="cover-main">
-            <h1 class="cover-title">
-                Graph Algorithms<br>
-                Handbook
-            </h1>
-            <div class="cover-divider"></div>
-            <p class="cover-subtitle">
-                A Comprehensive Guide to Graph Theory,<br>
-                Algorithms, and Network Analysis
-            </p>
-        </div>
-        
-        <div class="cover-footer">
-            <div class="cover-author">Shohag Miah</div>
-            <div class="cover-year">2025</div>
-        </div>
+    <div class="cover-container">
+        <h1 class="cover-title">
+            Graph Algorithms<br>
+            Handbook
+        </h1>
+        <p class="cover-subtitle">
+            A Comprehensive Guide to Graph Theory,<br>
+            Algorithms, and Network Analysis
+        </p>
+        <div class="cover-author">Shohag Miah</div>
+        <div class="cover-year">2025</div>
     </div>
 
     </div>
@@ -1657,11 +1666,11 @@ public:
     </ul>
 
     <pre class="code-block">// Simple DAG implementation for task scheduling
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <queue>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;queue&gt;
+#include &lt;string&gt;
 using namespace std;
 
 class TaskScheduler {
@@ -1815,11 +1824,11 @@ public:
     </div>
 
     <pre class="code-block">// Graph analysis tools
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+#include &lt;string&gt;
 using namespace std;
 
 class GraphAnalyzer {
@@ -2009,9 +2018,9 @@ public:
     </ul>
 
     <pre class="code-block">// Simple Node structure
-#include <iostream>
-#include <vector>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 using namespace std;
 
 // Simple node - just holds data and connections
@@ -2125,7 +2134,7 @@ public:
     </div>
 
     <pre class="code-block">// Simple Binary Search Tree
-#include <iostream>
+#include &lt;iostream&gt;
 using namespace std;
 
 // Simple binary node
@@ -2232,8 +2241,8 @@ public:
     </ul>
 
     <pre class="code-block">// Simple tree traversal functions
-#include <iostream>
-#include <queue>
+#include &lt;iostream&gt;
+#include &lt;queue&gt;
 using namespace std;
 
 class TreeTraversal {
@@ -2312,9 +2321,9 @@ public:
     </div>
 
     <pre class="code-block">// Simple file system tree
-#include <iostream>
-#include <vector>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 using namespace std;
 
 // Simple file/folder node
@@ -2489,9 +2498,9 @@ public:
     </ul>
 
     <pre class="code-block">// Simple Trie implementation
-#include <iostream>
-#include <vector>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 using namespace std;
 
 // Trie node - each node represents one character
@@ -2620,9 +2629,9 @@ public:
     </ol>
 
     <pre class="code-block">// Autocomplete system using trie
-#include <iostream>
-#include <vector>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 using namespace std;
 
 class AutoComplete {
@@ -2736,10 +2745,10 @@ public:
     </div>
 
     <pre class="code-block">// Simple spell checker using trie
-#include <iostream>
-#include <vector>
-#include <string>
-#include <set>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;set&gt;
 using namespace std;
 
 class SpellChecker {
@@ -3310,8 +3319,8 @@ public:
     </ul>
 
     <pre class="code-block">// Heap Sort implementation
-#include <iostream>
-#include <vector>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
 using namespace std;
 
 class HeapSort {
@@ -4163,12 +4172,12 @@ public:
     </div>
 
     <pre class="code-block">// A* Algorithm Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_map>
-#include <cmath>
-#include <limits>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_map&gt;
+#include &lt;cmath&gt;
+#include &lt;limits&gt;
 using namespace std;
 
 class AStarGraph {
@@ -4620,10 +4629,10 @@ public:
     </div>
 
     <pre class="code-block">// Prim's Algorithm Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <climits>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;climits&gt;
 using namespace std;
 
 class PrimMST {
@@ -5511,11 +5520,11 @@ public:
     </div>
 
     <pre class="code-block">// Ford-Fulkerson Method Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <climits>
-#include <cstring>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;climits&gt;
+#include &lt;cstring&gt;
 using namespace std;
 
 class FordFulkerson {
@@ -5639,10 +5648,10 @@ public:
     </ul>
 
     <pre class="code-block">// Edmonds-Karp Algorithm (Ford-Fulkerson with BFS)
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <climits>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;climits&gt;
 using namespace std;
 
 class EdmondsKarp {
@@ -5813,9 +5822,9 @@ public:
     </div>
 
     <pre class="code-block">// Bipartite Matching using Max Flow
-#include <iostream>
-#include <vector>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 using namespace std;
 
 class BipartiteMatching {
@@ -6008,10 +6017,10 @@ void solveJobAssignment() {
     </div>
 
     <pre class="code-block">// Greedy Graph Coloring Implementation
-#include <iostream>
-#include <vector>
-#include <unordered_set>
-#include <algorithm>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_set&gt;
+#include &lt;algorithm&gt;
 using namespace std;
 
 class GraphColoring {
@@ -6179,9 +6188,9 @@ public:
     </div>
 
     <pre class="code-block">// Bipartite Matching using DFS (Hungarian Algorithm variant)
-#include <iostream>
-#include <vector>
-#include <cstring>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;cstring&gt;
 using namespace std;
 
 class BipartiteMatching {
@@ -6276,11 +6285,11 @@ public:
     </div>
 
     <pre class="code-block">// Exam Scheduling using Graph Coloring
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
 using namespace std;
 
 class ExamScheduler {
@@ -6372,10 +6381,10 @@ public:
     </ul>
 
     <pre class="code-block">// Job Assignment using Bipartite Matching
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
 using namespace std;
 
 class JobAssignment {
@@ -6551,9 +6560,9 @@ public:
     </ul>
 
     <pre class="code-block">// Articulation Points and Bridges using Tarjan's Algorithm
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
 using namespace std;
 
 class ArticulationPoints {
@@ -6669,9 +6678,9 @@ public:
     </div>
 
     <pre class="code-block">// Tarjan's Algorithm for SCCs
-#include <iostream>
-#include <vector>
-#include <stack>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;stack&gt;
 using namespace std;
 
 class TarjanSCC {
@@ -6759,8 +6768,8 @@ public:
     </div>
 
     <pre class="code-block">// Eulerian Path Detection
-#include <iostream>
-#include <vector>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
 using namespace std;
 
 class EulerianPath {
@@ -6922,11 +6931,11 @@ public:
     </div>
 
     <pre class="code-block">// Comprehensive AST Implementation
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <string>
-#include <unordered_map>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
 using namespace std;
 
 enum class NodeType {
@@ -7140,10 +7149,10 @@ shared_ptr<ASTNode> buildExampleAST() {
     </div>
 
     <pre class="code-block">// Comprehensive Deadlock Detection System
-#include <iostream>
-#include <vector>
-#include <unordered_set>
-#include <algorithm>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_set&gt;
+#include &lt;algorithm&gt;
 using namespace std;
 
 class DeadlockDetector {
@@ -7315,12 +7324,12 @@ public:
     </div>
 
     <pre class="code-block">// Simple Graph Database Implementation
-#include <iostream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <queue>
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+#include &lt;queue&gt;
 using namespace std;
 
 class GraphDatabase {
@@ -7503,11 +7512,11 @@ public:
     </ul>
 
     <pre class="code-block">// Simple Computation Graph for Neural Network
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <memory>
-#include <cmath>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;memory&gt;
+#include &lt;cmath&gt;
 using namespace std;
 
 class ComputationNode {
@@ -7651,9 +7660,9 @@ void buildAndExecuteGraph() {
     </div>
 
     <pre class="code-block">// Complete PageRank Implementation
-#include <iostream>
-#include <vector>
-#include <cmath>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
 using namespace std;
 
 class PageRank {
@@ -7890,10 +7899,10 @@ public:
     <p class="academic-text">Finding the maximum clique is NP-complete - one of the hardest problems in computer science! However, we can find all maximal cliques efficiently using the Bron-Kerbosch algorithm.</p>
     
     <pre class="code-block">// Clique Detection using Bron-Kerbosch Algorithm
-#include <iostream>
-#include <vector>
-#include <unordered_set>
-#include <algorithm>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_set&gt;
+#include &lt;algorithm&gt;
 using namespace std;
 
 class CliqueFinder {
@@ -8007,9 +8016,9 @@ public:
     </div>
 
     <pre class="code-block">// Louvain Method for Community Detection
-#include <iostream>
-#include <vector>
-#include <unordered_map>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
 using namespace std;
 
 class CommunityDetector {
@@ -8216,12 +8225,12 @@ public:
     </ol>
 
     <pre class="code-block">// Career Path Planner using Dijkstra's Algorithm
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_map>
-#include <string>
-#include <limits>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_map&gt;
+#include &lt;string&gt;
+#include &lt;limits&gt;
 using namespace std;
 
 class CareerPathPlanner {
