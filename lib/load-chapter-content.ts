@@ -19,6 +19,7 @@ const chapterFileMap: Record<string, string> = {
   'pattern-recognition': 'chapter-14.html',
   'real-life-decisions': 'chapter-15.html',
   'graph-mindset': 'chapter-16.html',
+  'coding-interviews': 'chapter-17.html',
   'terminology-reference': 'appendix-a.html',
   'complexity-table': 'appendix-b.html',
   'practice-problems': 'appendix-c.html',

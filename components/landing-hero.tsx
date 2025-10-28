@@ -93,8 +93,8 @@ export function LandingHero() {
               onClick={() => {
                 // Create a link to download the PDF
                 const link = document.createElement('a')
-                link.href = '/graphs-handbook.pdf'
-                link.download = 'Graphs-Trees-Algorithms-Handbook.pdf'
+                link.href = '/Graph Algorithms Handbook.pdf'
+                link.download = 'Graph Algorithms Handbook.pdf'
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)

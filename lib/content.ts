@@ -364,11 +364,30 @@ export const chapters: Chapter[] = [
     difficulty: "beginner",
     readingTime: 18,
   },
+  {
+    id: "17",
+    chapter: 17,
+    title: "Graph Problems in Coding Interviews",
+    slug: "coding-interviews",
+    part: "Part IV - Applied Graph Thinking",
+    partNumber: 4,
+    pages: 6,
+    description: "Master these 5 essential graph problems and you'll be ready to tackle any graph challenge in coding interviews.",
+    keywords: ["leetcode", "coding interviews", "graph algorithms", "problem solving", "technical interviews"],
+    lifeInsight: "Pattern recognition in coding interviews mirrors problem-solving skills in real-world engineering",
+    objectives: ["Master essential graph interview patterns", "Implement clean, efficient solutions", "Recognize problem types quickly", "Handle edge cases confidently", "Optimize time and space complexity"],
+    prerequisites: ["traversal-algorithms", "shortest-path-algorithms", "topological-sorting", "advanced-concepts"],
+    diagrams: ["islands-grid.svg", "course-dependencies.svg", "word-ladder-graph.svg"],
+    codeExamples: ["number-of-islands.cpp", "course-schedule.cpp", "word-ladder.cpp", "connected-components.cpp", "clone-graph.cpp"],
+    exercises: 5,
+    difficulty: "intermediate",
+    readingTime: 25,
+  },
   
   // APPENDICES
   {
     id: "A",
-    chapter: 17,
+    chapter: 18,
     title: "Appendix A: Graph Terminology Reference",
     slug: "terminology-reference",
     part: "Appendices",
@@ -387,7 +406,7 @@ export const chapters: Chapter[] = [
   },
   {
     id: "B",
-    chapter: 18,
+    chapter: 19,
     title: "Appendix B: Algorithm Complexity Table",
     slug: "complexity-table",
     part: "Appendices",
@@ -406,7 +425,7 @@ export const chapters: Chapter[] = [
   },
   {
     id: "C",
-    chapter: 19,
+    chapter: 20,
     title: "Appendix C: Practice Problems & Solutions",
     slug: "practice-problems",
     part: "Appendices",
@@ -425,7 +444,7 @@ export const chapters: Chapter[] = [
   },
   {
     id: "D",
-    chapter: 20,
+    chapter: 21,
     title: "Appendix D: Visual Cheatsheet",
     slug: "visual-cheatsheet",
     part: "Appendices",
@@ -444,7 +463,7 @@ export const chapters: Chapter[] = [
   },
   {
     id: "E",
-    chapter: 21,
+    chapter: 22,
     title: "Appendix E: Further Reading & Resources",
     slug: "further-reading",
     part: "Appendices",
