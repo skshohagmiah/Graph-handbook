@@ -14,16 +14,19 @@
         "Topological sorting solves dependency problems - from course prerequisites to build systems to project scheduling."
     </div>
 
-    <p class="academic-text">Ever wonder how your computer knows which files to compile first? Or how project managers schedule tasks with dependencies? The answer is topological sorting! It's the algorithm that puts things in the right order when some things must come before others.</p>
+    <p class="academic-text">Every time your computer compiles a complex software project, installs packages with dependencies, or schedules tasks in the correct order, it's solving one of the most fundamental ordering problems in computer science: topological sorting. This elegant algorithm transforms the complex challenge of dependency management into a systematic process that ensures everything happens in the right sequence, preventing the chaos that would result from trying to do things out of order.</p>
     
-    <p class="academic-text"><strong>What is topological sorting?</strong> It's a linear ordering of vertices in a directed acyclic graph (DAG) such that for every directed edge (u,v), vertex u comes before v in the ordering.</p>
+    <p class="academic-text">Topological sorting represents the mathematical solution to dependency resolution - the process of arranging tasks, courses, or components in an order that respects all prerequisite relationships. In a world where complex systems depend on intricate webs of dependencies, topological sorting provides the algorithmic foundation that keeps everything running smoothly, from the software on your computer to the supply chains that deliver products to your door.</p>
+
+    <p class="academic-text">The power of topological sorting extends far beyond simple ordering. When combined with dynamic programming on DAGs, it enables efficient solutions to complex optimization problems, from finding longest paths in project scheduling to optimizing resource allocation in distributed systems. This combination represents one of the most powerful algorithmic paradigms for solving real-world optimization challenges.</p>
     
-    <p class="academic-text"><strong>Real-world applications:</strong></p>
+    <p class="academic-text"><strong>Topological sorting powers the dependency management systems that make modern computing possible:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Course scheduling:</strong> Taking prerequisites before advanced courses</li>
-        <li class="academic-text"><strong>Build systems:</strong> Compiling dependencies before main programs</li>
-        <li class="academic-text"><strong>Project management:</strong> Scheduling tasks with dependencies</li>
-        <li class="academic-text"><strong>Package managers:</strong> Installing dependencies in correct order</li>
+        <li class="academic-text"><strong>Academic planning:</strong> University systems use topological sorting to ensure students take prerequisite courses before advanced ones, preventing academic bottlenecks and ensuring proper knowledge progression</li>
+        <li class="academic-text"><strong>Software build systems:</strong> Compilers and build tools use topological sorting to determine compilation order, ensuring libraries are built before the programs that depend on them</li>
+        <li class="academic-text"><strong>Project management:</strong> Critical path method and PERT charts rely on topological sorting to schedule project tasks, identifying which activities can run in parallel and which must wait for dependencies</li>
+        <li class="academic-text"><strong>Package management:</strong> Software package managers use topological sorting to install dependencies in the correct order, preventing installation failures and version conflicts</li>
+        <li class="academic-text"><strong>Manufacturing and supply chains:</strong> Production scheduling systems use topological sorting to coordinate complex manufacturing processes where some steps must complete before others can begin</li>
     </ul>
 
     <h2 class="section-title" id="ch9-1">9.1 Topological Ordering and Kahn's Algorithm</h2>

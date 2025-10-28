@@ -14,19 +14,23 @@
         "Graph coloring solves scheduling conflicts, while matching pairs resources optimally - two fundamental problems that power everything from exam scheduling to job assignments."
     </div>
 
-    <p class="academic-text">Graph coloring and matching are two of the most practical graph problems you'll encounter. Coloring asks "how can we assign labels to vertices so that no two adjacent vertices share the same label?" while matching asks "how can we pair up vertices optimally?"</p>
+    <p class="academic-text">Graph coloring and matching represent two of the most elegant and practically important optimization problems in computer science, solving fundamental challenges that appear everywhere from university scheduling to medical organ allocation. These problems ask seemingly simple questions - "How can we assign labels so no connected items share the same label?" and "How can we pair items optimally?" - but their solutions power critical systems across industries and reveal deep mathematical insights about computational complexity and optimization.</p>
     
-    <p class="academic-text"><strong>Real-world problems solved by coloring and matching:</strong></p>
+    <p class="academic-text">The beauty of coloring and matching problems lies in their universality. The same mathematical framework that helps universities schedule exams without conflicts also enables compilers to optimize code, helps telecommunications companies allocate frequencies, and allows dating apps to suggest compatible matches. These problems demonstrate how abstract graph theory translates directly into practical solutions for resource allocation, conflict resolution, and optimization challenges.</p>
+
+    <p class="academic-text">These problems also showcase the spectrum of computational complexity in computer science. While some instances can be solved efficiently with elegant algorithms, others represent some of the hardest problems in computer science, leading to important insights about what can and cannot be computed efficiently. Understanding these problems gives you insight into both practical algorithm design and fundamental questions about computation itself.</p>
+    
+    <p class="academic-text"><strong>Coloring and matching algorithms power critical systems across society:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Exam scheduling:</strong> Assign time slots so no student has conflicts</li>
-        <li class="academic-text"><strong>Register allocation:</strong> Assign CPU registers to variables in compilers</li>
-        <li class="academic-text"><strong>Map coloring:</strong> Color countries so neighbors have different colors</li>
-        <li class="academic-text"><strong>Job assignment:</strong> Match workers to jobs based on skills</li>
-        <li class="academic-text"><strong>Dating apps:</strong> Match users based on preferences</li>
-        <li class="academic-text"><strong>Organ donation:</strong> Match donors to recipients</li>
+        <li class="academic-text"><strong>Educational scheduling:</strong> Universities use graph coloring to schedule exams and classes, ensuring no student has time conflicts while minimizing the total scheduling period</li>
+        <li class="academic-text"><strong>Compiler optimization:</strong> Modern compilers use graph coloring to assign CPU registers to program variables, maximizing performance by minimizing memory access</li>
+        <li class="academic-text"><strong>Telecommunications:</strong> Wireless networks use coloring algorithms to assign frequencies to cell towers, preventing interference while maximizing coverage</li>
+        <li class="academic-text"><strong>Healthcare systems:</strong> Organ donation networks use matching algorithms to pair donors with recipients, optimizing compatibility and urgency factors to save lives</li>
+        <li class="academic-text"><strong>Online platforms:</strong> Dating apps and professional networking sites use sophisticated matching algorithms to suggest compatible connections based on preferences and compatibility</li>
+        <li class="academic-text"><strong>Resource allocation:</strong> Cloud computing platforms use matching algorithms to assign computational tasks to servers, balancing load and minimizing response times</li>
     </ul>
     
-    <p class="academic-text">This chapter explores both problems, from theoretical foundations to practical algorithms you can implement today.</p>
+    <p class="academic-text">This chapter explores both problems from theoretical foundations to practical implementations, showing how elegant mathematical concepts translate into algorithms that solve real-world challenges with precision and efficiency.</p>
 
     <h2 class="section-title" id="ch11-1">11.1 Greedy Coloring Algorithms</h2>
     

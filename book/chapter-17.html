@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 17: Graph Problems in Coding Interviews</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="max-w-4xl mx-auto px-8 py-16 font-sans">
+    <div class="chapter-number">Chapter 17</div>
+    <h1 class="chapter-title">Graph Problems in Coding Interviews</h1>
+    
+    <div class="definition-box">
+        "Master these 5 essential graph problems and you'll be ready to tackle any graph challenge in coding interviews."
+    </div>
+
+    <p class="academic-text">Graph problems are among the most common and challenging questions in technical interviews at top tech companies. This chapter bridges the gap between theoretical graph knowledge and practical coding skills by walking through 5 essential LeetCode problems that demonstrate key graph algorithms and patterns you'll encounter in interviews.</p>
+    
+    <p class="academic-text">These problems aren't just academic exercises - they represent real algorithmic challenges that software engineers face when building systems that involve networks, dependencies, pathfinding, and optimization. Mastering these patterns will give you the confidence and skills to tackle any graph problem in interviews and in your professional work.</p>
+
+    <p class="academic-text">Each problem demonstrates a fundamental graph algorithm or technique, building from basic traversal to advanced optimization. We'll explore the problem-solving approach, implement clean solutions, and discuss the underlying graph theory concepts that make each solution work.</p>
+    
+    <p class="academic-text"><strong>The 5 essential graph patterns every developer should master:</strong></p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+        <li class="academic-text"><strong>Graph Traversal:</strong> Number of Islands - BFS/DFS fundamentals</li>
+        <li class="academic-text"><strong>Topological Sorting:</strong> Course Schedule - Dependency resolution</li>
+        <li class="academic-text"><strong>Shortest Path:</strong> Word Ladder - BFS for unweighted paths</li>
+        <li class="academic-text"><strong>Union-Find:</strong> Number of Connected Components - Efficient connectivity</li>
+        <li class="academic-text"><strong>Advanced Traversal:</strong> Clone Graph - Deep copying with cycles</li>
+    </ul>
+
+    <h2 class="section-title" id="ch17-1">17.1 Problem 1: Number of Islands (Graph Traversal)</h2>
+    
+    <p class="academic-text"><strong>LeetCode 200 - Number of Islands</strong></p>
+    <p class="academic-text">Given a 2D binary grid representing a map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and formed by connecting adjacent lands horizontally or vertically.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🏝️ Problem Analysis</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Graph representation:</strong> 2D grid where each cell is a node</li>
+            <li class="academic-text"><strong>Connections:</strong> Adjacent cells (up, down, left, right)</li>
+            <li class="academic-text"><strong>Goal:</strong> Count connected components of '1's</li>
+            <li class="academic-text"><strong>Algorithm:</strong> DFS or BFS to explore each island</li>
+        </ul>
+    </div>
+
+    <pre class="code-block">// Solution using DFS
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        if (grid.empty() || grid[0].empty()) return 0;
+        
+        int rows = grid.size();
+        int cols = grid[0].size();
+        int islands = 0;
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == '1') {
+                    islands++;
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        
+        return islands;
+    }
+    
+private:
+    void dfs(vector<vector<char>>& grid, int row, int col) {
+        // Boundary check and water check
+        if (row < 0 || row >= grid.size() || 
+            col < 0 || col >= grid[0].size() || 
+            grid[row][col] == '0') {
+            return;
+        }
+        
+        // Mark as visited by changing to '0'
+        grid[row][col] = '0';
+        
+        // Explore all 4 directions
+        dfs(grid, row + 1, col);  // down
+        dfs(grid, row - 1, col);  // up
+        dfs(grid, row, col + 1);  // right
+        dfs(grid, row, col - 1);  // left
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Key Insights:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Connected components:</strong> Each island is a connected component</li>
+        <li class="academic-text"><strong>Marking visited:</strong> Change '1' to '0' to avoid revisiting</li>
+        <li class="academic-text"><strong>Time complexity:</strong> O(m×n) - visit each cell once</li>
+        <li class="academic-text"><strong>Space complexity:</strong> O(m×n) worst case for recursion stack</li>
+    </ul>
+
+    <h2 class="section-title" id="ch17-2">17.2 Problem 2: Course Schedule (Topological Sorting)</h2>
+    
+    <p class="academic-text"><strong>LeetCode 207 - Course Schedule</strong></p>
+    <p class="academic-text">There are numCourses courses labeled from 0 to numCourses-1. Given prerequisites array where prerequisites[i] = [ai, bi] indicates you must take course bi before course ai. Return true if you can finish all courses.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">📚 Problem Analysis</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Graph representation:</strong> Directed graph of course dependencies</li>
+            <li class="academic-text"><strong>Cycle detection:</strong> If there's a cycle, impossible to complete</li>
+            <li class="academic-text"><strong>Algorithm:</strong> Topological sort using Kahn's algorithm</li>
+            <li class="academic-text"><strong>Success condition:</strong> Can process all courses</li>
+        </ul>
+    </div>
+
+    <pre class="code-block">// Solution using Kahn's Algorithm (BFS-based topological sort)
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        // Build adjacency list and in-degree array
+        vector<vector<int>> graph(numCourses);
+        vector<int> inDegree(numCourses, 0);
+        
+        for (auto& prereq : prerequisites) {
+            int course = prereq[0];
+            int prerequisite = prereq[1];
+            graph[prerequisite].push_back(course);
+            inDegree[course]++;
+        }
+        
+        // Find all courses with no prerequisites
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+        
+        int processedCourses = 0;
+        
+        while (!q.empty()) {
+            int current = q.front();
+            q.pop();
+            processedCourses++;
+            
+            // Process all courses that depend on current
+            for (int dependent : graph[current]) {
+                inDegree[dependent]--;
+                if (inDegree[dependent] == 0) {
+                    q.push(dependent);
+                }
+            }
+        }
+        
+        return processedCourses == numCourses;
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Key Insights:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Cycle detection:</strong> If we can't process all courses, there's a cycle</li>
+        <li class="academic-text"><strong>In-degree tracking:</strong> Count prerequisites for each course</li>
+        <li class="academic-text"><strong>Time complexity:</strong> O(V + E) where V = courses, E = prerequisites</li>
+        <li class="academic-text"><strong>Space complexity:</strong> O(V + E) for graph and queue</li>
+    </ul>
+
+    <h2 class="section-title" id="ch17-3">17.3 Problem 3: Word Ladder (Shortest Path)</h2>
+    
+    <p class="academic-text"><strong>LeetCode 127 - Word Ladder</strong></p>
+    <p class="academic-text">Given two words beginWord and endWord, and a dictionary wordList, return the length of shortest transformation sequence from beginWord to endWord, where each transformation changes exactly one letter.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🔤 Problem Analysis</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Graph representation:</strong> Words as nodes, single-letter changes as edges</li>
+            <li class="academic-text"><strong>Shortest path:</strong> BFS finds minimum transformations</li>
+            <li class="academic-text"><strong>Edge condition:</strong> Two words differ by exactly one character</li>
+            <li class="academic-text"><strong>Optimization:</strong> Use set for O(1) word lookup</li>
+        </ul>
+    </div>
+
+    <pre class="code-block">// Solution using BFS for shortest path
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> wordSet(wordList.begin(), wordList.end());
+        
+        if (wordSet.find(endWord) == wordSet.end()) {
+            return 0; // endWord not in dictionary
+        }
+        
+        queue<string> q;
+        q.push(beginWord);
+        
+        int level = 1;
+        
+        while (!q.empty()) {
+            int size = q.size();
+            
+            for (int i = 0; i < size; i++) {
+                string current = q.front();
+                q.pop();
+                
+                if (current == endWord) {
+                    return level;
+                }
+                
+                // Try changing each character
+                for (int j = 0; j < current.length(); j++) {
+                    char original = current[j];
+                    
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        if (c == original) continue;
+                        
+                        current[j] = c;
+                        
+                        if (wordSet.find(current) != wordSet.end()) {
+                            q.push(current);
+                            wordSet.erase(current); // Mark as visited
+                        }
+                    }
+                    
+                    current[j] = original; // Restore
+                }
+            }
+            
+            level++;
+        }
+        
+        return 0; // No path found
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Key Insights:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>BFS for shortest path:</strong> Guarantees minimum transformations</li>
+        <li class="academic-text"><strong>Level-order processing:</strong> Track transformation count</li>
+        <li class="academic-text"><strong>Visited marking:</strong> Remove from set to avoid cycles</li>
+        <li class="academic-text"><strong>Time complexity:</strong> O(M²×N) where M = word length, N = word count</li>
+    </ul>
+
+    <h2 class="section-title" id="ch17-4">17.4 Problem 4: Number of Connected Components (Union-Find)</h2>
+    
+    <p class="academic-text"><strong>LeetCode 323 - Number of Connected Components in Undirected Graph</strong></p>
+    <p class="academic-text">Given n nodes labeled from 0 to n-1 and a list of undirected edges, write a function to find the number of connected components in the undirected graph.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🔗 Problem Analysis</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Union-Find structure:</strong> Efficient connectivity queries</li>
+            <li class="academic-text"><strong>Path compression:</strong> Optimize find operations</li>
+            <li class="academic-text"><strong>Union by rank:</strong> Keep trees balanced</li>
+            <li class="academic-text"><strong>Component counting:</strong> Track number of distinct roots</li>
+        </ul>
+    </div>
+
+    <pre class="code-block">// Solution using Union-Find with path compression
+class UnionFind {
+private:
+    vector<int> parent;
+    vector<int> rank;
+    int components;
+    
+public:
+    UnionFind(int n) : parent(n), rank(n, 0), components(n) {
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+    }
+    
+    int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]); // Path compression
+        }
+        return parent[x];
+    }
+    
+    void unionSets(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+        
+        if (rootX != rootY) {
+            // Union by rank
+            if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            } else if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            } else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
+            components--;
+        }
+    }
+    
+    int getComponents() {
+        return components;
+    }
+};
+
+class Solution {
+public:
+    int countComponents(int n, vector<vector<int>>& edges) {
+        UnionFind uf(n);
+        
+        for (auto& edge : edges) {
+            uf.unionSets(edge[0], edge[1]);
+        }
+        
+        return uf.getComponents();
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Key Insights:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Union-Find efficiency:</strong> Nearly O(1) operations with optimizations</li>
+        <li class="academic-text"><strong>Path compression:</strong> Flattens tree structure during find</li>
+        <li class="academic-text"><strong>Union by rank:</strong> Keeps trees balanced for better performance</li>
+        <li class="academic-text"><strong>Time complexity:</strong> O(E×α(n)) where α is inverse Ackermann</li>
+    </ul>
+
+    <h2 class="section-title" id="ch17-5">17.5 Problem 5: Clone Graph (Advanced Traversal)</h2>
+    
+    <p class="academic-text"><strong>LeetCode 133 - Clone Graph</strong></p>
+    <p class="academic-text">Given a reference of a node in a connected undirected graph, return a deep copy (clone) of the graph. Each node contains a value and a list of its neighbors.</p>
+    
+    <div class="definition-box" style="margin: 20px 0;">
+        <h3 style="margin-top: 0; color: #1976d2;">🔄 Problem Analysis</h3>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text"><strong>Deep copy challenge:</strong> Create new nodes while preserving structure</li>
+            <li class="academic-text"><strong>Cycle handling:</strong> Avoid infinite loops in cyclic graphs</li>
+            <li class="academic-text"><strong>Mapping strategy:</strong> Track original → clone relationships</li>
+            <li class="academic-text"><strong>Two approaches:</strong> DFS or BFS traversal</li>
+        </ul>
+    </div>
+
+    <pre class="code-block">// Node definition
+class Node {
+public:
+    int val;
+    vector<Node*> neighbors;
+    Node() {
+        val = 0;
+        neighbors = vector<Node*>();
+    }
+    Node(int _val) {
+        val = _val;
+        neighbors = vector<Node*>();
+    }
+    Node(int _val, vector<Node*> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+};
+
+// Solution using DFS
+class Solution {
+private:
+    unordered_map<Node*, Node*> cloneMap;
+    
+public:
+    Node* cloneGraph(Node* node) {
+        if (!node) return nullptr;
+        
+        // If already cloned, return the clone
+        if (cloneMap.find(node) != cloneMap.end()) {
+            return cloneMap[node];
+        }
+        
+        // Create clone of current node
+        Node* clone = new Node(node->val);
+        cloneMap[node] = clone;
+        
+        // Clone all neighbors
+        for (Node* neighbor : node->neighbors) {
+            clone->neighbors.push_back(cloneGraph(neighbor));
+        }
+        
+        return clone;
+    }
+};</pre>
+
+    <p class="academic-text"><strong>Key Insights:</strong></p>
+    <ul style="margin: 8px 0 16px 24px;">
+        <li class="academic-text"><strong>Cycle prevention:</strong> Use map to track cloned nodes</li>
+        <li class="academic-text"><strong>Recursive structure:</strong> Clone neighbors recursively</li>
+        <li class="academic-text"><strong>Memory management:</strong> Create new nodes for deep copy</li>
+        <li class="academic-text"><strong>Time complexity:</strong> O(V + E) - visit each node and edge once</li>
+    </ul>
+
+    <div class="performance-summary">
+        <h3 style="color: #2e7d32; margin-top: 0;">🎯 Interview Success Patterns</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Problem-Solving Approach</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text"><strong>Identify pattern:</strong> Recognize the graph algorithm needed</li>
+                    <li class="academic-text"><strong>Choose representation:</strong> Adjacency list vs matrix vs implicit</li>
+                    <li class="academic-text"><strong>Handle edge cases:</strong> Empty graphs, cycles, disconnected components</li>
+                    <li class="academic-text"><strong>Optimize:</strong> Consider time/space trade-offs</li>
+                </ul>
+            </div>
+            
+            <div style="background-color: white; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2e7d32; margin-top: 0;">Common Patterns</h4>
+                <ul style="margin: 8px 0 16px 24px;">
+                    <li class="academic-text"><strong>Traversal:</strong> DFS/BFS for connectivity</li>
+                    <li class="academic-text"><strong>Shortest path:</strong> BFS for unweighted, Dijkstra for weighted</li>
+                    <li class="academic-text"><strong>Cycle detection:</strong> DFS with colors or topological sort</li>
+                    <li class="academic-text"><strong>Connectivity:</strong> Union-Find for dynamic queries</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="completion-summary">
+        <h3 style="color: #1976d2; margin-top: 0;">🎉 Chapter 17 Complete!</h3>
+        <p class="academic-text">You now have the essential graph problem-solving toolkit for coding interviews:</p>
+        <ul style="margin: 8px 0 16px 24px;">
+            <li class="academic-text">✅ <strong>Graph traversal mastery</strong> - BFS/DFS for connectivity problems</li>
+            <li class="academic-text">✅ <strong>Topological sorting</strong> - Dependency resolution and cycle detection</li>
+            <li class="academic-text">✅ <strong>Shortest path algorithms</strong> - BFS for unweighted graphs</li>
+            <li class="academic-text">✅ <strong>Union-Find techniques</strong> - Efficient connectivity queries</li>
+            <li class="academic-text">✅ <strong>Advanced patterns</strong> - Deep copying and cycle handling</li>
+        </ul>
+        
+        <p class="academic-text">These 5 problems represent the core patterns you'll encounter in graph interviews. Practice variations of these problems to build confidence and speed. Remember: graph problems often have multiple valid approaches - choose the one that best fits the constraints and your comfort level!</p>
+    </div>
+</body>
+</html>

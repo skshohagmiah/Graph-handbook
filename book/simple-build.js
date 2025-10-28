@@ -23,6 +23,7 @@ const files = [
     'chapter-14.html',
     'chapter-15.html',
     'chapter-16.html',
+    'chapter-17.html',
     'appendix-a.html',
     'appendix-b.html',
     'appendix-c.html',
@@ -371,6 +372,7 @@ files.forEach((filename, index) => {
             else if (filename === 'chapter-14.html') pageId = 'ch14';
             else if (filename === 'chapter-15.html') pageId = 'ch15';
             else if (filename === 'chapter-16.html') pageId = 'ch16';
+            else if (filename === 'chapter-17.html') pageId = 'ch17';
             else if (filename === 'appendix-a.html') pageId = 'appa';
             else if (filename === 'appendix-b.html') pageId = 'appb';
             else if (filename === 'appendix-c.html') pageId = 'appc';
