@@ -96,16 +96,16 @@
     </div>
 
     <pre class="code-block">// Greedy Graph Coloring Implementation
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_set&gt;
-#include &lt;algorithm&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
 
 class GraphColoring {
 private:
     int V; // Number of vertices
-    vector&lt;vector&lt;int&gt;&gt; adj; // Adjacency list
+    vector<vector<int>> adj; // Adjacency list
     
 public:
     GraphColoring(int vertices) : V(vertices) {
@@ -118,16 +118,16 @@ public:
     }
     
     // Greedy coloring algorithm
-    vector&lt;int&gt; greedyColoring() {
-        vector&lt;int&gt; color(V, -1); // -1 means uncolored
+    vector<int> greedyColoring() {
+        vector<int> color(V, -1); // -1 means uncolored
         
         // Color first vertex with color 0
         color[0] = 0;
         
         // Color remaining vertices
-        for (int u = 1; u &lt; V; u++) {
+        for (int u = 1; u < V; u++) {
             // Find colors used by neighbors
-            unordered_set&lt;int&gt; usedColors;
+            unordered_set<int> usedColors;
             for (int neighbor : adj[u]) {
                 if (color[neighbor] != -1) {
                     usedColors.insert(color[neighbor]);
@@ -147,19 +147,19 @@ public:
     }
     
     // Improved: Order by degree (largest first)
-    vector&lt;int&gt; greedyColoringLargestFirst() {
+    vector<int> greedyColoringLargestFirst() {
         // Create vertex ordering by degree (descending)
-        vector&lt;pair&lt;int, int&gt;&gt; degreeVertex;
-        for (int i = 0; i &lt; V; i++) {
+        vector<pair<int, int>> degreeVertex;
+        for (int i = 0; i < V; i++) {
             degreeVertex.push_back({adj[i].size(), i});
         }
         sort(degreeVertex.rbegin(), degreeVertex.rend());
         
-        vector&lt;int&gt; color(V, -1);
+        vector<int> color(V, -1);
         
         // Color vertices in degree order
         for (auto [degree, u] : degreeVertex) {
-            unordered_set&lt;int&gt; usedColors;
+            unordered_set<int> usedColors;
             for (int neighbor : adj[u]) {
                 if (color[neighbor] != -1) {
                     usedColors.insert(color[neighbor]);
@@ -178,18 +178,18 @@ public:
     }
     
     // Get chromatic number (number of colors used)
-    int getChromaticNumber(const vector&lt;int&gt;&amp; coloring) {
+    int getChromaticNumber(const vector<int>& coloring) {
         if (coloring.empty()) return 0;
         return *max_element(coloring.begin(), coloring.end()) + 1;
     }
     
     // Print coloring result
-    void printColoring(const vector&lt;int&gt;&amp; coloring) {
-        cout &lt;&lt; "Vertex Coloring:" &lt;&lt; endl;
-        for (int i = 0; i &lt; V; i++) {
-            cout &lt;&lt; "Vertex " &lt;&lt; i &lt;&lt; " -> Color " &lt;&lt; coloring[i] &lt;&lt; endl;
+    void printColoring(const vector<int>& coloring) {
+        cout << "Vertex Coloring:" << endl;
+        for (int i = 0; i < V; i++) {
+            cout << "Vertex " << i << " -> Color " << coloring[i] << endl;
         }
-        cout &lt;&lt; "Total colors used: " &lt;&lt; getChromaticNumber(coloring) &lt;&lt; endl;
+        cout << "Total colors used: " << getChromaticNumber(coloring) << endl;
     }
 };</pre>
 
@@ -267,17 +267,17 @@ public:
     </div>
 
     <pre class="code-block">// Bipartite Matching using DFS (Hungarian Algorithm variant)
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;cstring&gt;
+#include <iostream>
+#include <vector>
+#include <cstring>
 using namespace std;
 
 class BipartiteMatching {
 private:
     int leftSize, rightSize;
-    vector&lt;vector&lt;int&gt;&gt; adj; // adj[left] = list of compatible right vertices
-    vector&lt;int&gt; match; // match[right] = matched left vertex (-1 if unmatched)
-    vector&lt;bool&gt; visited;
+    vector<vector<int>> adj; // adj[left] = list of compatible right vertices
+    vector<int> match; // match[right] = matched left vertex (-1 if unmatched)
+    vector<bool> visited;
     
     // Try to find augmenting path from left vertex u
     bool dfs(int u) {
@@ -311,7 +311,7 @@ public:
         int result = 0;
         
         // Try to find augmenting path for each left vertex
-        for (int u = 0; u &lt; leftSize; u++) {
+        for (int u = 0; u < leftSize; u++) {
             visited.assign(rightSize, false);
             if (dfs(u)) {
                 result++;
@@ -322,9 +322,9 @@ public:
     }
     
     // Get the matching edges
-    vector&lt;pair&lt;int, int&gt;&gt; getMatching() {
-        vector&lt;pair&lt;int, int&gt;&gt; matching;
-        for (int v = 0; v &lt; rightSize; v++) {
+    vector<pair<int, int>> getMatching() {
+        vector<pair<int, int>> matching;
+        for (int v = 0; v < rightSize; v++) {
             if (match[v] != -1) {
                 matching.push_back({match[v], v});
             }
@@ -364,40 +364,40 @@ public:
     </div>
 
     <pre class="code-block">// Exam Scheduling using Graph Coloring
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
-#include &lt;unordered_map&gt;
-#include &lt;unordered_set&gt;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 using namespace std;
 
 class ExamScheduler {
 private:
-    vector&lt;string&gt; exams;
-    unordered_map&lt;string, int&gt; examIndex;
+    vector<string> exams;
+    unordered_map<string, int> examIndex;
     GraphColoring graph;
     
 public:
-    ExamScheduler(const vector&lt;string&gt;&amp; examList) 
+    ExamScheduler(const vector<string>& examList) 
         : exams(examList), graph(examList.size()) {
-        for (int i = 0; i &lt; exams.size(); i++) {
+        for (int i = 0; i < exams.size(); i++) {
             examIndex[exams[i]] = i;
         }
     }
     
     // Add conflict: two exams have common students
-    void addConflict(const string&amp; exam1, const string&amp; exam2) {
+    void addConflict(const string& exam1, const string& exam2) {
         int u = examIndex[exam1];
         int v = examIndex[exam2];
         graph.addEdge(u, v);
     }
     
     // Schedule exams and return time slots
-    unordered_map&lt;string, int&gt; scheduleExams() {
-        vector&lt;int&gt; coloring = graph.greedyColoringLargestFirst();
+    unordered_map<string, int> scheduleExams() {
+        vector<int> coloring = graph.greedyColoringLargestFirst();
         
-        unordered_map&lt;string, int&gt; schedule;
-        for (int i = 0; i &lt; exams.size(); i++) {
+        unordered_map<string, int> schedule;
+        for (int i = 0; i < exams.size(); i++) {
             schedule[exams[i]] = coloring[i];
         }
         
@@ -409,20 +409,20 @@ public:
         auto schedule = scheduleExams();
         
         // Group by time slot
-        unordered_map&lt;int, vector&lt;string&gt;&gt; slots;
-        for (const auto&amp; [exam, slot] : schedule) {
+        unordered_map<int, vector<string>> slots;
+        for (const auto& [exam, slot] : schedule) {
             slots[slot].push_back(exam);
         }
         
-        cout &lt;&lt; "Exam Schedule:" &lt;&lt; endl;
-        for (const auto&amp; [slot, examList] : slots) {
-            cout &lt;&lt; "Time Slot " &lt;&lt; slot &lt;&lt; ": ";
-            for (const string&amp; exam : examList) {
-                cout &lt;&lt; exam &lt;&lt; " ";
+        cout << "Exam Schedule:" << endl;
+        for (const auto& [slot, examList] : slots) {
+            cout << "Time Slot " << slot << ": ";
+            for (const string& exam : examList) {
+                cout << exam << " ";
             }
-            cout &lt;&lt; endl;
+            cout << endl;
         }
-        cout &lt;&lt; "Total time slots needed: " &lt;&lt; slots.size() &lt;&lt; endl;
+        cout << "Total time slots needed: " << slots.size() << endl;
     }
 };</pre>
 
@@ -460,46 +460,46 @@ public:
     </ul>
 
     <pre class="code-block">// Job Assignment using Bipartite Matching
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
-#include &lt;unordered_map&gt;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
 using namespace std;
 
 class JobAssignment {
 private:
-    vector&lt;string&gt; workers;
-    vector&lt;string&gt; jobs;
-    unordered_map&lt;string, int&gt; workerIndex;
-    unordered_map&lt;string, int&gt; jobIndex;
+    vector<string> workers;
+    vector<string> jobs;
+    unordered_map<string, int> workerIndex;
+    unordered_map<string, int> jobIndex;
     BipartiteMatching matcher;
     
 public:
-    JobAssignment(const vector&lt;string&gt;&amp; workerList, 
-                  const vector&lt;string&gt;&amp; jobList)
+    JobAssignment(const vector<string>& workerList, 
+                  const vector<string>& jobList)
         : workers(workerList), jobs(jobList),
           matcher(workerList.size(), jobList.size()) {
         
-        for (int i = 0; i &lt; workers.size(); i++) {
+        for (int i = 0; i < workers.size(); i++) {
             workerIndex[workers[i]] = i;
         }
-        for (int i = 0; i &lt; jobs.size(); i++) {
+        for (int i = 0; i < jobs.size(); i++) {
             jobIndex[jobs[i]] = i;
         }
     }
     
     // Add skill: worker can do this job
-    void addSkill(const string&amp; worker, const string&amp; job) {
+    void addSkill(const string& worker, const string& job) {
         int w = workerIndex[worker];
         int j = jobIndex[job];
         matcher.addEdge(w, j);
     }
     
     // Find optimal assignment
-    vector&lt;pair&lt;string, string&gt;&gt; assignJobs() {
+    vector<pair<string, string>> assignJobs() {
         auto matching = matcher.getMatching();
         
-        vector&lt;pair&lt;string, string&gt;&gt; assignment;
+        vector<pair<string, string>> assignment;
         for (auto [w, j] : matching) {
             assignment.push_back({workers[w], jobs[j]});
         }
@@ -511,14 +511,14 @@ public:
     void printAssignment() {
         auto assignment = assignJobs();
         
-        cout &lt;&lt; "Job Assignments:" &lt;&lt; endl;
-        for (const auto&amp; [worker, job] : assignment) {
-            cout &lt;&lt; worker &lt;&lt; " -> " &lt;&lt; job &lt;&lt; endl;
+        cout << "Job Assignments:" << endl;
+        for (const auto& [worker, job] : assignment) {
+            cout << worker << " -> " << job << endl;
         }
         
         int unassigned = workers.size() - assignment.size();
-        if (unassigned &gt; 0) {
-            cout &lt;&lt; unassigned &lt;&lt; " workers remain unassigned" &lt;&lt; endl;
+        if (unassigned > 0) {
+            cout << unassigned << " workers remain unassigned" << endl;
         }
     }
 };</pre>

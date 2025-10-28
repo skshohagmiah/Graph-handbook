@@ -32,26 +32,43 @@ const files = [
 ];
 
 let combinedHTML = `<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graph Algorithms Handbook</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Cache buster: ${Date.now()} -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
-        mermaid.initialize({ 
+        // Configure Mermaid for better print rendering
+        mermaid.initialize({
             startOnLoad: true,
-            theme: 'default',
+            theme: 'base',
             themeVariables: {
-                primaryColor: '#f0f8ff',
-                primaryTextColor: '#000',
-                primaryBorderColor: '#333',
-                lineColor: '#333',
-                secondaryColor: '#e8f5e8',
-                tertiaryColor: '#fff5f5'
-            }
+                primaryColor: '#f9f9f9',
+                primaryTextColor: '#000000',
+                primaryBorderColor: '#333333',
+                lineColor: '#333333',
+                fontSize: '14px'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: false,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true
+            },
+            gantt: {
+                useMaxWidth: true
+            },
+            fontFamily: 'Arial, sans-serif',
+            fontSize: 14
+        });
+        
+        // Fix for print rendering
+        window.addEventListener('beforeprint', function() {
+            mermaid.init();
+{{ ... }}
         });
     </script>
     <style>
@@ -246,96 +263,94 @@ let combinedHTML = `<!DOCTYPE html>
         }
         
         @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-before: always; }
-            
-            /* Ensure code blocks print with proper colors and no overflow */
-            .code-block {
-                background: #2d3748 !important;
-                color: #e2e8f0 !important;
-                border: 2px solid #4a5568 !important;
-                border-left: 4px solid #4299e1 !important;
-                page-break-inside: avoid;
-                overflow: visible !important;
-                white-space: pre-wrap !important;
-                word-wrap: break-word !important;
-                font-size: 10pt !important;
-                line-height: 1.4 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+            body {
+                font-family: Times, serif !important;
+                font-size: 14pt !important;
+                line-height: 1.5 !important;
+                margin: 0.1in !important;
+                color: black !important;
+                background: white !important;
             }
             
-            /* Ensure summary sections print with colors */
-            .performance-summary {
-                background-color: #f8f9fa !important;
-                border: 2px solid #4caf50 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            .completion-summary {
-                background-color: #f8f9fa !important;
-                border-left: 5px solid #2196f3 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            .summary-section {
-                background-color: #f8f9fa !important;
-                border: 1px solid #dee2e6 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            /* Prevent diagrams from being split across pages */
-            .mermaid {
-                page-break-inside: avoid;
-                page-break-before: auto;
-                page-break-after: auto;
-            }
-            
-            /* Prevent diagram containers from splitting */
-            div[style*="background-color: #f8f9fa"] {
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            /* Ensure definition boxes print properly */
-            .definition-box {
-                background-color: #f8f9fa !important;
-                border-left: 4px solid #2196f3 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            /* Better page breaks for sections */
-            .section-title {
+            /* Keep chapter titles with content */
+            .chapter-number {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: 0 0 6pt 0 !important;
+                page-break-before: always;
                 page-break-after: avoid;
             }
             
             .chapter-title {
+                font-size: 24pt !important;
+                font-weight: bold !important;
+                margin: 6pt 0 15pt 0 !important;
                 page-break-after: avoid;
-            }
-            
-            /* Prevent orphaned content */
-            h1, h2, h3, h4, h5, h6 {
-                page-break-after: avoid;
-            }
-            
-            /* Ensure tables don't break awkwardly */
-            table {
                 page-break-inside: avoid;
             }
             
-            /* Better spacing for print */
-            .academic-content {
-                line-height: 1.6 !important;
+            .section-title, h2 {
+                font-size: 18pt !important;
+                font-weight: bold !important;
+                margin: 15pt 0 10pt 0 !important;
+                page-break-after: avoid;
             }
+            
+            h3 {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: 12pt 0 8pt 0 !important;
+                page-break-after: avoid;
+            }
+            
+            p, .academic-text {
+                margin: 0 0 8pt 0 !important;
+                text-align: justify !important;
+            }
+            
+            /* Keep first content with chapter title */
+            .chapter-title + p,
+            .chapter-title + .academic-text,
+            .chapter-title + ul,
+            .chapter-title + ol,
+            .chapter-title + pre,
+            .chapter-title + .code-block {
+                page-break-before: avoid !important;
+            }
+            
+            pre, .code-block {
+                font-family: 'Courier New', Courier, monospace !important;
+                font-size: 11pt !important;
+                line-height: 1.3 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 2pt solid #000000 !important;
+                padding: 12pt !important;
+                margin: 12pt 0 !important;
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+            }
+            
+            ul, ol {
+                margin: 8pt 0 10pt 20pt !important;
+            }
+            
+            li {
+                margin-bottom: 3pt !important;
+            }
+            
+            .mermaid {
+                margin: 12pt 0 !important;
+                text-align: center !important;
+            }
+            
+            .definition-box {
+                background: #f9f9f9 !important;
+                border-left: 3pt solid #333 !important;
+                padding: 8pt !important;
+                margin: 10pt 0 !important;
+            }
+        }
         }
     </style>
 </head>

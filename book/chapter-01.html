@@ -134,7 +134,7 @@
         <li class="academic-text"><strong>Out-degree</strong>: How many arrows point FROM this node</li>
     </ul>
 
-    <pre class="code-block">// Simple way to represent our friendship graph in code
+    <pre class="code-block">// Simple friendship graph using adjacency list
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -143,14 +143,14 @@ using namespace std;
 
 class FriendshipGraph {
 private:
-    // Each person has a list of their friends
+    // Each person maps to their list of friends
     unordered_map&lt;string, vector&lt;string&gt;&gt; friendsList;
     
 public:
-    // Add a friendship between two people
+    // Add mutual friendship between two people
     void addFriendship(string person1, string person2) {
         friendsList[person1].push_back(person2);
-        friendsList[person2].push_back(person1); // Friendship goes both ways!
+        friendsList[person2].push_back(person1); // Friendship is mutual
     }
     
     // Count how many friends someone has
@@ -158,15 +158,13 @@ public:
         return friendsList[person].size();
     }
     
-    // Show everyone's friends
-    void showAllFriendships() {
-        for (const auto&amp; [person, friends] : friendsList) {
-            cout &lt;&lt; person &lt;&lt; " is friends with: ";
-            for (const string&amp; friendName : friends) {
-                cout &lt;&lt; friendName &lt;&lt; " ";
-            }
-            cout &lt;&lt; "(" &lt;&lt; countFriends(person) &lt;&lt; " friends total)" &lt;&lt; endl;
+    // Display someone's friend list
+    void showFriends(string person) {
+        cout &lt;&lt; person &lt;&lt; " has " &lt;&lt; countFriends(person) &lt;&lt; " friends: ";
+        for (const string&amp; friend : friendsList[person]) {
+            cout &lt;&lt; friend &lt;&lt; " ";
         }
+        cout &lt;&lt; endl;
     }
 };</pre>
 
@@ -292,7 +290,7 @@ public:
         <li class="academic-text"><strong>Real examples:</strong> GPS navigation (distance), social networks (closeness), internet routing (speed)</li>
     </ul>
 
-    <pre class="code-block">// Simple way to represent a city distance map
+    <pre class="code-block">// Weighted graph for city distances
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -301,25 +299,20 @@ using namespace std;
 
 class CityMap {
 private:
-    // Each city has connections to other cities with distances
-    unordered_map&lt;string, vector&lt;pair&lt;string, int&gt;&gt;&gt; cityConnections;
+    unordered_map&lt;string, vector&lt;pair&lt;string, int&gt;&gt;&gt; roads;
     
 public:
-    // Add a road between two cities with distance
     void addRoad(string city1, string city2, int distance) {
-        cityConnections[city1].push_back({city2, distance});
-        cityConnections[city2].push_back({city1, distance}); // Roads work both ways!
+        roads[city1].push_back({city2, distance});
+        roads[city2].push_back({city1, distance});
     }
     
-    // Show all roads from each city
-    void showAllRoads() {
-        for (const auto&amp; [city, roads] : cityConnections) {
-            cout &lt;&lt; "From " &lt;&lt; city &lt;&lt; ": ";
-            for (const auto&amp; [destination, distance] : roads) {
-                cout &lt;&lt; destination &lt;&lt; "(" &lt;&lt; distance &lt;&lt; " miles) ";
-            }
-            cout &lt;&lt; endl;
+    void showRoads(string city) {
+        cout &lt;&lt; city &lt;&lt; " connects to: ";
+        for (auto&amp; [dest, dist] : roads[city]) {
+            cout &lt;&lt; dest &lt;&lt; "(" &lt;&lt; dist &lt;&lt; "mi) ";
         }
+        cout &lt;&lt; endl;
     }
 };</pre>
 
@@ -456,7 +449,7 @@ public:
         <li class="academic-text"><strong>Bad for:</strong> Uses lots of memory if you have many people but few friendships</li>
     </ul>
 
-    <pre class="code-block">// Method 1: Adjacency Matrix Implementation
+    <pre class="code-block">// Adjacency Matrix - Fast lookups O(1), uses O(V²) memory
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -465,53 +458,29 @@ using namespace std;
 
 class AdjacencyMatrix {
 private:
-    vector&lt;vector&lt;bool&gt;&gt; matrix;
-    vector&lt;string&gt; nodeNames;
-    unordered_map&lt;string, int&gt; nameToIndex;
-    int size;
+    vector&lt;vector&lt;bool&gt;&gt; matrix;           // 2D matrix for connections
+    unordered_map&lt;string, int&gt; nameToIndex; // Map names to matrix indices
+    vector&lt;string&gt; names;                 // Store original names
     
 public:
-    AdjacencyMatrix(const vector&lt;string&gt;&amp; names) {
-        size = names.size();
-        nodeNames = names;
-        matrix.resize(size, vector&lt;bool&gt;(size, false));
-        
-        // Map names to indices
+    AdjacencyMatrix(const vector&lt;string&gt;&amp; nodeNames) : names(nodeNames) {
+        int size = names.size();
+        matrix.resize(size, vector&lt;bool&gt;(size, false)); // Initialize all false
+        // Create name-to-index mapping
         for (int i = 0; i &lt; size; i++) {
             nameToIndex[names[i]] = i;
         }
     }
     
-    // Add friendship between two people
-    void addEdge(const string&amp; person1, const string&amp; person2) {
-        int i = nameToIndex[person1];
-        int j = nameToIndex[person2];
-        matrix[i][j] = true;
-        matrix[j][i] = true; // Friendship is mutual
+    // Add undirected edge between two nodes
+    void addEdge(const string&amp; a, const string&amp; b) {
+        int i = nameToIndex[a], j = nameToIndex[b];
+        matrix[i][j] = matrix[j][i] = true; // Set both directions
     }
     
-    // Check if two people are friends - VERY FAST!
-    bool areFriends(const string&amp; person1, const string&amp; person2) {
-        int i = nameToIndex[person1];
-        int j = nameToIndex[person2];
-        return matrix[i][j];
-    }
-    
-    // Print the friendship matrix
-    void printMatrix() {
-        cout &lt;&lt; "\t";
-        for (const string&amp; name : nodeNames) {
-            cout &lt;&lt; name &lt;&lt; "\t";
-        }
-        cout &lt;&lt; endl;
-        
-        for (int i = 0; i &lt; size; i++) {
-            cout &lt;&lt; nodeNames[i] &lt;&lt; "\t";
-            for (int j = 0; j &lt; size; j++) {
-                cout &lt;&lt; (matrix[i][j] ? "1" : "0") &lt;&lt; "\t";
-            }
-            cout &lt;&lt; endl;
-        }
+    // Check if two nodes are connected - O(1) lookup!
+    bool connected(const string&amp; a, const string&amp; b) {
+        return matrix[nameToIndex[a]][nameToIndex[b]];
     }
 };</pre>
 
@@ -541,66 +510,42 @@ Carol's friends: [Alice, Bob]
         <li class="academic-text"><strong>Memory constraints:</strong> When you need to minimize memory usage for large graphs</li>
     </ul>
 
-    <pre class="code-block">// Method 2: Adjacency List Implementation
+    <pre class="code-block">// Adjacency List - Memory efficient O(V+E), great for sparse graphs
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
 #include &lt;string&gt;
-#include &lt;algorithm&gt;
 using namespace std;
 
 class AdjacencyList {
 private:
-    // Each person has their own list of friends
+    // Each vertex stores its own neighbor list
     unordered_map&lt;string, vector&lt;string&gt;&gt; friendsMap;
     
 public:
-    // Add friendship between two people
-    void addEdge(const string&amp; person1, const string&amp; person2) {
-        friendsMap[person1].push_back(person2);
-        friendsMap[person2].push_back(person1); // Friendship is mutual
+    // Add undirected edge - O(1) average case
+    void addEdge(const string&amp; a, const string&amp; b) {
+        friendsMap[a].push_back(b);
+        friendsMap[b].push_back(a); // Mutual friendship
     }
     
-    // Get all friends of a person - VERY FAST!
+    // Get all neighbors - O(1) access to list
     vector&lt;string&gt; getFriends(const string&amp; person) {
         return friendsMap[person];
     }
     
-    // Check if two people are friends (slower than matrix)
-    bool areFriends(const string&amp; person1, const string&amp; person2) {
-        const auto&amp; friends = friendsMap[person1];
-        return find(friends.begin(), friends.end(), person2) != friends.end();
-    }
-    
-    // Count how many friends someone has
+    // Count neighbors - O(1)
     int countFriends(const string&amp; person) {
         return friendsMap[person].size();
     }
     
-    // Print everyone's friend lists
-    void printLists() {
-        for (const auto&amp; [person, friends] : friendsMap) {
-            cout &lt;&lt; person &lt;&lt; "'s friends: [";
-            for (size_t i = 0; i &lt; friends.size(); i++) {
-                cout &lt;&lt; friends[i];
-                if (i &lt; friends.size() - 1) cout &lt;&lt; ", ";
-            }
-            cout &lt;&lt; "]" &lt;&lt; endl;
+    // Display neighbor list - O(degree)
+    void showFriends(const string&amp; person) {
+        cout &lt;&lt; person &lt;&lt; "'s friends: ";
+        for (const string&amp; friend : friendsMap[person]) {
+            cout &lt;&lt; friend &lt;&lt; " ";
         }
-    }
-    
-    // Find mutual friends between two people
-    vector&lt;string&gt; getMutualFriends(const string&amp; person1, const string&amp; person2) {
-        vector&lt;string&gt; mutual;
-        const auto&amp; friends1 = friendsMap[person1];
-        const auto&amp; friends2 = friendsMap[person2];
-        
-        for (const string&amp; friend1 : friends1) {
-            if (find(friends2.begin(), friends2.end(), friend1) != friends2.end()) {
-                mutual.push_back(friend1);
-            }
-        }
-        return mutual;
+        cout &lt;&lt; endl;
     }
 };</pre>
 
@@ -629,7 +574,7 @@ Friendship 3: Bob - Carol
         <li class="academic-text"><strong>Batch processing:</strong> When you're analyzing entire networks rather than navigating from specific vertices</li>
     </ul>
 
-    <pre class="code-block">// Method 3: Edge List Implementation
+    <pre class="code-block">// Edge List - Simple list of all connections
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;string&gt;
@@ -637,56 +582,22 @@ using namespace std;
 
 class EdgeList {
 private:
-    // Simple list of all friendships
     vector&lt;pair&lt;string, string&gt;&gt; edges;
     
 public:
-    // Add friendship between two people
-    void addEdge(const string&amp; person1, const string&amp; person2) {
-        edges.push_back({person1, person2});
+    void addEdge(const string&amp; a, const string&amp; b) {
+        edges.push_back({a, b});
     }
     
-    // Get all edges/friendships - VERY FAST!
-    const vector&lt;pair&lt;string, string&gt;&gt;&amp; getAllEdges() {
-        return edges;
-    }
-    
-    // Check if two people are friends (slow - must search all edges)
-    bool areFriends(const string&amp; person1, const string&amp; person2) {
-        for (const auto&amp; edge : edges) {
-            if ((edge.first == person1 &amp;&amp; edge.second == person2) ||
-                (edge.first == person2 &amp;&amp; edge.second == person1)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    // Count total number of friendships
-    int getTotalFriendships() {
+    int getTotalEdges() {
         return edges.size();
     }
     
-    // Print all friendships
-    void printAllFriendships() {
-        cout &lt;&lt; "All Friendships:" &lt;&lt; endl;
-        for (size_t i = 0; i &lt; edges.size(); i++) {
-            cout &lt;&lt; "Friendship " &lt;&lt; (i + 1) &lt;&lt; ": " 
-                 &lt;&lt; edges[i].first &lt;&lt; " - " &lt;&lt; edges[i].second &lt;&lt; endl;
-        }
-    }
-    
-    // Find all friends of a person (slow - must search all edges)
-    vector&lt;string&gt; getFriends(const string&amp; person) {
-        vector&lt;string&gt; friends;
+    void printAllEdges() {
+        cout &lt;&lt; "All connections:" &lt;&lt; endl;
         for (const auto&amp; edge : edges) {
-            if (edge.first == person) {
-                friends.push_back(edge.second);
-            } else if (edge.second == person) {
-                friends.push_back(edge.first);
-            }
+            cout &lt;&lt; edge.first &lt;&lt; " - " &lt;&lt; edge.second &lt;&lt; endl;
         }
-        return friends;
     }
 };</pre>
 
@@ -779,7 +690,7 @@ public:
         </ul>
     </div>
 
-    <pre class="code-block">// Simple course planning system - like a college advisor!
+    <pre class="code-block">// Course prerequisite system using graphs
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -789,40 +700,30 @@ using namespace std;
 
 class CourseAdvisor {
 private:
-    // Each course has a list of courses you need to take first
     unordered_map&lt;string, vector&lt;string&gt;&gt; prerequisites;
     
 public:
-    // Add a requirement: "To take course X, you must first complete course Y"
-    void addRequirement(string course, string mustTakeFirst) {
-        prerequisites[course].push_back(mustTakeFirst);
+    void addRequirement(string course, string required) {
+        prerequisites[course].push_back(required);
     }
     
-    // Check if a student can take a specific course
-    bool canStudentTakeCourse(string course, set&lt;string&gt; completedCourses) {
-        // Check each requirement for this course
-        for (const string&amp; requiredCourse : prerequisites[course]) {
-            if (completedCourses.find(requiredCourse) == completedCourses.end()) {
-                return false; // Missing a required course!
+    bool canTake(string course, set&lt;string&gt; completed) {
+        for (const string&amp; req : prerequisites[course]) {
+            if (completed.find(req) == completed.end()) {
+                return false;
             }
         }
-        return true; // All requirements met!
+        return true;
     }
     
-    // Find all courses a student can take right now
-    vector&lt;string&gt; getCoursesStudentCanTake(set&lt;string&gt; completedCourses) {
-        vector&lt;string&gt; availableCourses;
-        
-        for (const auto&amp; [course, requirements] : prerequisites) {
-            // Skip courses already completed
-            if (completedCourses.find(course) != completedCourses.end()) continue;
-            
-            // Check if student can take this course
-            if (canStudentTakeCourse(course, completedCourses)) {
-                availableCourses.push_back(course);
+    vector&lt;string&gt; getAvailableCourses(set&lt;string&gt; completed) {
+        vector&lt;string&gt; available;
+        for (const auto&amp; [course, reqs] : prerequisites) {
+            if (completed.find(course) == completed.end() &amp;&amp; canTake(course, completed)) {
+                available.push_back(course);
             }
         }
-        return availableCourses;
+        return available;
     }
 };</pre>
 

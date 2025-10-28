@@ -81,19 +81,19 @@
     </ul>
 
     <pre class="code-block">// Articulation Points and Bridges using Tarjan's Algorithm
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;algorithm&gt;
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 class ArticulationPoints {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;bool&gt; visited;
-    vector&lt;int&gt; disc, low, parent;
-    vector&lt;bool&gt; isAP;
-    vector&lt;pair&lt;int, int&gt;&gt; bridges;
+    vector<vector<int>> adj;
+    vector<bool> visited;
+    vector<int> disc, low, parent;
+    vector<bool> isAP;
+    vector<pair<int, int>> bridges;
     int timer;
     
     void dfs(int u) {
@@ -110,15 +110,15 @@ private:
                 low[u] = min(low[u], low[v]);
                 
                 // Check articulation point
-                if (parent[u] == -1 && children &gt; 1) {
+                if (parent[u] == -1 && children > 1) {
                     isAP[u] = true;
                 }
-                if (parent[u] != -1 && low[v] &gt;= disc[u]) {
+                if (parent[u] != -1 && low[v] >= disc[u]) {
                     isAP[u] = true;
                 }
                 
                 // Check bridge
-                if (low[v] &gt; disc[u]) {
+                if (low[v] > disc[u]) {
                     bridges.push_back({u, v});
                 }
             }
@@ -144,20 +144,20 @@ public:
     }
     
     void findArticulationPoints() {
-        for (int i = 0; i &lt; V; i++) {
+        for (int i = 0; i < V; i++) {
             if (!visited[i]) dfs(i);
         }
     }
     
-    vector&lt;int&gt; getArticulationPoints() {
-        vector&lt;int&gt; result;
-        for (int i = 0; i &lt; V; i++) {
+    vector<int> getArticulationPoints() {
+        vector<int> result;
+        for (int i = 0; i < V; i++) {
             if (isAP[i]) result.push_back(i);
         }
         return result;
     }
     
-    vector&lt;pair&lt;int, int&gt;&gt; getBridges() {
+    vector<pair<int, int>> getBridges() {
         return bridges;
     }
 };</pre>
@@ -199,19 +199,19 @@ public:
     </div>
 
     <pre class="code-block">// Tarjan's Algorithm for SCCs
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;stack&gt;
+#include <iostream>
+#include <vector>
+#include <stack>
 using namespace std;
 
 class TarjanSCC {
 private:
     int V, timer;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;bool&gt; onStack, visited;
-    vector&lt;int&gt; disc, low;
-    stack&lt;int&gt; st;
-    vector&lt;vector&lt;int&gt;&gt; sccs;
+    vector<vector<int>> adj;
+    vector<bool> onStack, visited;
+    vector<int> disc, low;
+    stack<int> st;
+    vector<vector<int>> sccs;
     
     void dfs(int u) {
         disc[u] = low[u] = timer++;
@@ -230,7 +230,7 @@ private:
         }
         
         if (low[u] == disc[u]) {
-            vector&lt;int&gt; scc;
+            vector<int> scc;
             int v;
             do {
                 v = st.top();
@@ -255,8 +255,8 @@ public:
         adj[u].push_back(v);
     }
     
-    vector&lt;vector&lt;int&gt;&gt; findSCCs() {
-        for (int i = 0; i &lt; V; i++) {
+    vector<vector<int>> findSCCs() {
+        for (int i = 0; i < V; i++) {
             if (!visited[i]) dfs(i);
         }
         return sccs;
@@ -289,15 +289,15 @@ public:
     </div>
 
     <pre class="code-block">// Eulerian Path Detection
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
+#include <iostream>
+#include <vector>
 using namespace std;
 
 class EulerianPath {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;int&gt; degree;
+    vector<vector<int>> adj;
+    vector<int> degree;
     
 public:
     EulerianPath(int vertices) : V(vertices) {
@@ -314,7 +314,7 @@ public:
     
     int checkEulerian() {
         int oddCount = 0;
-        for (int i = 0; i &lt; V; i++) {
+        for (int i = 0; i < V; i++) {
             if (degree[i] % 2 != 0) oddCount++;
         }
         

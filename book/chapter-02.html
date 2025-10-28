@@ -96,22 +96,23 @@
         <li class="academic-text"><strong>Disconnected:</strong> Separate friend groups, isolated computer networks, different continents without bridges</li>
     </ul>
 
-    <pre class="code-block">// Check if a graph is connected using DFS
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
+    <pre class="code-block">// Check if entire graph is connected using DFS traversal
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+#include &lt;string&gt;
 using namespace std;
 
 class ConnectivityChecker {
 private:
-    unordered_map<string, vector<string>> graph;
+    unordered_map&lt;string, vector&lt;string&gt;&gt; graph;
     
     // Depth-First Search to visit all reachable nodes
-    void dfs(const string& node, unordered_set<string>& visited) {
+    void dfs(const string&amp; node, unordered_set&lt;string&gt;&amp; visited) {
         visited.insert(node);
-        for (const string& neighbor : graph[node]) {
+        // Recursively visit all unvisited neighbors
+        for (const string&amp; neighbor : graph[node]) {
             if (visited.find(neighbor) == visited.end()) {
                 dfs(neighbor, visited);
             }
@@ -119,44 +120,18 @@ private:
     }
     
 public:
-    void addEdge(const string& u, const string& v) {
+    // Add undirected edge between two nodes
+    void addEdge(const string&amp; u, const string&amp; v) {
         graph[u].push_back(v);
-        graph[v].push_back(u);
+        graph[v].push_back(u); // Undirected graph
     }
     
-    // Check if the graph is connected
+    // Check if all nodes are reachable from any starting node
     bool isConnected() {
         if (graph.empty()) return true;
-        
-        unordered_set<string> visited;
-        string startNode = graph.begin()->first;
-        
-        // Start DFS from any node
-        dfs(startNode, visited);
-        
-        // If we visited all nodes, the graph is connected
-        return visited.size() == graph.size();
-    }
-    
-    // Find all connected components
-    vector<vector<string>> getConnectedComponents() {
-        vector<vector<string>> components;
-        unordered_set<string> globalVisited;
-        
-        for (const auto& [node, neighbors] : graph) {
-            if (globalVisited.find(node) == globalVisited.end()) {
-                unordered_set<string> componentVisited;
-                dfs(node, componentVisited);
-                
-                vector<string> component;
-                for (const string& n : componentVisited) {
-                    component.push_back(n);
-                    globalVisited.insert(n);
-                }
-                components.push_back(component);
-            }
-        }
-        return components;
+        unordered_set&lt;string&gt; visited;
+        dfs(graph.begin()-&gt;first, visited); // Start DFS from any node
+        return visited.size() == graph.size(); // All nodes visited?
     }
 };</pre>
 

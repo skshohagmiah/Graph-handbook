@@ -1,55 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 6: Traversal Algorithms</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="max-w-4xl mx-auto px-8 py-16 font-sans">
     <div class="chapter-number">Chapter 6</div>
     <h1 class="chapter-title">Traversal Algorithms</h1>
-    
+
     <div class="definition-box">
-        "Graph traversal is like exploring a maze - you need systematic strategies to visit every room without getting lost."
+        "Graph traversal is like exploring a maze - you need systematic strategies to visit every room without getting
+        lost."
     </div>
 
-    <p class="academic-text">Welcome to the algorithmic heart of graph theory! Having mastered the fundamental structures - graphs, trees, tries, and heaps - you're now ready to explore the algorithms that bring these structures to life. Graph traversal algorithms represent the foundation upon which virtually every graph algorithm is built, from the simplest connectivity checks to the most sophisticated network analysis and artificial intelligence systems.</p>
-    
-    <p class="academic-text">Traversal algorithms solve the fundamental challenge of systematic exploration: how do you visit every node in a graph exactly once, in a predictable order, without getting lost or missing anything? This seemingly simple problem underlies countless applications - web crawlers exploring the internet, social media algorithms analyzing friend networks, GPS systems finding routes, and AI systems searching through solution spaces. The strategies you learn here will appear again and again throughout computer science.</p>
+    <p class="academic-text">Welcome to the algorithmic heart of graph theory! Having mastered the fundamental
+        structures - graphs, trees, tries, and heaps - you're now ready to explore the algorithms that bring these
+        structures to life. Graph traversal algorithms represent the foundation upon which virtually every graph
+        algorithm is built, from the simplest connectivity checks to the most sophisticated network analysis and
+        artificial intelligence systems.</p>
 
-    <p class="academic-text">The beauty of graph traversal lies in how two simple, contrasting strategies - breadth-first and depth-first search - can solve an enormous range of problems. These aren't just academic exercises; they're the algorithmic building blocks that power search engines, social networks, navigation systems, and countless other technologies you use daily. Understanding these traversal patterns will give you the foundation to tackle complex algorithmic challenges across every domain of computer science.</p>
-    
-    <p class="academic-text"><strong>The two fundamental exploration strategies that power modern computing:</strong></p>
+    <p class="academic-text">Traversal algorithms solve the fundamental challenge of systematic exploration: how do you
+        visit every node in a graph exactly once, in a predictable order, without getting lost or missing anything? This
+        seemingly simple problem underlies countless applications - web crawlers exploring the internet, social media
+        algorithms analyzing friend networks, GPS systems finding routes, and AI systems searching through solution
+        spaces. The strategies you learn here will appear again and again throughout computer science.</p>
+
+    <p class="academic-text">The beauty of graph traversal lies in how two simple, contrasting strategies -
+        breadth-first and depth-first search - can solve an enormous range of problems. These aren't just academic
+        exercises; they're the algorithmic building blocks that power search engines, social networks, navigation
+        systems, and countless other technologies you use daily. Understanding these traversal patterns will give you
+        the foundation to tackle complex algorithmic challenges across every domain of computer science.</p>
+
+    <p class="academic-text"><strong>The two fundamental exploration strategies that power modern computing:</strong>
+    </p>
     <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Breadth-First Search (BFS):</strong> Explores systematically by distance, like ripples spreading from a stone dropped in water - perfect for finding shortest paths and analyzing network structure</li>
-        <li class="academic-text"><strong>Depth-First Search (DFS):</strong> Explores by going as deep as possible before backtracking, like a maze solver following each path to its end - ideal for detecting cycles and analyzing connectivity</li>
+        <li class="academic-text"><strong>Breadth-First Search (BFS):</strong> Explores systematically by distance, like
+            ripples spreading from a stone dropped in water - perfect for finding shortest paths and analyzing network
+            structure</li>
+        <li class="academic-text"><strong>Depth-First Search (DFS):</strong> Explores by going as deep as possible
+            before backtracking, like a maze solver following each path to its end - ideal for detecting cycles and
+            analyzing connectivity</li>
     </ul>
 
     <h2 class="section-title" id="ch6-1">6.1 Breadth-First Search (BFS)</h2>
-    
-    <p class="academic-text">BFS explores a graph level by level, like ripples spreading out from a stone dropped in water. It visits all nodes at distance 1, then all nodes at distance 2, and so on.</p>
-    
+
+    <p class="academic-text">BFS explores a graph level by level, like ripples spreading out from a stone dropped in
+        water. It visits all nodes at distance 1, then all nodes at distance 2, and so on.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🌊 BFS Strategy</h3>
-        <p class="academic-text"><strong>Breadth-First Search</strong> systematically explores nodes in order of their distance from the starting node.</p>
+        <p class="academic-text"><strong>Breadth-First Search</strong> systematically explores nodes in order of their
+            distance from the starting node.</p>
         <ul style="margin: 8px 0 16px 24px;">
-            <li class="academic-text"><strong>Level-by-level:</strong> Visit all nodes at distance k before any at distance k+1</li>
+            <li class="academic-text"><strong>Level-by-level:</strong> Visit all nodes at distance k before any at
+                distance k+1</li>
             <li class="academic-text"><strong>Queue-based:</strong> Uses a FIFO queue to maintain exploration order</li>
             <li class="academic-text"><strong>Shortest paths:</strong> Finds shortest unweighted paths naturally</li>
         </ul>
     </div>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>BFS Exploration Example (Starting from A):</strong><br><br>
         <div class="mermaid">
-        graph LR
+            graph LR
             A[A:0] --- B[B:1]
             A --- C[C:1]
             B --- D[D:2]
             B --- E[E:2]
             C --- F[F:2]
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
             style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
             style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
@@ -57,47 +81,50 @@
             style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
             style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Numbers show distance from A. BFS visits: A(0) → B,C(1) → D,E,F(2)</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Numbers show
+            distance from A. BFS visits: A(0) → B,C(1) → D,E,F(2)</p>
     </div>
 
-    <pre class="code-block">// BFS Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_set>
+    <pre class="code-block">// Breadth-First Search - explores level by level using queue
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_set&gt;
 using namespace std;
 
 class BFS {
 private:
-    vector<vector<int>> graph;
+    vector&lt;vector&lt;int&gt;&gt; graph;  // Adjacency list representation
     
 public:
     BFS(int n) : graph(n) {}
     
+    // Add undirected edge between two nodes
     void addEdge(int u, int v) {
         graph[u].push_back(v);
-        graph[v].push_back(u); // undirected
+        graph[v].push_back(u); // Make it undirected
     }
     
-    // BFS traversal from start node
-    vector<int> bfsTraversal(int start) {
-        vector<int> result;
-        vector<bool> visited(graph.size(), false);
-        queue<int> q;
+    // BFS traversal - visits nodes level by level - O(V + E)
+    vector&lt;int&gt; bfsTraversal(int start) {
+        vector&lt;int&gt; result;                        // Store traversal order
+        vector&lt;bool&gt; visited(graph.size(), false); // Track visited nodes
+        queue&lt;int&gt; q;                              // FIFO queue for BFS
         
+        // Start with the initial node
         q.push(start);
         visited[start] = true;
         
         while (!q.empty()) {
-            int current = q.front();
+            int current = q.front();  // Get front of queue
             q.pop();
             result.push_back(current);
             
-            // Visit all unvisited neighbors
+            // Add all unvisited neighbors to queue
             for (int neighbor : graph[current]) {
                 if (!visited[neighbor]) {
-                    visited[neighbor] = true;
-                    q.push(neighbor);
+                    visited[neighbor] = true;  // Mark as visited
+                    q.push(neighbor);          // Add to queue
                 }
             }
         }
@@ -139,32 +166,38 @@ public:
 };</pre>
 
     <h2 class="section-title" id="ch6-2">6.2 Depth-First Search (DFS)</h2>
-    
-    <p class="academic-text">DFS explores a graph by going as deep as possible along each branch before backtracking. It's like exploring a maze by always taking the first unexplored path you see.</p>
-    
+
+    <p class="academic-text">DFS explores a graph by going as deep as possible along each branch before backtracking.
+        It's like exploring a maze by always taking the first unexplored path you see.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🕳️ DFS Strategy</h3>
-        <p class="academic-text"><strong>Depth-First Search</strong> explores as far as possible along each branch before backtracking.</p>
+        <p class="academic-text"><strong>Depth-First Search</strong> explores as far as possible along each branch
+            before backtracking.</p>
         <ul style="margin: 8px 0 16px 24px;">
-            <li class="academic-text"><strong>Deep exploration:</strong> Follow paths to their end before trying alternatives</li>
+            <li class="academic-text"><strong>Deep exploration:</strong> Follow paths to their end before trying
+                alternatives</li>
             <li class="academic-text"><strong>Stack-based:</strong> Uses recursion or explicit stack (LIFO)</li>
-            <li class="academic-text"><strong>Memory efficient:</strong> Only stores current path, not all discovered nodes</li>
+            <li class="academic-text"><strong>Memory efficient:</strong> Only stores current path, not all discovered
+                nodes</li>
         </ul>
     </div>
 
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>DFS vs BFS Comparison:</strong><br><br>
         <div class="mermaid">
-        graph TD
+            graph TD
             A[A] --- B[B]
             A --- C[C]
             B --- D[D]
             B --- E[E]
             C --- F[F]
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">BFS order: A → B,C → D,E,F | DFS order: A → B → D → E → C → F</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">BFS order: A → B,C
+            → D,E,F | DFS order: A → B → D → E → C → F</p>
     </div>
 
     <pre class="code-block">// DFS Implementation
@@ -228,15 +261,17 @@ public:
 };</pre>
 
     <h2 class="section-title" id="ch6-3">6.3 Cycle Detection Using DFS</h2>
-    
-    <p class="academic-text">One of DFS's superpowers is detecting cycles in graphs. This is crucial for many applications like detecting deadlocks, finding dependencies, and validating DAGs.</p>
-    
+
+    <p class="academic-text">One of DFS's superpowers is detecting cycles in graphs. This is crucial for many
+        applications like detecting deadlocks, finding dependencies, and validating DAGs.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🔄 Cycle Detection</h3>
         <p class="academic-text">DFS can detect cycles by tracking the recursion stack and looking for back edges.</p>
         <ul style="margin: 8px 0 16px 24px;">
             <li class="academic-text"><strong>Back edge:</strong> An edge to an ancestor in the DFS tree</li>
-            <li class="academic-text"><strong>Three colors:</strong> White (unvisited), Gray (processing), Black (finished)</li>
+            <li class="academic-text"><strong>Three colors:</strong> White (unvisited), Gray (processing), Black
+                (finished)</li>
             <li class="academic-text"><strong>Cycle found:</strong> When we encounter a gray node</li>
         </ul>
     </div>
@@ -285,16 +320,17 @@ public:
 };</pre>
 
     <h2 class="section-title" id="ch6-4">6.4 Applications in Social Networks and Web Crawling</h2>
-    
-    <p class="academic-text">BFS and DFS power many real-world applications. Let's see how they work in systems you use every day.</p>
-    
+
+    <p class="academic-text">BFS and DFS power many real-world applications. Let's see how they work in systems you use
+        every day.</p>
+
     <p class="academic-text"><strong>Social Network Applications:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
         <li class="academic-text"><strong>Friend suggestions:</strong> BFS finds mutual friends at distance 2</li>
         <li class="academic-text"><strong>Influence analysis:</strong> DFS explores how information spreads</li>
         <li class="academic-text"><strong>Community detection:</strong> Connected components using DFS</li>
     </ul>
-    
+
     <p class="academic-text"><strong>Web Crawling Applications:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
         <li class="academic-text"><strong>Search engines:</strong> BFS for broad web exploration</li>
@@ -364,7 +400,7 @@ private:
 
     <div class="performance-summary">
         <h3 style="color: #2e7d32; margin-top: 0;">🚀 Traversal Algorithm Summary</h3>
-        
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
             <div style="background-color: white; border-radius: 8px; padding: 15px;">
                 <h4 style="color: #2e7d32; margin-top: 0;">BFS Characteristics</h4>
@@ -375,7 +411,7 @@ private:
                     <li class="academic-text"><strong>Memory:</strong> Higher (stores all discovered)</li>
                 </ul>
             </div>
-            
+
             <div style="background-color: white; border-radius: 8px; padding: 15px;">
                 <h4 style="color: #2e7d32; margin-top: 0;">DFS Characteristics</h4>
                 <ul style="margin: 8px 0 16px 24px;">
@@ -397,8 +433,11 @@ private:
             <li class="academic-text">✅ <strong>Cycle detection</strong> - using DFS with three-color approach</li>
             <li class="academic-text">✅ <strong>Real applications</strong> - social networks and web crawling</li>
         </ul>
-        
-        <p class="academic-text">These traversal algorithms are the foundation for almost every graph algorithm you'll learn next. Understanding BFS and DFS deeply will make shortest path algorithms, minimum spanning trees, and network flow much easier to grasp!</p>
+
+        <p class="academic-text">These traversal algorithms are the foundation for almost every graph algorithm you'll
+            learn next. Understanding BFS and DFS deeply will make shortest path algorithms, minimum spanning trees, and
+            network flow much easier to grasp!</p>
     </div>
 </body>
+
 </html>

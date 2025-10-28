@@ -92,23 +92,24 @@
 #include <string>
 using namespace std;
 
-// Simple trie node
+// Trie node - each node represents one character
 struct TrieNode {
-    vector<TrieNode*> children;
-    bool isEndOfWord;
-    char character;
+    vector<TrieNode*> children;  // 26 children for a-z
+    bool isEndOfWord;            // True if this node ends a valid word
+    char character;              // Character this node represents
     
     TrieNode(char c = '\0') : character(c), isEndOfWord(false) {
-        children.resize(26, nullptr); // for a-z
+        children.resize(26, nullptr); // Initialize all children to null
     }
 };
 
 class SimpleTrie {
 private:
-    TrieNode* root;
+    TrieNode* root;  // Root node (empty character)
     
+    // Convert character to array index (a=0, b=1, ..., z=25)
     int charToIndex(char c) {
-        return c - 'a'; // convert 'a' to 0, 'b' to 1, etc.
+        return c - 'a';
     }
     
 public:
@@ -226,34 +227,14 @@ class AutoComplete {
 private:
     SimpleTrie* trie;
     
-    // Helper function to collect all words from a node
-    void collectWords(TrieNode* node, string currentWord, vector<string>& results) {
-        if (node == nullptr) return;
-        
-        if (node->isEndOfWord) {
-            results.push_back(currentWord);
-        }
-        
+    void collectWords(TrieNode* node, string word, vector<string>& results) {
+        if (!node) return;
+        if (node->isEndOfWord) results.push_back(word);
         for (int i = 0; i < 26; i++) {
-            if (node->children[i] != nullptr) {
-                char nextChar = 'a' + i;
-                collectWords(node->children[i], currentWord + nextChar, results);
+            if (node->children[i]) {
+                collectWords(node->children[i], word + char('a' + i), results);
             }
         }
-    }
-    
-    // Find the node representing a prefix
-    TrieNode* findPrefixNode(string prefix) {
-        TrieNode* current = trie->root;
-        
-        for (char c : prefix) {
-            int index = c - 'a';
-            if (current->children[index] == nullptr) {
-                return nullptr; // Prefix not found
-            }
-            current = current->children[index];
-        }
-        return current;
     }
     
 public:

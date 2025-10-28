@@ -63,35 +63,38 @@
     </div>
 
     <pre class="code-block">// Kruskal's Algorithm Implementation
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
 using namespace std;
 
 class KruskalMST {
 private:
+    // Edge structure for Kruskal's algorithm
     struct Edge {
-        int u, v, weight;
+        int u, v, weight;  // Two endpoints and weight
         Edge(int u, int v, int w) : u(u), v(v), weight(w) {}
         
+        // Comparison operator for sorting edges by weight
         bool operator<(const Edge& other) const {
             return weight < other.weight;
         }
     };
     
-    vector<Edge> edges;
-    int numVertices;
+    vector&lt;Edge&gt; edges;    // All edges in the graph
+    int numVertices;       // Number of vertices
     
 public:
     KruskalMST(int n) : numVertices(n) {}
     
+    // Add undirected weighted edge to graph
     void addEdge(int u, int v, int weight) {
         edges.push_back(Edge(u, v, weight));
     }
     
     // Find MST using Kruskal's algorithm
-    vector<Edge> findMST() {
-        vector<Edge> mst;
+    vector&lt;Edge&gt; findMST() {
+        vector&lt;Edge&gt; mst;
         
         // Sort edges by weight
         sort(edges.begin(), edges.end());
@@ -175,8 +178,11 @@ public:
     </div>
 
     <pre class="code-block">// Prim's Algorithm Implementation
+#include <iostream>
+#include <vector>
 #include <queue>
 #include <climits>
+using namespace std;
 
 class PrimMST {
 private:

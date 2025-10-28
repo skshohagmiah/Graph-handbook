@@ -61,38 +61,40 @@
     </div>
 
     <pre class="code-block">// Dijkstra's Algorithm Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_map>
-#include <limits>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_map&gt;
+#include &lt;limits&gt;
 using namespace std;
 
 class DijkstraGraph {
 private:
+    // Edge structure for weighted directed graph
     struct Edge {
-        int to;
-        int weight;
+        int to;      // Destination node
+        int weight;  // Edge weight/cost
         Edge(int t, int w) : to(t), weight(w) {}
     };
     
-    vector<vector<Edge>> graph;
+    vector&lt;vector&lt;Edge&gt;&gt; graph;  // Adjacency list with weights
     
 public:
     DijkstraGraph(int n) : graph(n) {}
     
+    // Add directed weighted edge
     void addEdge(int from, int to, int weight) {
         graph[from].push_back(Edge(to, weight));
     }
     
-    // Dijkstra's shortest path algorithm
-    pair<vector<int>, vector<int>> dijkstra(int start) {
+    // Dijkstra's algorithm - finds shortest paths from start to all nodes - O((V+E)logV)
+    pair&lt;vector&lt;int&gt;, vector&lt;int&gt;&gt; dijkstra(int start) {
         int n = graph.size();
-        vector<int> dist(n, INT_MAX);
-        vector<int> parent(n, -1);
+        vector&lt;int&gt; dist(n, INT_MAX);    // Distance from start to each node
+        vector&lt;int&gt; parent(n, -1);       // Parent for path reconstruction
         
-        // Priority queue: (distance, node)
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        // Min-heap priority queue: (distance, node) - processes closest nodes first
+        priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int, int&gt;&gt;, greater&lt;pair&lt;int, int&gt;&gt;&gt; pq;
         
         dist[start] = 0;
         pq.push({0, start});
@@ -287,7 +289,13 @@ public:
     </div>
 
     <pre class="code-block">// A* Algorithm Implementation
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
 #include <cmath>
+#include <limits>
+using namespace std;
 
 class AStarGraph {
 private:

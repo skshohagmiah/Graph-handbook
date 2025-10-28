@@ -1,24 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graph Algorithms Handbook</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Cache buster: 1761635545595 -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
-        mermaid.initialize({ 
+        // Configure Mermaid for better print rendering
+        mermaid.initialize({
             startOnLoad: true,
-            theme: 'default',
+            theme: 'base',
             themeVariables: {
-                primaryColor: '#f0f8ff',
-                primaryTextColor: '#000',
-                primaryBorderColor: '#333',
-                lineColor: '#333',
-                secondaryColor: '#e8f5e8',
-                tertiaryColor: '#fff5f5'
-            }
+                primaryColor: '#f9f9f9',
+                primaryTextColor: '#000000',
+                primaryBorderColor: '#333333',
+                lineColor: '#333333',
+                fontSize: '14px'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: false,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true
+            },
+            gantt: {
+                useMaxWidth: true
+            },
+            fontFamily: 'Arial, sans-serif',
+            fontSize: 14
+        });
+        
+        // Fix for print rendering
+        window.addEventListener('beforeprint', function() {
+            mermaid.init();
+{{ ... }}
         });
     </script>
     <style>
@@ -213,96 +230,94 @@
         }
         
         @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-before: always; }
-            
-            /* Ensure code blocks print with proper colors and no overflow */
-            .code-block {
-                background: #2d3748 !important;
-                color: #e2e8f0 !important;
-                border: 2px solid #4a5568 !important;
-                border-left: 4px solid #4299e1 !important;
-                page-break-inside: avoid;
-                overflow: visible !important;
-                white-space: pre-wrap !important;
-                word-wrap: break-word !important;
-                font-size: 10pt !important;
-                line-height: 1.4 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+            body {
+                font-family: Times, serif !important;
+                font-size: 14pt !important;
+                line-height: 1.5 !important;
+                margin: 0.1in !important;
+                color: black !important;
+                background: white !important;
             }
             
-            /* Ensure summary sections print with colors */
-            .performance-summary {
-                background-color: #f8f9fa !important;
-                border: 2px solid #4caf50 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            .completion-summary {
-                background-color: #f8f9fa !important;
-                border-left: 5px solid #2196f3 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            .summary-section {
-                background-color: #f8f9fa !important;
-                border: 1px solid #dee2e6 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            /* Prevent diagrams from being split across pages */
-            .mermaid {
-                page-break-inside: avoid;
-                page-break-before: auto;
-                page-break-after: auto;
-            }
-            
-            /* Prevent diagram containers from splitting */
-            div[style*="background-color: #f8f9fa"] {
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            /* Ensure definition boxes print properly */
-            .definition-box {
-                background-color: #f8f9fa !important;
-                border-left: 4px solid #2196f3 !important;
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            /* Better page breaks for sections */
-            .section-title {
+            /* Keep chapter titles with content */
+            .chapter-number {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: 0 0 6pt 0 !important;
+                page-break-before: always;
                 page-break-after: avoid;
             }
             
             .chapter-title {
+                font-size: 24pt !important;
+                font-weight: bold !important;
+                margin: 6pt 0 15pt 0 !important;
                 page-break-after: avoid;
-            }
-            
-            /* Prevent orphaned content */
-            h1, h2, h3, h4, h5, h6 {
-                page-break-after: avoid;
-            }
-            
-            /* Ensure tables don't break awkwardly */
-            table {
                 page-break-inside: avoid;
             }
             
-            /* Better spacing for print */
-            .academic-content {
-                line-height: 1.6 !important;
+            .section-title, h2 {
+                font-size: 18pt !important;
+                font-weight: bold !important;
+                margin: 15pt 0 10pt 0 !important;
+                page-break-after: avoid;
             }
+            
+            h3 {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: 12pt 0 8pt 0 !important;
+                page-break-after: avoid;
+            }
+            
+            p, .academic-text {
+                margin: 0 0 8pt 0 !important;
+                text-align: justify !important;
+            }
+            
+            /* Keep first content with chapter title */
+            .chapter-title + p,
+            .chapter-title + .academic-text,
+            .chapter-title + ul,
+            .chapter-title + ol,
+            .chapter-title + pre,
+            .chapter-title + .code-block {
+                page-break-before: avoid !important;
+            }
+            
+            pre, .code-block {
+                font-family: 'Courier New', Courier, monospace !important;
+                font-size: 11pt !important;
+                line-height: 1.3 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 2pt solid #000000 !important;
+                padding: 12pt !important;
+                margin: 12pt 0 !important;
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+            }
+            
+            ul, ol {
+                margin: 8pt 0 10pt 20pt !important;
+            }
+            
+            li {
+                margin-bottom: 3pt !important;
+            }
+            
+            .mermaid {
+                margin: 12pt 0 !important;
+                text-align: center !important;
+            }
+            
+            .definition-box {
+                background: #f9f9f9 !important;
+                border-left: 3pt solid #333 !important;
+                padding: 8pt !important;
+                margin: 10pt 0 !important;
+            }
+        }
         }
     </style>
 </head>
@@ -310,7 +325,7 @@
 
     <div class="cover-page " id="cover">
         
-    <div class="cover-content">
+    <div class="cover-container cover-content">
         <div class="cover-main">
             <h1 class="cover-title">
                 Graph Algorithms<br>
@@ -761,7 +776,7 @@
         <li class="academic-text"><strong>Out-degree</strong>: How many arrows point FROM this node</li>
     </ul>
 
-    <pre class="code-block">// Simple way to represent our friendship graph in code
+    <pre class="code-block">// Simple friendship graph using adjacency list
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -770,14 +785,14 @@ using namespace std;
 
 class FriendshipGraph {
 private:
-    // Each person has a list of their friends
+    // Each person maps to their list of friends
     unordered_map&lt;string, vector&lt;string&gt;&gt; friendsList;
     
 public:
-    // Add a friendship between two people
+    // Add mutual friendship between two people
     void addFriendship(string person1, string person2) {
         friendsList[person1].push_back(person2);
-        friendsList[person2].push_back(person1); // Friendship goes both ways!
+        friendsList[person2].push_back(person1); // Friendship is mutual
     }
     
     // Count how many friends someone has
@@ -785,15 +800,13 @@ public:
         return friendsList[person].size();
     }
     
-    // Show everyone's friends
-    void showAllFriendships() {
-        for (const auto&amp; [person, friends] : friendsList) {
-            cout &lt;&lt; person &lt;&lt; " is friends with: ";
-            for (const string&amp; friendName : friends) {
-                cout &lt;&lt; friendName &lt;&lt; " ";
-            }
-            cout &lt;&lt; "(" &lt;&lt; countFriends(person) &lt;&lt; " friends total)" &lt;&lt; endl;
+    // Display someone's friend list
+    void showFriends(string person) {
+        cout &lt;&lt; person &lt;&lt; " has " &lt;&lt; countFriends(person) &lt;&lt; " friends: ";
+        for (const string&amp; friend : friendsList[person]) {
+            cout &lt;&lt; friend &lt;&lt; " ";
         }
+        cout &lt;&lt; endl;
     }
 };</pre>
 
@@ -919,7 +932,7 @@ public:
         <li class="academic-text"><strong>Real examples:</strong> GPS navigation (distance), social networks (closeness), internet routing (speed)</li>
     </ul>
 
-    <pre class="code-block">// Simple way to represent a city distance map
+    <pre class="code-block">// Weighted graph for city distances
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -928,25 +941,20 @@ using namespace std;
 
 class CityMap {
 private:
-    // Each city has connections to other cities with distances
-    unordered_map&lt;string, vector&lt;pair&lt;string, int&gt;&gt;&gt; cityConnections;
+    unordered_map&lt;string, vector&lt;pair&lt;string, int&gt;&gt;&gt; roads;
     
 public:
-    // Add a road between two cities with distance
     void addRoad(string city1, string city2, int distance) {
-        cityConnections[city1].push_back({city2, distance});
-        cityConnections[city2].push_back({city1, distance}); // Roads work both ways!
+        roads[city1].push_back({city2, distance});
+        roads[city2].push_back({city1, distance});
     }
     
-    // Show all roads from each city
-    void showAllRoads() {
-        for (const auto&amp; [city, roads] : cityConnections) {
-            cout &lt;&lt; "From " &lt;&lt; city &lt;&lt; ": ";
-            for (const auto&amp; [destination, distance] : roads) {
-                cout &lt;&lt; destination &lt;&lt; "(" &lt;&lt; distance &lt;&lt; " miles) ";
-            }
-            cout &lt;&lt; endl;
+    void showRoads(string city) {
+        cout &lt;&lt; city &lt;&lt; " connects to: ";
+        for (auto&amp; [dest, dist] : roads[city]) {
+            cout &lt;&lt; dest &lt;&lt; "(" &lt;&lt; dist &lt;&lt; "mi) ";
         }
+        cout &lt;&lt; endl;
     }
 };</pre>
 
@@ -1083,7 +1091,7 @@ public:
         <li class="academic-text"><strong>Bad for:</strong> Uses lots of memory if you have many people but few friendships</li>
     </ul>
 
-    <pre class="code-block">// Method 1: Adjacency Matrix Implementation
+    <pre class="code-block">// Adjacency Matrix - Fast lookups O(1), uses O(V²) memory
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -1092,53 +1100,29 @@ using namespace std;
 
 class AdjacencyMatrix {
 private:
-    vector&lt;vector&lt;bool&gt;&gt; matrix;
-    vector&lt;string&gt; nodeNames;
-    unordered_map&lt;string, int&gt; nameToIndex;
-    int size;
+    vector&lt;vector&lt;bool&gt;&gt; matrix;           // 2D matrix for connections
+    unordered_map&lt;string, int&gt; nameToIndex; // Map names to matrix indices
+    vector&lt;string&gt; names;                 // Store original names
     
 public:
-    AdjacencyMatrix(const vector&lt;string&gt;&amp; names) {
-        size = names.size();
-        nodeNames = names;
-        matrix.resize(size, vector&lt;bool&gt;(size, false));
-        
-        // Map names to indices
+    AdjacencyMatrix(const vector&lt;string&gt;&amp; nodeNames) : names(nodeNames) {
+        int size = names.size();
+        matrix.resize(size, vector&lt;bool&gt;(size, false)); // Initialize all false
+        // Create name-to-index mapping
         for (int i = 0; i &lt; size; i++) {
             nameToIndex[names[i]] = i;
         }
     }
     
-    // Add friendship between two people
-    void addEdge(const string&amp; person1, const string&amp; person2) {
-        int i = nameToIndex[person1];
-        int j = nameToIndex[person2];
-        matrix[i][j] = true;
-        matrix[j][i] = true; // Friendship is mutual
+    // Add undirected edge between two nodes
+    void addEdge(const string&amp; a, const string&amp; b) {
+        int i = nameToIndex[a], j = nameToIndex[b];
+        matrix[i][j] = matrix[j][i] = true; // Set both directions
     }
     
-    // Check if two people are friends - VERY FAST!
-    bool areFriends(const string&amp; person1, const string&amp; person2) {
-        int i = nameToIndex[person1];
-        int j = nameToIndex[person2];
-        return matrix[i][j];
-    }
-    
-    // Print the friendship matrix
-    void printMatrix() {
-        cout &lt;&lt; "\t";
-        for (const string&amp; name : nodeNames) {
-            cout &lt;&lt; name &lt;&lt; "\t";
-        }
-        cout &lt;&lt; endl;
-        
-        for (int i = 0; i &lt; size; i++) {
-            cout &lt;&lt; nodeNames[i] &lt;&lt; "\t";
-            for (int j = 0; j &lt; size; j++) {
-                cout &lt;&lt; (matrix[i][j] ? "1" : "0") &lt;&lt; "\t";
-            }
-            cout &lt;&lt; endl;
-        }
+    // Check if two nodes are connected - O(1) lookup!
+    bool connected(const string&amp; a, const string&amp; b) {
+        return matrix[nameToIndex[a]][nameToIndex[b]];
     }
 };</pre>
 
@@ -1168,66 +1152,42 @@ Carol's friends: [Alice, Bob]
         <li class="academic-text"><strong>Memory constraints:</strong> When you need to minimize memory usage for large graphs</li>
     </ul>
 
-    <pre class="code-block">// Method 2: Adjacency List Implementation
+    <pre class="code-block">// Adjacency List - Memory efficient O(V+E), great for sparse graphs
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
 #include &lt;string&gt;
-#include &lt;algorithm&gt;
 using namespace std;
 
 class AdjacencyList {
 private:
-    // Each person has their own list of friends
+    // Each vertex stores its own neighbor list
     unordered_map&lt;string, vector&lt;string&gt;&gt; friendsMap;
     
 public:
-    // Add friendship between two people
-    void addEdge(const string&amp; person1, const string&amp; person2) {
-        friendsMap[person1].push_back(person2);
-        friendsMap[person2].push_back(person1); // Friendship is mutual
+    // Add undirected edge - O(1) average case
+    void addEdge(const string&amp; a, const string&amp; b) {
+        friendsMap[a].push_back(b);
+        friendsMap[b].push_back(a); // Mutual friendship
     }
     
-    // Get all friends of a person - VERY FAST!
+    // Get all neighbors - O(1) access to list
     vector&lt;string&gt; getFriends(const string&amp; person) {
         return friendsMap[person];
     }
     
-    // Check if two people are friends (slower than matrix)
-    bool areFriends(const string&amp; person1, const string&amp; person2) {
-        const auto&amp; friends = friendsMap[person1];
-        return find(friends.begin(), friends.end(), person2) != friends.end();
-    }
-    
-    // Count how many friends someone has
+    // Count neighbors - O(1)
     int countFriends(const string&amp; person) {
         return friendsMap[person].size();
     }
     
-    // Print everyone's friend lists
-    void printLists() {
-        for (const auto&amp; [person, friends] : friendsMap) {
-            cout &lt;&lt; person &lt;&lt; "'s friends: [";
-            for (size_t i = 0; i &lt; friends.size(); i++) {
-                cout &lt;&lt; friends[i];
-                if (i &lt; friends.size() - 1) cout &lt;&lt; ", ";
-            }
-            cout &lt;&lt; "]" &lt;&lt; endl;
+    // Display neighbor list - O(degree)
+    void showFriends(const string&amp; person) {
+        cout &lt;&lt; person &lt;&lt; "'s friends: ";
+        for (const string&amp; friend : friendsMap[person]) {
+            cout &lt;&lt; friend &lt;&lt; " ";
         }
-    }
-    
-    // Find mutual friends between two people
-    vector&lt;string&gt; getMutualFriends(const string&amp; person1, const string&amp; person2) {
-        vector&lt;string&gt; mutual;
-        const auto&amp; friends1 = friendsMap[person1];
-        const auto&amp; friends2 = friendsMap[person2];
-        
-        for (const string&amp; friend1 : friends1) {
-            if (find(friends2.begin(), friends2.end(), friend1) != friends2.end()) {
-                mutual.push_back(friend1);
-            }
-        }
-        return mutual;
+        cout &lt;&lt; endl;
     }
 };</pre>
 
@@ -1256,7 +1216,7 @@ Friendship 3: Bob - Carol
         <li class="academic-text"><strong>Batch processing:</strong> When you're analyzing entire networks rather than navigating from specific vertices</li>
     </ul>
 
-    <pre class="code-block">// Method 3: Edge List Implementation
+    <pre class="code-block">// Edge List - Simple list of all connections
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;string&gt;
@@ -1264,56 +1224,22 @@ using namespace std;
 
 class EdgeList {
 private:
-    // Simple list of all friendships
     vector&lt;pair&lt;string, string&gt;&gt; edges;
     
 public:
-    // Add friendship between two people
-    void addEdge(const string&amp; person1, const string&amp; person2) {
-        edges.push_back({person1, person2});
+    void addEdge(const string&amp; a, const string&amp; b) {
+        edges.push_back({a, b});
     }
     
-    // Get all edges/friendships - VERY FAST!
-    const vector&lt;pair&lt;string, string&gt;&gt;&amp; getAllEdges() {
-        return edges;
-    }
-    
-    // Check if two people are friends (slow - must search all edges)
-    bool areFriends(const string&amp; person1, const string&amp; person2) {
-        for (const auto&amp; edge : edges) {
-            if ((edge.first == person1 &amp;&amp; edge.second == person2) ||
-                (edge.first == person2 &amp;&amp; edge.second == person1)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    // Count total number of friendships
-    int getTotalFriendships() {
+    int getTotalEdges() {
         return edges.size();
     }
     
-    // Print all friendships
-    void printAllFriendships() {
-        cout &lt;&lt; "All Friendships:" &lt;&lt; endl;
-        for (size_t i = 0; i &lt; edges.size(); i++) {
-            cout &lt;&lt; "Friendship " &lt;&lt; (i + 1) &lt;&lt; ": " 
-                 &lt;&lt; edges[i].first &lt;&lt; " - " &lt;&lt; edges[i].second &lt;&lt; endl;
-        }
-    }
-    
-    // Find all friends of a person (slow - must search all edges)
-    vector&lt;string&gt; getFriends(const string&amp; person) {
-        vector&lt;string&gt; friends;
+    void printAllEdges() {
+        cout &lt;&lt; "All connections:" &lt;&lt; endl;
         for (const auto&amp; edge : edges) {
-            if (edge.first == person) {
-                friends.push_back(edge.second);
-            } else if (edge.second == person) {
-                friends.push_back(edge.first);
-            }
+            cout &lt;&lt; edge.first &lt;&lt; " - " &lt;&lt; edge.second &lt;&lt; endl;
         }
-        return friends;
     }
 };</pre>
 
@@ -1406,7 +1332,7 @@ public:
         </ul>
     </div>
 
-    <pre class="code-block">// Simple course planning system - like a college advisor!
+    <pre class="code-block">// Course prerequisite system using graphs
 #include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;unordered_map&gt;
@@ -1416,40 +1342,30 @@ using namespace std;
 
 class CourseAdvisor {
 private:
-    // Each course has a list of courses you need to take first
     unordered_map&lt;string, vector&lt;string&gt;&gt; prerequisites;
     
 public:
-    // Add a requirement: "To take course X, you must first complete course Y"
-    void addRequirement(string course, string mustTakeFirst) {
-        prerequisites[course].push_back(mustTakeFirst);
+    void addRequirement(string course, string required) {
+        prerequisites[course].push_back(required);
     }
     
-    // Check if a student can take a specific course
-    bool canStudentTakeCourse(string course, set&lt;string&gt; completedCourses) {
-        // Check each requirement for this course
-        for (const string&amp; requiredCourse : prerequisites[course]) {
-            if (completedCourses.find(requiredCourse) == completedCourses.end()) {
-                return false; // Missing a required course!
+    bool canTake(string course, set&lt;string&gt; completed) {
+        for (const string&amp; req : prerequisites[course]) {
+            if (completed.find(req) == completed.end()) {
+                return false;
             }
         }
-        return true; // All requirements met!
+        return true;
     }
     
-    // Find all courses a student can take right now
-    vector&lt;string&gt; getCoursesStudentCanTake(set&lt;string&gt; completedCourses) {
-        vector&lt;string&gt; availableCourses;
-        
-        for (const auto&amp; [course, requirements] : prerequisites) {
-            // Skip courses already completed
-            if (completedCourses.find(course) != completedCourses.end()) continue;
-            
-            // Check if student can take this course
-            if (canStudentTakeCourse(course, completedCourses)) {
-                availableCourses.push_back(course);
+    vector&lt;string&gt; getAvailableCourses(set&lt;string&gt; completed) {
+        vector&lt;string&gt; available;
+        for (const auto&amp; [course, reqs] : prerequisites) {
+            if (completed.find(course) == completed.end() &amp;&amp; canTake(course, completed)) {
+                available.push_back(course);
             }
         }
-        return availableCourses;
+        return available;
     }
 };</pre>
 
@@ -1586,22 +1502,23 @@ public:
         <li class="academic-text"><strong>Disconnected:</strong> Separate friend groups, isolated computer networks, different continents without bridges</li>
     </ul>
 
-    <pre class="code-block">// Check if a graph is connected using DFS
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
+    <pre class="code-block">// Check if entire graph is connected using DFS traversal
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+#include &lt;string&gt;
 using namespace std;
 
 class ConnectivityChecker {
 private:
-    unordered_map<string, vector<string>> graph;
+    unordered_map&lt;string, vector&lt;string&gt;&gt; graph;
     
     // Depth-First Search to visit all reachable nodes
-    void dfs(const string& node, unordered_set<string>& visited) {
+    void dfs(const string&amp; node, unordered_set&lt;string&gt;&amp; visited) {
         visited.insert(node);
-        for (const string& neighbor : graph[node]) {
+        // Recursively visit all unvisited neighbors
+        for (const string&amp; neighbor : graph[node]) {
             if (visited.find(neighbor) == visited.end()) {
                 dfs(neighbor, visited);
             }
@@ -1609,44 +1526,18 @@ private:
     }
     
 public:
-    void addEdge(const string& u, const string& v) {
+    // Add undirected edge between two nodes
+    void addEdge(const string&amp; u, const string&amp; v) {
         graph[u].push_back(v);
-        graph[v].push_back(u);
+        graph[v].push_back(u); // Undirected graph
     }
     
-    // Check if the graph is connected
+    // Check if all nodes are reachable from any starting node
     bool isConnected() {
         if (graph.empty()) return true;
-        
-        unordered_set<string> visited;
-        string startNode = graph.begin()->first;
-        
-        // Start DFS from any node
-        dfs(startNode, visited);
-        
-        // If we visited all nodes, the graph is connected
-        return visited.size() == graph.size();
-    }
-    
-    // Find all connected components
-    vector<vector<string>> getConnectedComponents() {
-        vector<vector<string>> components;
-        unordered_set<string> globalVisited;
-        
-        for (const auto& [node, neighbors] : graph) {
-            if (globalVisited.find(node) == globalVisited.end()) {
-                unordered_set<string> componentVisited;
-                dfs(node, componentVisited);
-                
-                vector<string> component;
-                for (const string& n : componentVisited) {
-                    component.push_back(n);
-                    globalVisited.insert(n);
-                }
-                components.push_back(component);
-            }
-        }
-        return components;
+        unordered_set&lt;string&gt; visited;
+        dfs(graph.begin()-&gt;first, visited); // Start DFS from any node
+        return visited.size() == graph.size(); // All nodes visited?
     }
 };</pre>
 
@@ -2368,33 +2259,21 @@ public:
     <p class="academic-text">The tree structure of file systems isn't just convenient - it's essential for performance and organization. It enables efficient path resolution (finding files by their full path), supports recursive operations (like calculating directory sizes), and provides the foundation for file permissions, backup systems, and search indexing. Without tree structure, managing millions of files would be chaotic and inefficient.</p>
     
     <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
-        <strong>File System Example:</strong><br><br>
-        <div class="mermaid">
-        graph TD
-            A[/] --> B[home]
-            A --> C[usr]
-            A --> D[var]
-            B --> E[user1]
-            B --> F[user2]
-            E --> G[Documents]
-            E --> H[Pictures]
-            G --> I[resume.pdf]
-            G --> J[notes.txt]
-            H --> K[vacation.jpg]
-            
-            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
-            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-            style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-            style G fill:#ffebee,stroke:#f44336,stroke-width:2px
-            style H fill:#ffebee,stroke:#f44336,stroke-width:2px
-            style I fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-            style J fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-            style K fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-        </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Each path from root to file is unique - no cycles!</p>
+        <strong>File System Tree Structure:</strong><br><br>
+        <pre style="font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.4; margin: 0; background: none; border: none; padding: 0;">
+/                    (root directory)
+├── home/           (user directories)
+│   ├── user1/
+│   │   ├── Documents/
+│   │   │   ├── resume.pdf
+│   │   │   └── notes.txt
+│   │   └── Pictures/
+│   │       └── vacation.jpg
+│   └── user2/
+├── usr/            (system programs)
+└── var/            (variable data)
+        </pre>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;"><strong>Each path from root to file is unique - no cycles!</strong></p>
     </div>
 
     <pre class="code-block">// Simple file system tree
@@ -2416,53 +2295,30 @@ struct FileNode {
 
 class FileSystem {
 public:
-    // Build a sample file system
-    static FileNode* buildSampleFileSystem() {
-        FileNode* root = new FileNode("/", false);
-        FileNode* home = new FileNode("home", false);
-        FileNode* user = new FileNode("user1", false);
-        FileNode* docs = new FileNode("Documents", false);
-        FileNode* pics = new FileNode("Pictures", false);
+    // Print tree structure with indentation showing hierarchy
+    static void printTree(FileNode* node, int depth = 0) {
+        if (!node) return;
         
-        FileNode* resume = new FileNode("resume.pdf", true, 1024);
-        FileNode* notes = new FileNode("notes.txt", true, 512);
-        FileNode* photo = new FileNode("vacation.jpg", true, 2048);
-        
-        // Build the tree structure
-        root->children = {home};
-        home->children = {user};
-        user->children = {docs, pics};
-        docs->children = {resume, notes};
-        pics->children = {photo};
-        
-        return root;
-    }
-    
-    // Print file system tree
-    static void printFileSystem(FileNode* root, int indent = 0) {
-        if (root == nullptr) return;
-        
-        for (int i = 0; i < indent; i++) cout << "  ";
-        cout << root->name;
-        if (root->isFile) {
-            cout << " (" << root->size << " bytes)";
-        } else {
-            cout << "/";
-        }
+        // Print indentation based on depth
+        for (int i = 0; i < depth; i++) cout << "  ";
+        cout << node->name;
+        if (node->isFile) cout << " (" << node->size << "B)";
         cout << endl;
         
-        for (FileNode* child : root->children) {
-            printFileSystem(child, indent + 1);
+        // Recursively print all children
+        for (FileNode* child : node->children) {
+            printTree(child, depth + 1);
         }
     }
     
-    // Calculate total directory size
-    static int getTotalSize(FileNode* root) {
-        if (root->isFile) return root->size;
+    // Calculate total size of directory (recursive)
+    static int getSize(FileNode* node) {
+        if (node->isFile) return node->size; // Base case: file size
         
         int total = 0;
-        for (FileNode* child : root->children) {
-            total += getTotalSize(child);
+        // Sum up sizes of all children
+        for (FileNode* child : node->children) {
+            total += getSize(child);
         }
         return total;
     }
@@ -2603,23 +2459,24 @@ public:
 #include <string>
 using namespace std;
 
-// Simple trie node
+// Trie node - each node represents one character
 struct TrieNode {
-    vector<TrieNode*> children;
-    bool isEndOfWord;
-    char character;
+    vector<TrieNode*> children;  // 26 children for a-z
+    bool isEndOfWord;            // True if this node ends a valid word
+    char character;              // Character this node represents
     
     TrieNode(char c = '\0') : character(c), isEndOfWord(false) {
-        children.resize(26, nullptr); // for a-z
+        children.resize(26, nullptr); // Initialize all children to null
     }
 };
 
 class SimpleTrie {
 private:
-    TrieNode* root;
+    TrieNode* root;  // Root node (empty character)
     
+    // Convert character to array index (a=0, b=1, ..., z=25)
     int charToIndex(char c) {
-        return c - 'a'; // convert 'a' to 0, 'b' to 1, etc.
+        return c - 'a';
     }
     
 public:
@@ -2737,34 +2594,14 @@ class AutoComplete {
 private:
     SimpleTrie* trie;
     
-    // Helper function to collect all words from a node
-    void collectWords(TrieNode* node, string currentWord, vector<string>& results) {
-        if (node == nullptr) return;
-        
-        if (node->isEndOfWord) {
-            results.push_back(currentWord);
-        }
-        
+    void collectWords(TrieNode* node, string word, vector<string>& results) {
+        if (!node) return;
+        if (node->isEndOfWord) results.push_back(word);
         for (int i = 0; i < 26; i++) {
-            if (node->children[i] != nullptr) {
-                char nextChar = 'a' + i;
-                collectWords(node->children[i], currentWord + nextChar, results);
+            if (node->children[i]) {
+                collectWords(node->children[i], word + char('a' + i), results);
             }
         }
-    }
-    
-    // Find the node representing a prefix
-    TrieNode* findPrefixNode(string prefix) {
-        TrieNode* current = trie->root;
-        
-        for (char c : prefix) {
-            int index = c - 'a';
-            if (current->children[index] == nullptr) {
-                return nullptr; // Prefix not found
-            }
-            current = current->children[index];
-        }
-        return current;
     }
     
 public:
@@ -3115,20 +2952,20 @@ public:
     </ul>
 
     <pre class="code-block">// Simple heap implementation using array
-#include <iostream>
-#include <vector>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
 using namespace std;
 
 class MinHeap {
 private:
-    vector<int> heap;
+    vector&lt;int&gt; heap;  // Array representation of binary heap
     
-    // Get parent, left child, right child indices
-    int parent(int i) { return (i - 1) / 2; }
-    int leftChild(int i) { return 2 * i + 1; }
-    int rightChild(int i) { return 2 * i + 2; }
+    // Navigation helpers for binary tree in array
+    int parent(int i) { return (i - 1) / 2; }      // Parent at (i-1)/2
+    int leftChild(int i) { return 2 * i + 1; }    // Left child at 2i+1
+    int rightChild(int i) { return 2 * i + 2; }   // Right child at 2i+2
     
-    // Swap two elements
+    // Utility function to swap two elements
     void swap(int i, int j) {
         int temp = heap[i];
         heap[i] = heap[j];
@@ -3136,40 +2973,27 @@ private:
     }
     
 public:
-    // Check if heap is empty
+    // Check if heap is empty - O(1)
     bool isEmpty() {
         return heap.empty();
     }
     
-    // Get the minimum element (root)
+    // Peek at minimum element (always at root) - O(1)
     int getMin() {
         if (isEmpty()) return -1;
-        return heap[0];
+        return heap[0];  // Root is always minimum in min-heap
     }
     
-    // Get heap size
+    // Get current number of elements - O(1)
     int size() {
         return heap.size();
     }
     
-    // Print heap as array
+    // Display heap as array (level-order traversal)
     void printHeap() {
         cout << "Heap: ";
-        for (int val : heap) {
-            cout << val << " ";
-        }
+        for (int val : heap) cout << val << " ";
         cout << endl;
-    }
-    
-    // Build a sample min-heap
-    static MinHeap* buildSampleHeap() {
-        MinHeap* h = new MinHeap();
-        vector<int> values = {3, 7, 1, 8, 2, 5, 4};
-        
-        for (int val : values) {
-            h->insert(val);
-        }
-        return h;
     }
 };</pre>
 
@@ -3319,9 +3143,9 @@ public:
     </ul>
 
     <pre class="code-block">// Priority Queue using heap
-#include <iostream>
-#include <vector>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 using namespace std;
 
 // Task with priority
@@ -3590,47 +3414,69 @@ public:
         
     <div class="chapter-number">Chapter 6</div>
     <h1 class="chapter-title">Traversal Algorithms</h1>
-    
+
     <div class="definition-box">
-        "Graph traversal is like exploring a maze - you need systematic strategies to visit every room without getting lost."
+        "Graph traversal is like exploring a maze - you need systematic strategies to visit every room without getting
+        lost."
     </div>
 
-    <p class="academic-text">Welcome to the algorithmic heart of graph theory! Having mastered the fundamental structures - graphs, trees, tries, and heaps - you're now ready to explore the algorithms that bring these structures to life. Graph traversal algorithms represent the foundation upon which virtually every graph algorithm is built, from the simplest connectivity checks to the most sophisticated network analysis and artificial intelligence systems.</p>
-    
-    <p class="academic-text">Traversal algorithms solve the fundamental challenge of systematic exploration: how do you visit every node in a graph exactly once, in a predictable order, without getting lost or missing anything? This seemingly simple problem underlies countless applications - web crawlers exploring the internet, social media algorithms analyzing friend networks, GPS systems finding routes, and AI systems searching through solution spaces. The strategies you learn here will appear again and again throughout computer science.</p>
+    <p class="academic-text">Welcome to the algorithmic heart of graph theory! Having mastered the fundamental
+        structures - graphs, trees, tries, and heaps - you're now ready to explore the algorithms that bring these
+        structures to life. Graph traversal algorithms represent the foundation upon which virtually every graph
+        algorithm is built, from the simplest connectivity checks to the most sophisticated network analysis and
+        artificial intelligence systems.</p>
 
-    <p class="academic-text">The beauty of graph traversal lies in how two simple, contrasting strategies - breadth-first and depth-first search - can solve an enormous range of problems. These aren't just academic exercises; they're the algorithmic building blocks that power search engines, social networks, navigation systems, and countless other technologies you use daily. Understanding these traversal patterns will give you the foundation to tackle complex algorithmic challenges across every domain of computer science.</p>
-    
-    <p class="academic-text"><strong>The two fundamental exploration strategies that power modern computing:</strong></p>
+    <p class="academic-text">Traversal algorithms solve the fundamental challenge of systematic exploration: how do you
+        visit every node in a graph exactly once, in a predictable order, without getting lost or missing anything? This
+        seemingly simple problem underlies countless applications - web crawlers exploring the internet, social media
+        algorithms analyzing friend networks, GPS systems finding routes, and AI systems searching through solution
+        spaces. The strategies you learn here will appear again and again throughout computer science.</p>
+
+    <p class="academic-text">The beauty of graph traversal lies in how two simple, contrasting strategies -
+        breadth-first and depth-first search - can solve an enormous range of problems. These aren't just academic
+        exercises; they're the algorithmic building blocks that power search engines, social networks, navigation
+        systems, and countless other technologies you use daily. Understanding these traversal patterns will give you
+        the foundation to tackle complex algorithmic challenges across every domain of computer science.</p>
+
+    <p class="academic-text"><strong>The two fundamental exploration strategies that power modern computing:</strong>
+    </p>
     <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Breadth-First Search (BFS):</strong> Explores systematically by distance, like ripples spreading from a stone dropped in water - perfect for finding shortest paths and analyzing network structure</li>
-        <li class="academic-text"><strong>Depth-First Search (DFS):</strong> Explores by going as deep as possible before backtracking, like a maze solver following each path to its end - ideal for detecting cycles and analyzing connectivity</li>
+        <li class="academic-text"><strong>Breadth-First Search (BFS):</strong> Explores systematically by distance, like
+            ripples spreading from a stone dropped in water - perfect for finding shortest paths and analyzing network
+            structure</li>
+        <li class="academic-text"><strong>Depth-First Search (DFS):</strong> Explores by going as deep as possible
+            before backtracking, like a maze solver following each path to its end - ideal for detecting cycles and
+            analyzing connectivity</li>
     </ul>
 
     <h2 class="section-title" id="ch6-1">6.1 Breadth-First Search (BFS)</h2>
-    
-    <p class="academic-text">BFS explores a graph level by level, like ripples spreading out from a stone dropped in water. It visits all nodes at distance 1, then all nodes at distance 2, and so on.</p>
-    
+
+    <p class="academic-text">BFS explores a graph level by level, like ripples spreading out from a stone dropped in
+        water. It visits all nodes at distance 1, then all nodes at distance 2, and so on.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🌊 BFS Strategy</h3>
-        <p class="academic-text"><strong>Breadth-First Search</strong> systematically explores nodes in order of their distance from the starting node.</p>
+        <p class="academic-text"><strong>Breadth-First Search</strong> systematically explores nodes in order of their
+            distance from the starting node.</p>
         <ul style="margin: 8px 0 16px 24px;">
-            <li class="academic-text"><strong>Level-by-level:</strong> Visit all nodes at distance k before any at distance k+1</li>
+            <li class="academic-text"><strong>Level-by-level:</strong> Visit all nodes at distance k before any at
+                distance k+1</li>
             <li class="academic-text"><strong>Queue-based:</strong> Uses a FIFO queue to maintain exploration order</li>
             <li class="academic-text"><strong>Shortest paths:</strong> Finds shortest unweighted paths naturally</li>
         </ul>
     </div>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>BFS Exploration Example (Starting from A):</strong><br><br>
         <div class="mermaid">
-        graph LR
+            graph LR
             A[A:0] --- B[B:1]
             A --- C[C:1]
             B --- D[D:2]
             B --- E[E:2]
             C --- F[F:2]
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
             style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
             style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
@@ -3638,47 +3484,50 @@ public:
             style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
             style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Numbers show distance from A. BFS visits: A(0) → B,C(1) → D,E,F(2)</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Numbers show
+            distance from A. BFS visits: A(0) → B,C(1) → D,E,F(2)</p>
     </div>
 
-    <pre class="code-block">// BFS Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_set>
+    <pre class="code-block">// Breadth-First Search - explores level by level using queue
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_set&gt;
 using namespace std;
 
 class BFS {
 private:
-    vector<vector<int>> graph;
+    vector&lt;vector&lt;int&gt;&gt; graph;  // Adjacency list representation
     
 public:
     BFS(int n) : graph(n) {}
     
+    // Add undirected edge between two nodes
     void addEdge(int u, int v) {
         graph[u].push_back(v);
-        graph[v].push_back(u); // undirected
+        graph[v].push_back(u); // Make it undirected
     }
     
-    // BFS traversal from start node
-    vector<int> bfsTraversal(int start) {
-        vector<int> result;
-        vector<bool> visited(graph.size(), false);
-        queue<int> q;
+    // BFS traversal - visits nodes level by level - O(V + E)
+    vector&lt;int&gt; bfsTraversal(int start) {
+        vector&lt;int&gt; result;                        // Store traversal order
+        vector&lt;bool&gt; visited(graph.size(), false); // Track visited nodes
+        queue&lt;int&gt; q;                              // FIFO queue for BFS
         
+        // Start with the initial node
         q.push(start);
         visited[start] = true;
         
         while (!q.empty()) {
-            int current = q.front();
+            int current = q.front();  // Get front of queue
             q.pop();
             result.push_back(current);
             
-            // Visit all unvisited neighbors
+            // Add all unvisited neighbors to queue
             for (int neighbor : graph[current]) {
                 if (!visited[neighbor]) {
-                    visited[neighbor] = true;
-                    q.push(neighbor);
+                    visited[neighbor] = true;  // Mark as visited
+                    q.push(neighbor);          // Add to queue
                 }
             }
         }
@@ -3720,32 +3569,38 @@ public:
 };</pre>
 
     <h2 class="section-title" id="ch6-2">6.2 Depth-First Search (DFS)</h2>
-    
-    <p class="academic-text">DFS explores a graph by going as deep as possible along each branch before backtracking. It's like exploring a maze by always taking the first unexplored path you see.</p>
-    
+
+    <p class="academic-text">DFS explores a graph by going as deep as possible along each branch before backtracking.
+        It's like exploring a maze by always taking the first unexplored path you see.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🕳️ DFS Strategy</h3>
-        <p class="academic-text"><strong>Depth-First Search</strong> explores as far as possible along each branch before backtracking.</p>
+        <p class="academic-text"><strong>Depth-First Search</strong> explores as far as possible along each branch
+            before backtracking.</p>
         <ul style="margin: 8px 0 16px 24px;">
-            <li class="academic-text"><strong>Deep exploration:</strong> Follow paths to their end before trying alternatives</li>
+            <li class="academic-text"><strong>Deep exploration:</strong> Follow paths to their end before trying
+                alternatives</li>
             <li class="academic-text"><strong>Stack-based:</strong> Uses recursion or explicit stack (LIFO)</li>
-            <li class="academic-text"><strong>Memory efficient:</strong> Only stores current path, not all discovered nodes</li>
+            <li class="academic-text"><strong>Memory efficient:</strong> Only stores current path, not all discovered
+                nodes</li>
         </ul>
     </div>
 
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>DFS vs BFS Comparison:</strong><br><br>
         <div class="mermaid">
-        graph TD
+            graph TD
             A[A] --- B[B]
             A --- C[C]
             B --- D[D]
             B --- E[E]
             C --- F[F]
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">BFS order: A → B,C → D,E,F | DFS order: A → B → D → E → C → F</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">BFS order: A → B,C
+            → D,E,F | DFS order: A → B → D → E → C → F</p>
     </div>
 
     <pre class="code-block">// DFS Implementation
@@ -3809,15 +3664,17 @@ public:
 };</pre>
 
     <h2 class="section-title" id="ch6-3">6.3 Cycle Detection Using DFS</h2>
-    
-    <p class="academic-text">One of DFS's superpowers is detecting cycles in graphs. This is crucial for many applications like detecting deadlocks, finding dependencies, and validating DAGs.</p>
-    
+
+    <p class="academic-text">One of DFS's superpowers is detecting cycles in graphs. This is crucial for many
+        applications like detecting deadlocks, finding dependencies, and validating DAGs.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🔄 Cycle Detection</h3>
         <p class="academic-text">DFS can detect cycles by tracking the recursion stack and looking for back edges.</p>
         <ul style="margin: 8px 0 16px 24px;">
             <li class="academic-text"><strong>Back edge:</strong> An edge to an ancestor in the DFS tree</li>
-            <li class="academic-text"><strong>Three colors:</strong> White (unvisited), Gray (processing), Black (finished)</li>
+            <li class="academic-text"><strong>Three colors:</strong> White (unvisited), Gray (processing), Black
+                (finished)</li>
             <li class="academic-text"><strong>Cycle found:</strong> When we encounter a gray node</li>
         </ul>
     </div>
@@ -3866,16 +3723,17 @@ public:
 };</pre>
 
     <h2 class="section-title" id="ch6-4">6.4 Applications in Social Networks and Web Crawling</h2>
-    
-    <p class="academic-text">BFS and DFS power many real-world applications. Let's see how they work in systems you use every day.</p>
-    
+
+    <p class="academic-text">BFS and DFS power many real-world applications. Let's see how they work in systems you use
+        every day.</p>
+
     <p class="academic-text"><strong>Social Network Applications:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
         <li class="academic-text"><strong>Friend suggestions:</strong> BFS finds mutual friends at distance 2</li>
         <li class="academic-text"><strong>Influence analysis:</strong> DFS explores how information spreads</li>
         <li class="academic-text"><strong>Community detection:</strong> Connected components using DFS</li>
     </ul>
-    
+
     <p class="academic-text"><strong>Web Crawling Applications:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
         <li class="academic-text"><strong>Search engines:</strong> BFS for broad web exploration</li>
@@ -3945,7 +3803,7 @@ private:
 
     <div class="performance-summary">
         <h3 style="color: #2e7d32; margin-top: 0;">🚀 Traversal Algorithm Summary</h3>
-        
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
             <div style="background-color: white; border-radius: 8px; padding: 15px;">
                 <h4 style="color: #2e7d32; margin-top: 0;">BFS Characteristics</h4>
@@ -3956,7 +3814,7 @@ private:
                     <li class="academic-text"><strong>Memory:</strong> Higher (stores all discovered)</li>
                 </ul>
             </div>
-            
+
             <div style="background-color: white; border-radius: 8px; padding: 15px;">
                 <h4 style="color: #2e7d32; margin-top: 0;">DFS Characteristics</h4>
                 <ul style="margin: 8px 0 16px 24px;">
@@ -3978,8 +3836,10 @@ private:
             <li class="academic-text">✅ <strong>Cycle detection</strong> - using DFS with three-color approach</li>
             <li class="academic-text">✅ <strong>Real applications</strong> - social networks and web crawling</li>
         </ul>
-        
-        <p class="academic-text">These traversal algorithms are the foundation for almost every graph algorithm you'll learn next. Understanding BFS and DFS deeply will make shortest path algorithms, minimum spanning trees, and network flow much easier to grasp!</p>
+
+        <p class="academic-text">These traversal algorithms are the foundation for almost every graph algorithm you'll
+            learn next. Understanding BFS and DFS deeply will make shortest path algorithms, minimum spanning trees, and
+            network flow much easier to grasp!</p>
     </div>
 
     </div>
@@ -4040,38 +3900,40 @@ private:
     </div>
 
     <pre class="code-block">// Dijkstra's Algorithm Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_map>
-#include <limits>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_map&gt;
+#include &lt;limits&gt;
 using namespace std;
 
 class DijkstraGraph {
 private:
+    // Edge structure for weighted directed graph
     struct Edge {
-        int to;
-        int weight;
+        int to;      // Destination node
+        int weight;  // Edge weight/cost
         Edge(int t, int w) : to(t), weight(w) {}
     };
     
-    vector<vector<Edge>> graph;
+    vector&lt;vector&lt;Edge&gt;&gt; graph;  // Adjacency list with weights
     
 public:
     DijkstraGraph(int n) : graph(n) {}
     
+    // Add directed weighted edge
     void addEdge(int from, int to, int weight) {
         graph[from].push_back(Edge(to, weight));
     }
     
-    // Dijkstra's shortest path algorithm
-    pair<vector<int>, vector<int>> dijkstra(int start) {
+    // Dijkstra's algorithm - finds shortest paths from start to all nodes - O((V+E)logV)
+    pair&lt;vector&lt;int&gt;, vector&lt;int&gt;&gt; dijkstra(int start) {
         int n = graph.size();
-        vector<int> dist(n, INT_MAX);
-        vector<int> parent(n, -1);
+        vector&lt;int&gt; dist(n, INT_MAX);    // Distance from start to each node
+        vector&lt;int&gt; parent(n, -1);       // Parent for path reconstruction
         
-        // Priority queue: (distance, node)
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        // Min-heap priority queue: (distance, node) - processes closest nodes first
+        priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int, int&gt;&gt;, greater&lt;pair&lt;int, int&gt;&gt;&gt; pq;
         
         dist[start] = 0;
         pq.push({0, start});
@@ -4266,7 +4128,13 @@ public:
     </div>
 
     <pre class="code-block">// A* Algorithm Implementation
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
 #include <cmath>
+#include <limits>
+using namespace std;
 
 class AStarGraph {
 private:
@@ -4602,35 +4470,38 @@ public:
     </div>
 
     <pre class="code-block">// Kruskal's Algorithm Implementation
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
 using namespace std;
 
 class KruskalMST {
 private:
+    // Edge structure for Kruskal's algorithm
     struct Edge {
-        int u, v, weight;
+        int u, v, weight;  // Two endpoints and weight
         Edge(int u, int v, int w) : u(u), v(v), weight(w) {}
         
+        // Comparison operator for sorting edges by weight
         bool operator<(const Edge& other) const {
             return weight < other.weight;
         }
     };
     
-    vector<Edge> edges;
-    int numVertices;
+    vector&lt;Edge&gt; edges;    // All edges in the graph
+    int numVertices;       // Number of vertices
     
 public:
     KruskalMST(int n) : numVertices(n) {}
     
+    // Add undirected weighted edge to graph
     void addEdge(int u, int v, int weight) {
         edges.push_back(Edge(u, v, weight));
     }
     
     // Find MST using Kruskal's algorithm
-    vector<Edge> findMST() {
-        vector<Edge> mst;
+    vector&lt;Edge&gt; findMST() {
+        vector&lt;Edge&gt; mst;
         
         // Sort edges by weight
         sort(edges.begin(), edges.end());
@@ -4714,8 +4585,11 @@ public:
     </div>
 
     <pre class="code-block">// Prim's Algorithm Implementation
+#include <iostream>
+#include <vector>
 #include <queue>
 #include <climits>
+using namespace std;
 
 class PrimMST {
 private:
@@ -5118,16 +4992,16 @@ public:
     </div>
 
     <pre class="code-block">// Kahn's Algorithm Implementation
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <unordered_map>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_map&gt;
 using namespace std;
 
 class TopologicalSort {
 private:
-    vector<vector<int>> graph;
-    vector<int> inDegree;
+    vector&lt;vector&lt;int&gt;&gt; graph;
+    vector&lt;int&gt; inDegree;
     int numVertices;
     
 public:
@@ -5602,23 +5476,23 @@ public:
     </div>
 
     <pre class="code-block">// Ford-Fulkerson Method Implementation
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;queue&gt;
-#include &lt;climits&gt;
-#include &lt;cstring&gt;
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+#include <cstring>
 using namespace std;
 
 class FordFulkerson {
 private:
     int V; // Number of vertices
-    vector&lt;vector&lt;int&gt;&gt; capacity;  // Capacity matrix
-    vector&lt;vector&lt;int&gt;&gt; flow;      // Flow matrix
+    vector<vector<int>> capacity;  // Capacity matrix
+    vector<vector<int>> flow;      // Flow matrix
     
     // BFS to find if there's a path from source to sink
-    bool bfs(int source, int sink, vector&lt;int&gt;&amp; parent) {
-        vector&lt;bool&gt; visited(V, false);
-        queue&lt;int&gt; q;
+    bool bfs(int source, int sink, vector<int>& parent) {
+        vector<bool> visited(V, false);
+        queue<int> q;
         q.push(source);
         visited[source] = true;
         parent[source] = -1;
@@ -5627,11 +5501,11 @@ private:
             int u = q.front();
             q.pop();
             
-            for (int v = 0; v &lt; V; v++) {
+            for (int v = 0; v < V; v++) {
                 // Check if there's residual capacity
                 int residual = capacity[u][v] - flow[u][v];
                 
-                if (!visited[v] &amp;&amp; residual &gt; 0) {
+                if (!visited[v] && residual > 0) {
                     visited[v] = true;
                     parent[v] = u;
                     q.push(v);
@@ -5645,8 +5519,8 @@ private:
     
 public:
     FordFulkerson(int vertices) : V(vertices) {
-        capacity.resize(V, vector&lt;int&gt;(V, 0));
-        flow.resize(V, vector&lt;int&gt;(V, 0));
+        capacity.resize(V, vector<int>(V, 0));
+        flow.resize(V, vector<int>(V, 0));
     }
     
     // Add edge with capacity
@@ -5657,7 +5531,7 @@ public:
     // Compute maximum flow from source to sink
     int maxFlow(int source, int sink) {
         int totalFlow = 0;
-        vector&lt;int&gt; parent(V);
+        vector<int> parent(V);
         
         // While there exists an augmenting path
         while (bfs(source, sink, parent)) {
@@ -5683,10 +5557,10 @@ public:
     }
     
     // Get the min-cut (vertices reachable from source in residual graph)
-    vector&lt;int&gt; getMinCut(int source) {
-        vector&lt;int&gt; reachable;
-        vector&lt;bool&gt; visited(V, false);
-        queue&lt;int&gt; q;
+    vector<int> getMinCut(int source) {
+        vector<int> reachable;
+        vector<bool> visited(V, false);
+        queue<int> q;
         q.push(source);
         visited[source] = true;
         
@@ -5695,9 +5569,9 @@ public:
             q.pop();
             reachable.push_back(u);
             
-            for (int v = 0; v &lt; V; v++) {
+            for (int v = 0; v < V; v++) {
                 int residual = capacity[u][v] - flow[u][v];
-                if (!visited[v] &amp;&amp; residual &gt; 0) {
+                if (!visited[v] && residual > 0) {
                     visited[v] = true;
                     q.push(v);
                 }
@@ -5730,22 +5604,22 @@ public:
     </ul>
 
     <pre class="code-block">// Edmonds-Karp Algorithm (Ford-Fulkerson with BFS)
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;queue&gt;
-#include &lt;climits&gt;
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
 using namespace std;
 
 class EdmondsKarp {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; capacity;
+    vector<vector<int>> capacity;
     
     // BFS to find shortest augmenting path
-    bool bfs(int source, int sink, vector&lt;int&gt;&amp; parent, 
-             vector&lt;vector&lt;int&gt;&gt;&amp; residual) {
-        vector&lt;bool&gt; visited(V, false);
-        queue&lt;int&gt; q;
+    bool bfs(int source, int sink, vector<int>& parent, 
+             vector<vector<int>>& residual) {
+        vector<bool> visited(V, false);
+        queue<int> q;
         q.push(source);
         visited[source] = true;
         parent[source] = -1;
@@ -5755,8 +5629,8 @@ private:
             q.pop();
             
             // Try all neighbors
-            for (int v = 0; v &lt; V; v++) {
-                if (!visited[v] &amp;&amp; residual[u][v] &gt; 0) {
+            for (int v = 0; v < V; v++) {
+                if (!visited[v] && residual[u][v] > 0) {
                     visited[v] = true;
                     parent[v] = u;
                     q.push(v);
@@ -5770,7 +5644,7 @@ private:
     
 public:
     EdmondsKarp(int vertices) : V(vertices) {
-        capacity.resize(V, vector&lt;int&gt;(V, 0));
+        capacity.resize(V, vector<int>(V, 0));
     }
     
     void addEdge(int u, int v, int cap) {
@@ -5779,8 +5653,8 @@ public:
     
     int maxFlow(int source, int sink) {
         // Create residual graph (initially same as capacity)
-        vector&lt;vector&lt;int&gt;&gt; residual = capacity;
-        vector&lt;int&gt; parent(V);
+        vector<vector<int>> residual = capacity;
+        vector<int> parent(V);
         int maxFlowValue = 0;
         
         // While there exists an augmenting path from source to sink
@@ -5807,10 +5681,10 @@ public:
     
     // Print flow decomposition
     void printFlow(int source, int sink) {
-        vector&lt;vector&lt;int&gt;&gt; residual = capacity;
-        vector&lt;int&gt; parent(V);
+        vector<vector<int>> residual = capacity;
+        vector<int> parent(V);
         
-        cout &lt;&lt; "Flow paths:" &lt;&lt; endl;
+        cout << "Flow paths:" << endl;
         int pathNum = 1;
         
         while (bfs(source, sink, parent, residual)) {
@@ -5820,18 +5694,18 @@ public:
                 pathFlow = min(pathFlow, residual[u][v]);
             }
             
-            cout &lt;&lt; "Path " &lt;&lt; pathNum++ &lt;&lt; " (flow=" &lt;&lt; pathFlow &lt;&lt; "): ";
-            vector&lt;int&gt; path;
+            cout << "Path " << pathNum++ << " (flow=" << pathFlow << "): ";
+            vector<int> path;
             for (int v = sink; v != source; v = parent[v]) {
                 path.push_back(v);
             }
             path.push_back(source);
             
-            for (int i = path.size() - 1; i &gt;= 0; i--) {
-                cout &lt;&lt; path[i];
-                if (i &gt; 0) cout &lt;&lt; " -> ";
+            for (int i = path.size() - 1; i >= 0; i--) {
+                cout << path[i];
+                if (i > 0) cout << " -> ";
             }
-            cout &lt;&lt; endl;
+            cout << endl;
             
             for (int v = sink; v != source; v = parent[v]) {
                 int u = parent[v];
@@ -5904,9 +5778,9 @@ public:
     </div>
 
     <pre class="code-block">// Bipartite Matching using Max Flow
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
+#include <iostream>
+#include <vector>
+#include <string>
 using namespace std;
 
 class BipartiteMatching {
@@ -5923,12 +5797,12 @@ public:
         sink = left + right + 1;
         
         // Connect source to all left nodes
-        for (int i = 1; i &lt;= left; i++) {
+        for (int i = 1; i <= left; i++) {
             flowNetwork.addEdge(source, i, 1);
         }
         
         // Connect all right nodes to sink
-        for (int i = 1; i &lt;= right; i++) {
+        for (int i = 1; i <= right; i++) {
             flowNetwork.addEdge(left + i, sink, 1);
         }
     }
@@ -5964,8 +5838,8 @@ void solveJobAssignment() {
     matcher.addCompatibility(3, 3);
     
     int maxAssignments = matcher.maxMatching();
-    cout &lt;&lt; "Maximum workers that can be assigned: " 
-         &lt;&lt; maxAssignments &lt;&lt; endl;
+    cout << "Maximum workers that can be assigned: " 
+         << maxAssignments << endl;
 }</pre>
 
     <div class="performance-summary">
@@ -6099,16 +5973,16 @@ void solveJobAssignment() {
     </div>
 
     <pre class="code-block">// Greedy Graph Coloring Implementation
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_set&gt;
-#include &lt;algorithm&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
 
 class GraphColoring {
 private:
     int V; // Number of vertices
-    vector&lt;vector&lt;int&gt;&gt; adj; // Adjacency list
+    vector<vector<int>> adj; // Adjacency list
     
 public:
     GraphColoring(int vertices) : V(vertices) {
@@ -6121,16 +5995,16 @@ public:
     }
     
     // Greedy coloring algorithm
-    vector&lt;int&gt; greedyColoring() {
-        vector&lt;int&gt; color(V, -1); // -1 means uncolored
+    vector<int> greedyColoring() {
+        vector<int> color(V, -1); // -1 means uncolored
         
         // Color first vertex with color 0
         color[0] = 0;
         
         // Color remaining vertices
-        for (int u = 1; u &lt; V; u++) {
+        for (int u = 1; u < V; u++) {
             // Find colors used by neighbors
-            unordered_set&lt;int&gt; usedColors;
+            unordered_set<int> usedColors;
             for (int neighbor : adj[u]) {
                 if (color[neighbor] != -1) {
                     usedColors.insert(color[neighbor]);
@@ -6150,19 +6024,19 @@ public:
     }
     
     // Improved: Order by degree (largest first)
-    vector&lt;int&gt; greedyColoringLargestFirst() {
+    vector<int> greedyColoringLargestFirst() {
         // Create vertex ordering by degree (descending)
-        vector&lt;pair&lt;int, int&gt;&gt; degreeVertex;
-        for (int i = 0; i &lt; V; i++) {
+        vector<pair<int, int>> degreeVertex;
+        for (int i = 0; i < V; i++) {
             degreeVertex.push_back({adj[i].size(), i});
         }
         sort(degreeVertex.rbegin(), degreeVertex.rend());
         
-        vector&lt;int&gt; color(V, -1);
+        vector<int> color(V, -1);
         
         // Color vertices in degree order
         for (auto [degree, u] : degreeVertex) {
-            unordered_set&lt;int&gt; usedColors;
+            unordered_set<int> usedColors;
             for (int neighbor : adj[u]) {
                 if (color[neighbor] != -1) {
                     usedColors.insert(color[neighbor]);
@@ -6181,18 +6055,18 @@ public:
     }
     
     // Get chromatic number (number of colors used)
-    int getChromaticNumber(const vector&lt;int&gt;&amp; coloring) {
+    int getChromaticNumber(const vector<int>& coloring) {
         if (coloring.empty()) return 0;
         return *max_element(coloring.begin(), coloring.end()) + 1;
     }
     
     // Print coloring result
-    void printColoring(const vector&lt;int&gt;&amp; coloring) {
-        cout &lt;&lt; "Vertex Coloring:" &lt;&lt; endl;
-        for (int i = 0; i &lt; V; i++) {
-            cout &lt;&lt; "Vertex " &lt;&lt; i &lt;&lt; " -> Color " &lt;&lt; coloring[i] &lt;&lt; endl;
+    void printColoring(const vector<int>& coloring) {
+        cout << "Vertex Coloring:" << endl;
+        for (int i = 0; i < V; i++) {
+            cout << "Vertex " << i << " -> Color " << coloring[i] << endl;
         }
-        cout &lt;&lt; "Total colors used: " &lt;&lt; getChromaticNumber(coloring) &lt;&lt; endl;
+        cout << "Total colors used: " << getChromaticNumber(coloring) << endl;
     }
 };</pre>
 
@@ -6270,17 +6144,17 @@ public:
     </div>
 
     <pre class="code-block">// Bipartite Matching using DFS (Hungarian Algorithm variant)
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;cstring&gt;
+#include <iostream>
+#include <vector>
+#include <cstring>
 using namespace std;
 
 class BipartiteMatching {
 private:
     int leftSize, rightSize;
-    vector&lt;vector&lt;int&gt;&gt; adj; // adj[left] = list of compatible right vertices
-    vector&lt;int&gt; match; // match[right] = matched left vertex (-1 if unmatched)
-    vector&lt;bool&gt; visited;
+    vector<vector<int>> adj; // adj[left] = list of compatible right vertices
+    vector<int> match; // match[right] = matched left vertex (-1 if unmatched)
+    vector<bool> visited;
     
     // Try to find augmenting path from left vertex u
     bool dfs(int u) {
@@ -6314,7 +6188,7 @@ public:
         int result = 0;
         
         // Try to find augmenting path for each left vertex
-        for (int u = 0; u &lt; leftSize; u++) {
+        for (int u = 0; u < leftSize; u++) {
             visited.assign(rightSize, false);
             if (dfs(u)) {
                 result++;
@@ -6325,9 +6199,9 @@ public:
     }
     
     // Get the matching edges
-    vector&lt;pair&lt;int, int&gt;&gt; getMatching() {
-        vector&lt;pair&lt;int, int&gt;&gt; matching;
-        for (int v = 0; v &lt; rightSize; v++) {
+    vector<pair<int, int>> getMatching() {
+        vector<pair<int, int>> matching;
+        for (int v = 0; v < rightSize; v++) {
             if (match[v] != -1) {
                 matching.push_back({match[v], v});
             }
@@ -6367,40 +6241,40 @@ public:
     </div>
 
     <pre class="code-block">// Exam Scheduling using Graph Coloring
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
-#include &lt;unordered_map&gt;
-#include &lt;unordered_set&gt;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 using namespace std;
 
 class ExamScheduler {
 private:
-    vector&lt;string&gt; exams;
-    unordered_map&lt;string, int&gt; examIndex;
+    vector<string> exams;
+    unordered_map<string, int> examIndex;
     GraphColoring graph;
     
 public:
-    ExamScheduler(const vector&lt;string&gt;&amp; examList) 
+    ExamScheduler(const vector<string>& examList) 
         : exams(examList), graph(examList.size()) {
-        for (int i = 0; i &lt; exams.size(); i++) {
+        for (int i = 0; i < exams.size(); i++) {
             examIndex[exams[i]] = i;
         }
     }
     
     // Add conflict: two exams have common students
-    void addConflict(const string&amp; exam1, const string&amp; exam2) {
+    void addConflict(const string& exam1, const string& exam2) {
         int u = examIndex[exam1];
         int v = examIndex[exam2];
         graph.addEdge(u, v);
     }
     
     // Schedule exams and return time slots
-    unordered_map&lt;string, int&gt; scheduleExams() {
-        vector&lt;int&gt; coloring = graph.greedyColoringLargestFirst();
+    unordered_map<string, int> scheduleExams() {
+        vector<int> coloring = graph.greedyColoringLargestFirst();
         
-        unordered_map&lt;string, int&gt; schedule;
-        for (int i = 0; i &lt; exams.size(); i++) {
+        unordered_map<string, int> schedule;
+        for (int i = 0; i < exams.size(); i++) {
             schedule[exams[i]] = coloring[i];
         }
         
@@ -6412,20 +6286,20 @@ public:
         auto schedule = scheduleExams();
         
         // Group by time slot
-        unordered_map&lt;int, vector&lt;string&gt;&gt; slots;
-        for (const auto&amp; [exam, slot] : schedule) {
+        unordered_map<int, vector<string>> slots;
+        for (const auto& [exam, slot] : schedule) {
             slots[slot].push_back(exam);
         }
         
-        cout &lt;&lt; "Exam Schedule:" &lt;&lt; endl;
-        for (const auto&amp; [slot, examList] : slots) {
-            cout &lt;&lt; "Time Slot " &lt;&lt; slot &lt;&lt; ": ";
-            for (const string&amp; exam : examList) {
-                cout &lt;&lt; exam &lt;&lt; " ";
+        cout << "Exam Schedule:" << endl;
+        for (const auto& [slot, examList] : slots) {
+            cout << "Time Slot " << slot << ": ";
+            for (const string& exam : examList) {
+                cout << exam << " ";
             }
-            cout &lt;&lt; endl;
+            cout << endl;
         }
-        cout &lt;&lt; "Total time slots needed: " &lt;&lt; slots.size() &lt;&lt; endl;
+        cout << "Total time slots needed: " << slots.size() << endl;
     }
 };</pre>
 
@@ -6463,46 +6337,46 @@ public:
     </ul>
 
     <pre class="code-block">// Job Assignment using Bipartite Matching
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
-#include &lt;unordered_map&gt;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
 using namespace std;
 
 class JobAssignment {
 private:
-    vector&lt;string&gt; workers;
-    vector&lt;string&gt; jobs;
-    unordered_map&lt;string, int&gt; workerIndex;
-    unordered_map&lt;string, int&gt; jobIndex;
+    vector<string> workers;
+    vector<string> jobs;
+    unordered_map<string, int> workerIndex;
+    unordered_map<string, int> jobIndex;
     BipartiteMatching matcher;
     
 public:
-    JobAssignment(const vector&lt;string&gt;&amp; workerList, 
-                  const vector&lt;string&gt;&amp; jobList)
+    JobAssignment(const vector<string>& workerList, 
+                  const vector<string>& jobList)
         : workers(workerList), jobs(jobList),
           matcher(workerList.size(), jobList.size()) {
         
-        for (int i = 0; i &lt; workers.size(); i++) {
+        for (int i = 0; i < workers.size(); i++) {
             workerIndex[workers[i]] = i;
         }
-        for (int i = 0; i &lt; jobs.size(); i++) {
+        for (int i = 0; i < jobs.size(); i++) {
             jobIndex[jobs[i]] = i;
         }
     }
     
     // Add skill: worker can do this job
-    void addSkill(const string&amp; worker, const string&amp; job) {
+    void addSkill(const string& worker, const string& job) {
         int w = workerIndex[worker];
         int j = jobIndex[job];
         matcher.addEdge(w, j);
     }
     
     // Find optimal assignment
-    vector&lt;pair&lt;string, string&gt;&gt; assignJobs() {
+    vector<pair<string, string>> assignJobs() {
         auto matching = matcher.getMatching();
         
-        vector&lt;pair&lt;string, string&gt;&gt; assignment;
+        vector<pair<string, string>> assignment;
         for (auto [w, j] : matching) {
             assignment.push_back({workers[w], jobs[j]});
         }
@@ -6514,14 +6388,14 @@ public:
     void printAssignment() {
         auto assignment = assignJobs();
         
-        cout &lt;&lt; "Job Assignments:" &lt;&lt; endl;
-        for (const auto&amp; [worker, job] : assignment) {
-            cout &lt;&lt; worker &lt;&lt; " -> " &lt;&lt; job &lt;&lt; endl;
+        cout << "Job Assignments:" << endl;
+        for (const auto& [worker, job] : assignment) {
+            cout << worker << " -> " << job << endl;
         }
         
         int unassigned = workers.size() - assignment.size();
-        if (unassigned &gt; 0) {
-            cout &lt;&lt; unassigned &lt;&lt; " workers remain unassigned" &lt;&lt; endl;
+        if (unassigned > 0) {
+            cout << unassigned << " workers remain unassigned" << endl;
         }
     }
 };</pre>
@@ -6642,19 +6516,19 @@ public:
     </ul>
 
     <pre class="code-block">// Articulation Points and Bridges using Tarjan's Algorithm
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;algorithm&gt;
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 class ArticulationPoints {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;bool&gt; visited;
-    vector&lt;int&gt; disc, low, parent;
-    vector&lt;bool&gt; isAP;
-    vector&lt;pair&lt;int, int&gt;&gt; bridges;
+    vector<vector<int>> adj;
+    vector<bool> visited;
+    vector<int> disc, low, parent;
+    vector<bool> isAP;
+    vector<pair<int, int>> bridges;
     int timer;
     
     void dfs(int u) {
@@ -6671,15 +6545,15 @@ private:
                 low[u] = min(low[u], low[v]);
                 
                 // Check articulation point
-                if (parent[u] == -1 && children &gt; 1) {
+                if (parent[u] == -1 && children > 1) {
                     isAP[u] = true;
                 }
-                if (parent[u] != -1 && low[v] &gt;= disc[u]) {
+                if (parent[u] != -1 && low[v] >= disc[u]) {
                     isAP[u] = true;
                 }
                 
                 // Check bridge
-                if (low[v] &gt; disc[u]) {
+                if (low[v] > disc[u]) {
                     bridges.push_back({u, v});
                 }
             }
@@ -6705,20 +6579,20 @@ public:
     }
     
     void findArticulationPoints() {
-        for (int i = 0; i &lt; V; i++) {
+        for (int i = 0; i < V; i++) {
             if (!visited[i]) dfs(i);
         }
     }
     
-    vector&lt;int&gt; getArticulationPoints() {
-        vector&lt;int&gt; result;
-        for (int i = 0; i &lt; V; i++) {
+    vector<int> getArticulationPoints() {
+        vector<int> result;
+        for (int i = 0; i < V; i++) {
             if (isAP[i]) result.push_back(i);
         }
         return result;
     }
     
-    vector&lt;pair&lt;int, int&gt;&gt; getBridges() {
+    vector<pair<int, int>> getBridges() {
         return bridges;
     }
 };</pre>
@@ -6760,19 +6634,19 @@ public:
     </div>
 
     <pre class="code-block">// Tarjan's Algorithm for SCCs
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;stack&gt;
+#include <iostream>
+#include <vector>
+#include <stack>
 using namespace std;
 
 class TarjanSCC {
 private:
     int V, timer;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;bool&gt; onStack, visited;
-    vector&lt;int&gt; disc, low;
-    stack&lt;int&gt; st;
-    vector&lt;vector&lt;int&gt;&gt; sccs;
+    vector<vector<int>> adj;
+    vector<bool> onStack, visited;
+    vector<int> disc, low;
+    stack<int> st;
+    vector<vector<int>> sccs;
     
     void dfs(int u) {
         disc[u] = low[u] = timer++;
@@ -6791,7 +6665,7 @@ private:
         }
         
         if (low[u] == disc[u]) {
-            vector&lt;int&gt; scc;
+            vector<int> scc;
             int v;
             do {
                 v = st.top();
@@ -6816,8 +6690,8 @@ public:
         adj[u].push_back(v);
     }
     
-    vector&lt;vector&lt;int&gt;&gt; findSCCs() {
-        for (int i = 0; i &lt; V; i++) {
+    vector<vector<int>> findSCCs() {
+        for (int i = 0; i < V; i++) {
             if (!visited[i]) dfs(i);
         }
         return sccs;
@@ -6850,15 +6724,15 @@ public:
     </div>
 
     <pre class="code-block">// Eulerian Path Detection
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
+#include <iostream>
+#include <vector>
 using namespace std;
 
 class EulerianPath {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;int&gt; degree;
+    vector<vector<int>> adj;
+    vector<int> degree;
     
 public:
     EulerianPath(int vertices) : V(vertices) {
@@ -6875,7 +6749,7 @@ public:
     
     int checkEulerian() {
         int oddCount = 0;
-        for (int i = 0; i &lt; V; i++) {
+        for (int i = 0; i < V; i++) {
             if (degree[i] % 2 != 0) oddCount++;
         }
         
@@ -7013,11 +6887,11 @@ public:
     </div>
 
     <pre class="code-block">// Comprehensive AST Implementation
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;memory&gt;
-#include &lt;string&gt;
-#include &lt;unordered_map&gt;
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <string>
+#include <unordered_map>
 using namespace std;
 
 enum class NodeType {
@@ -7029,16 +6903,16 @@ class ASTNode {
 public:
     NodeType type;
     string value;
-    vector&lt;shared_ptr&lt;ASTNode&gt;&gt; children;
+    vector<shared_ptr<ASTNode>> children;
     
     ASTNode(NodeType t, string v = "") : type(t), value(v) {}
     
-    void addChild(shared_ptr&lt;ASTNode&gt; child) {
+    void addChild(shared_ptr<ASTNode> child) {
         children.push_back(child);
     }
     
     // Evaluate expression tree with variable context
-    double evaluate(unordered_map&lt;string, double&gt;&amp; variables) {
+    double evaluate(unordered_map<string, double>& variables) {
         switch (type) {
             case NodeType::NUMBER:
                 return stod(value);
@@ -7050,8 +6924,8 @@ public:
                 throw runtime_error("Undefined variable: " + value);
                 
             case NodeType::BINARY_OP: {
-                double left = children[0]-&gt;evaluate(variables);
-                double right = children[1]-&gt;evaluate(variables);
+                double left = children[0]->evaluate(variables);
+                double right = children[1]->evaluate(variables);
                 
                 if (value == "+") return left + right;
                 if (value == "-") return left - right;
@@ -7065,14 +6939,14 @@ public:
             }
             
             case NodeType::UNARY_OP: {
-                double operand = children[0]-&gt;evaluate(variables);
+                double operand = children[0]->evaluate(variables);
                 if (value == "-") return -operand;
                 if (value == "!") return !operand;
                 break;
             }
             
             case NodeType::ASSIGNMENT: {
-                double val = children[0]-&gt;evaluate(variables);
+                double val = children[0]->evaluate(variables);
                 variables[value] = val;
                 return val;
             }
@@ -7090,8 +6964,8 @@ public:
         
         switch (type) {
             case NodeType::BINARY_OP:
-                code = "(" + children[0]-&gt;generateCode() + " " + 
-                       value + " " + children[1]-&gt;generateCode() + ")";
+                code = "(" + children[0]->generateCode() + " " + 
+                       value + " " + children[1]->generateCode() + ")";
                 break;
                 
             case NodeType::NUMBER:
@@ -7100,7 +6974,7 @@ public:
                 break;
                 
             case NodeType::ASSIGNMENT:
-                code = value + " = " + children[0]-&gt;generateCode();
+                code = value + " = " + children[0]->generateCode();
                 break;
                 
             default:
@@ -7111,14 +6985,14 @@ public:
     
     // Pretty print the tree structure
     void print(int depth = 0) {
-        for (int i = 0; i &lt; depth; i++) cout &lt;&lt; "  ";
+        for (int i = 0; i < depth; i++) cout << "  ";
         
-        cout &lt;&lt; "[" &lt;&lt; typeToString(type) &lt;&lt; "] ";
-        if (!value.empty()) cout &lt;&lt; value;
-        cout &lt;&lt; endl;
+        cout << "[" << typeToString(type) << "] ";
+        if (!value.empty()) cout << value;
+        cout << endl;
         
-        for (auto&amp; child : children) {
-            child-&gt;print(depth + 1);
+        for (auto& child : children) {
+            child->print(depth + 1);
         }
     }
     
@@ -7136,23 +7010,23 @@ private:
 };
 
 // Build AST for: result = a + b * c
-shared_ptr&lt;ASTNode&gt; buildExampleAST() {
+shared_ptr<ASTNode> buildExampleAST() {
     // Create assignment node
-    auto assignment = make_shared&lt;ASTNode&gt;(NodeType::ASSIGNMENT, "result");
+    auto assignment = make_shared<ASTNode>(NodeType::ASSIGNMENT, "result");
     
     // Create expression: a + (b * c)
-    auto plus = make_shared&lt;ASTNode&gt;(NodeType::BINARY_OP, "+");
-    auto a = make_shared&lt;ASTNode&gt;(NodeType::VARIABLE, "a");
-    auto mult = make_shared&lt;ASTNode&gt;(NodeType::BINARY_OP, "*");
-    auto b = make_shared&lt;ASTNode&gt;(NodeType::VARIABLE, "b");
-    auto c = make_shared&lt;ASTNode&gt;(NodeType::VARIABLE, "c");
+    auto plus = make_shared<ASTNode>(NodeType::BINARY_OP, "+");
+    auto a = make_shared<ASTNode>(NodeType::VARIABLE, "a");
+    auto mult = make_shared<ASTNode>(NodeType::BINARY_OP, "*");
+    auto b = make_shared<ASTNode>(NodeType::VARIABLE, "b");
+    auto c = make_shared<ASTNode>(NodeType::VARIABLE, "c");
     
     // Build tree structure
-    mult-&gt;addChild(b);
-    mult-&gt;addChild(c);
-    plus-&gt;addChild(a);
-    plus-&gt;addChild(mult);
-    assignment-&gt;addChild(plus);
+    mult->addChild(b);
+    mult->addChild(c);
+    plus->addChild(a);
+    plus->addChild(mult);
+    assignment->addChild(plus);
     
     return assignment;
 }</pre>
@@ -7164,10 +7038,10 @@ shared_ptr&lt;ASTNode&gt; buildExampleAST() {
         <strong>CFG Example: If-Else with Loop</strong><br><br>
         <div class="mermaid">
         graph TD
-            A[Entry] --> B{if x &gt; 0}
+            A[Entry] --> B{if x > 0}
             B -->|true| C[y = x * 2]
             B -->|false| D[y = -x]
-            C --> E{while y &gt; 10}
+            C --> E{while y > 10}
             D --> E
             E -->|true| F[y = y - 1]
             F --> E
@@ -7231,21 +7105,21 @@ shared_ptr&lt;ASTNode&gt; buildExampleAST() {
     </div>
 
     <pre class="code-block">// Comprehensive Deadlock Detection System
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_set&gt;
-#include &lt;algorithm&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
 
 class DeadlockDetector {
 private:
     int numProcesses, numResources;
-    vector&lt;vector&lt;int&gt;&gt; waitForGraph;
-    vector&lt;int&gt; available;
-    vector&lt;vector&lt;int&gt;&gt; allocation, request;
+    vector<vector<int>> waitForGraph;
+    vector<int> available;
+    vector<vector<int>> allocation, request;
     
-    bool hasCycleDFS(int node, vector&lt;bool&gt;&amp; visited, 
-                     vector&lt;bool&gt;&amp; recStack, vector&lt;int&gt;&amp; cycle) {
+    bool hasCycleDFS(int node, vector<bool>& visited, 
+                     vector<bool>& recStack, vector<int>& cycle) {
         visited[node] = true;
         recStack[node] = true;
         cycle.push_back(node);
@@ -7272,19 +7146,19 @@ public:
         : numProcesses(processes), numResources(resources) {
         waitForGraph.resize(processes);
         available.resize(resources);
-        allocation.resize(processes, vector&lt;int&gt;(resources, 0));
-        request.resize(processes, vector&lt;int&gt;(resources, 0));
+        allocation.resize(processes, vector<int>(resources, 0));
+        request.resize(processes, vector<int>(resources, 0));
     }
     
     void addWaitFor(int p1, int p2) {
         waitForGraph[p1].push_back(p2);
     }
     
-    bool detectDeadlock(vector&lt;int&gt;&amp; deadlockedProcesses) {
-        vector&lt;bool&gt; visited(numProcesses, false);
-        vector&lt;bool&gt; recStack(numProcesses, false);
+    bool detectDeadlock(vector<int>& deadlockedProcesses) {
+        vector<bool> visited(numProcesses, false);
+        vector<bool> recStack(numProcesses, false);
         
-        for (int i = 0; i &lt; numProcesses; i++) {
+        for (int i = 0; i < numProcesses; i++) {
             if (!visited[i]) {
                 if (hasCycleDFS(i, visited, recStack, deadlockedProcesses))
                     return true;
@@ -7295,23 +7169,23 @@ public:
     
     // Banker's Algorithm for deadlock avoidance
     bool isSafeState() {
-        vector&lt;int&gt; work = available;
-        vector&lt;bool&gt; finish(numProcesses, false);
+        vector<int> work = available;
+        vector<bool> finish(numProcesses, false);
         
-        for (int count = 0; count &lt; numProcesses; count++) {
+        for (int count = 0; count < numProcesses; count++) {
             bool found = false;
-            for (int p = 0; p &lt; numProcesses; p++) {
+            for (int p = 0; p < numProcesses; p++) {
                 if (!finish[p]) {
                     bool canFinish = true;
-                    for (int r = 0; r &lt; numResources; r++) {
-                        if (request[p][r] &gt; work[r]) {
+                    for (int r = 0; r < numResources; r++) {
+                        if (request[p][r] > work[r]) {
                             canFinish = false;
                             break;
                         }
                     }
                     
                     if (canFinish) {
-                        for (int r = 0; r &lt; numResources; r++)
+                        for (int r = 0; r < numResources; r++)
                             work[r] += allocation[p][r];
                         finish[p] = true;
                         found = true;
@@ -7324,14 +7198,14 @@ public:
     }
     
     void printStatus() {
-        vector&lt;int&gt; deadlocked;
+        vector<int> deadlocked;
         if (detectDeadlock(deadlocked)) {
-            cout &lt;&lt; "⚠️  DEADLOCK DETECTED!" &lt;&lt; endl;
-            cout &lt;&lt; "Deadlocked processes: ";
-            for (int p : deadlocked) cout &lt;&lt; "P" &lt;&lt; p &lt;&lt; " ";
-            cout &lt;&lt; endl;
+            cout << "⚠️  DEADLOCK DETECTED!" << endl;
+            cout << "Deadlocked processes: ";
+            for (int p : deadlocked) cout << "P" << p << " ";
+            cout << endl;
         } else {
-            cout &lt;&lt; "✓ No deadlock. System safe." &lt;&lt; endl;
+            cout << "✓ No deadlock. System safe." << endl;
         }
     }
 };</pre>
@@ -7367,7 +7241,7 @@ public:
         <strong>Query Execution Plan Tree:</strong><br><br>
         <div class="mermaid">
         graph TD
-            A[JOIN Users-Orders] --> B[SELECT age &gt; 25]
+            A[JOIN Users-Orders] --> B[SELECT age > 25]
             A --> C[SELECT city = NYC]
             B --> D[SCAN Users Table]
             C --> E[SCAN Orders Table]
@@ -7406,74 +7280,74 @@ public:
     </div>
 
     <pre class="code-block">// Simple Graph Database Implementation
-#include &lt;iostream&gt;
-#include &lt;string&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_map&gt;
-#include &lt;unordered_set&gt;
-#include &lt;queue&gt;
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <queue>
 using namespace std;
 
 class GraphDatabase {
 private:
     struct Node {
         string id, label;
-        unordered_map&lt;string, string&gt; properties;
+        unordered_map<string, string> properties;
     };
     
     struct Edge {
         string from, to, type;
-        unordered_map&lt;string, string&gt; properties;
+        unordered_map<string, string> properties;
     };
     
-    unordered_map&lt;string, Node&gt; nodes;
-    vector&lt;Edge&gt; edges;
-    unordered_map&lt;string, vector&lt;Edge*&gt;&gt; outgoing, incoming;
+    unordered_map<string, Node> nodes;
+    vector<Edge> edges;
+    unordered_map<string, vector<Edge*>> outgoing, incoming;
     
 public:
     void createNode(string id, string label, 
-                    unordered_map&lt;string, string&gt; props = {}) {
+                    unordered_map<string, string> props = {}) {
         nodes[id] = {id, label, props};
     }
     
     void createRelationship(string from, string to, string type,
-                           unordered_map&lt;string, string&gt; props = {}) {
+                           unordered_map<string, string> props = {}) {
         edges.push_back({from, to, type, props});
-        outgoing[from].push_back(&amp;edges.back());
-        incoming[to].push_back(&amp;edges.back());
+        outgoing[from].push_back(&edges.back());
+        incoming[to].push_back(&edges.back());
     }
     
     // Find friends of friends (2-hop traversal)
-    vector&lt;string&gt; findFriendsOfFriends(string personId) {
-        unordered_set&lt;string&gt; result, directFriends;
+    vector<string> findFriendsOfFriends(string personId) {
+        unordered_set<string> result, directFriends;
         
         // Get direct friends
         for (Edge* edge : outgoing[personId]) {
-            if (edge-&gt;type == "KNOWS") {
-                directFriends.insert(edge-&gt;to);
+            if (edge->type == "KNOWS") {
+                directFriends.insert(edge->to);
             }
         }
         
         // Get friends of friends
-        for (const string&amp; friendId : directFriends) {
+        for (const string& friendId : directFriends) {
             for (Edge* edge : outgoing[friendId]) {
-                if (edge-&gt;type == "KNOWS" &amp;&amp; 
-                    edge-&gt;to != personId &amp;&amp;
-                    directFriends.find(edge-&gt;to) == directFriends.end()) {
-                    result.insert(edge-&gt;to);
+                if (edge->type == "KNOWS" && 
+                    edge->to != personId &&
+                    directFriends.find(edge->to) == directFriends.end()) {
+                    result.insert(edge->to);
                 }
             }
         }
         
-        return vector&lt;string&gt;(result.begin(), result.end());
+        return vector<string>(result.begin(), result.end());
     }
     
     // Shortest path (degrees of separation)
     int degreeOfSeparation(string person1, string person2) {
         if (person1 == person2) return 0;
         
-        queue&lt;pair&lt;string, int&gt;&gt; q;
-        unordered_set&lt;string&gt; visited;
+        queue<pair<string, int>> q;
+        unordered_set<string> visited;
         
         q.push({person1, 0});
         visited.insert(person1);
@@ -7483,12 +7357,12 @@ public:
             q.pop();
             
             for (Edge* edge : outgoing[current]) {
-                if (edge-&gt;type == "KNOWS") {
-                    if (edge-&gt;to == person2) return distance + 1;
+                if (edge->type == "KNOWS") {
+                    if (edge->to == person2) return distance + 1;
                     
-                    if (visited.find(edge-&gt;to) == visited.end()) {
-                        visited.insert(edge-&gt;to);
-                        q.push({edge-&gt;to, distance + 1});
+                    if (visited.find(edge->to) == visited.end()) {
+                        visited.insert(edge->to);
+                        q.push({edge->to, distance + 1});
                     }
                 }
             }
@@ -7497,26 +7371,26 @@ public:
     }
     
     // Recommendation: Products bought by friends
-    vector&lt;string&gt; recommendProducts(string personId) {
-        unordered_map&lt;string, int&gt; productCount;
-        unordered_set&lt;string&gt; alreadyBought;
+    vector<string> recommendProducts(string personId) {
+        unordered_map<string, int> productCount;
+        unordered_set<string> alreadyBought;
         
         // Get products this person already bought
         for (Edge* edge : outgoing[personId]) {
-            if (edge-&gt;type == "BOUGHT") {
-                alreadyBought.insert(edge-&gt;to);
+            if (edge->type == "BOUGHT") {
+                alreadyBought.insert(edge->to);
             }
         }
         
         // Get friends
         for (Edge* edge : outgoing[personId]) {
-            if (edge-&gt;type == "KNOWS") {
-                string friendId = edge-&gt;to;
+            if (edge->type == "KNOWS") {
+                string friendId = edge->to;
                 
                 // Get products bought by friend
                 for (Edge* friendEdge : outgoing[friendId]) {
-                    if (friendEdge-&gt;type == "BOUGHT") {
-                        string productId = friendEdge-&gt;to;
+                    if (friendEdge->type == "BOUGHT") {
+                        string productId = friendEdge->to;
                         if (alreadyBought.find(productId) == alreadyBought.end()) {
                             productCount[productId]++;
                         }
@@ -7526,14 +7400,14 @@ public:
         }
         
         // Sort by popularity
-        vector&lt;pair&lt;int, string&gt;&gt; recommendations;
-        for (auto&amp; [product, count] : productCount) {
+        vector<pair<int, string>> recommendations;
+        for (auto& [product, count] : productCount) {
             recommendations.push_back({count, product});
         }
         sort(recommendations.rbegin(), recommendations.rend());
         
-        vector&lt;string&gt; result;
-        for (auto&amp; [count, product] : recommendations) {
+        vector<string> result;
+        for (auto& [count, product] : recommendations) {
             result.push_back(product);
         }
         return result;
@@ -7594,11 +7468,11 @@ public:
     </ul>
 
     <pre class="code-block">// Simple Computation Graph for Neural Network
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_map&gt;
-#include &lt;memory&gt;
-#include &lt;cmath&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <memory>
+#include <cmath>
 using namespace std;
 
 class ComputationNode {
@@ -7606,7 +7480,7 @@ public:
     string name;
     double value;
     double gradient;
-    vector&lt;shared_ptr&lt;ComputationNode&gt;&gt; inputs;
+    vector<shared_ptr<ComputationNode>> inputs;
     
     ComputationNode(string n) : name(n), value(0), gradient(0) {}
     
@@ -7626,64 +7500,64 @@ public:
 
 class AddNode : public ComputationNode {
 public:
-    AddNode(string name, shared_ptr&lt;ComputationNode&gt; a, 
-            shared_ptr&lt;ComputationNode&gt; b) : ComputationNode(name) {
+    AddNode(string name, shared_ptr<ComputationNode> a, 
+            shared_ptr<ComputationNode> b) : ComputationNode(name) {
         inputs = {a, b};
     }
     
     double forward() override {
-        value = inputs[0]-&gt;value + inputs[1]-&gt;value;
+        value = inputs[0]->value + inputs[1]->value;
         return value;
     }
     
     void backward() override {
         // d(a+b)/da = 1, d(a+b)/db = 1
-        inputs[0]-&gt;gradient += gradient * 1.0;
-        inputs[1]-&gt;gradient += gradient * 1.0;
+        inputs[0]->gradient += gradient * 1.0;
+        inputs[1]->gradient += gradient * 1.0;
     }
 };
 
 class MultiplyNode : public ComputationNode {
 public:
-    MultiplyNode(string name, shared_ptr&lt;ComputationNode&gt; a,
-                 shared_ptr&lt;ComputationNode&gt; b) : ComputationNode(name) {
+    MultiplyNode(string name, shared_ptr<ComputationNode> a,
+                 shared_ptr<ComputationNode> b) : ComputationNode(name) {
         inputs = {a, b};
     }
     
     double forward() override {
-        value = inputs[0]-&gt;value * inputs[1]-&gt;value;
+        value = inputs[0]->value * inputs[1]->value;
         return value;
     }
     
     void backward() override {
         // d(a*b)/da = b, d(a*b)/db = a
-        inputs[0]-&gt;gradient += gradient * inputs[1]-&gt;value;
-        inputs[1]-&gt;gradient += gradient * inputs[0]-&gt;value;
+        inputs[0]->gradient += gradient * inputs[1]->value;
+        inputs[1]->gradient += gradient * inputs[0]->value;
     }
 };
 
 // Example: Build computation graph for f(x,y) = (x + y) * x
 void buildAndExecuteGraph() {
-    auto x = make_shared&lt;InputNode&gt;("x", 3.0);
-    auto y = make_shared&lt;InputNode&gt;("y", 2.0);
-    auto sum = make_shared&lt;AddNode&gt;("x+y", x, y);
-    auto result = make_shared&lt;MultiplyNode&gt;("(x+y)*x", sum, x);
+    auto x = make_shared<InputNode>("x", 3.0);
+    auto y = make_shared<InputNode>("y", 2.0);
+    auto sum = make_shared<AddNode>("x+y", x, y);
+    auto result = make_shared<MultiplyNode>("(x+y)*x", sum, x);
     
     // Forward pass (topological order)
-    x-&gt;forward();
-    y-&gt;forward();
-    sum-&gt;forward();
-    result-&gt;forward();
+    x->forward();
+    y->forward();
+    sum->forward();
+    result->forward();
     
-    cout &lt;&lt; "f(3, 2) = " &lt;&lt; result-&gt;value &lt;&lt; endl; // 15
+    cout << "f(3, 2) = " << result->value << endl; // 15
     
     // Backward pass (reverse topological order)
-    result-&gt;gradient = 1.0; // df/df = 1
-    result-&gt;backward();
-    sum-&gt;backward();
+    result->gradient = 1.0; // df/df = 1
+    result->backward();
+    sum->backward();
     
-    cout &lt;&lt; "df/dx = " &lt;&lt; x-&gt;gradient &lt;&lt; endl; // 8
-    cout &lt;&lt; "df/dy = " &lt;&lt; y-&gt;gradient &lt;&lt; endl; // 3
+    cout << "df/dx = " << x->gradient << endl; // 8
+    cout << "df/dy = " << y->gradient << endl; // 3
 }</pre>
 
     <p class="academic-text"><strong>AI Search Algorithms</strong></p>
@@ -7742,16 +7616,16 @@ void buildAndExecuteGraph() {
     </div>
 
     <pre class="code-block">// Complete PageRank Implementation
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;cmath&gt;
+#include <iostream>
+#include <vector>
+#include <cmath>
 using namespace std;
 
 class PageRank {
 private:
     int numPages;
-    vector&lt;vector&lt;int&gt;&gt; graph;  // graph[i] = pages that i links to
-    vector&lt;int&gt; outDegree;
+    vector<vector<int>> graph;  // graph[i] = pages that i links to
+    vector<int> outDegree;
     
 public:
     PageRank(int pages) : numPages(pages) {
@@ -7764,19 +7638,19 @@ public:
         outDegree[from]++;
     }
     
-    vector&lt;double&gt; calculate(int iterations = 20, 
+    vector<double> calculate(int iterations = 20, 
                               double dampingFactor = 0.85) {
-        vector&lt;double&gt; rank(numPages, 1.0 / numPages);
-        vector&lt;double&gt; newRank(numPages);
+        vector<double> rank(numPages, 1.0 / numPages);
+        vector<double> newRank(numPages);
         
-        for (int iter = 0; iter &lt; iterations; iter++) {
+        for (int iter = 0; iter < iterations; iter++) {
             // Initialize with teleportation probability
             fill(newRank.begin(), newRank.end(), 
                  (1.0 - dampingFactor) / numPages);
             
             // Distribute rank from each page
-            for (int page = 0; page &lt; numPages; page++) {
-                if (outDegree[page] &gt; 0) {
+            for (int page = 0; page < numPages; page++) {
+                if (outDegree[page] > 0) {
                     double contribution = dampingFactor * rank[page] / 
                                          outDegree[page];
                     for (int linkedPage : graph[page]) {
@@ -7786,7 +7660,7 @@ public:
                     // Dangling node - distribute to all pages
                     double contribution = dampingFactor * rank[page] / 
                                          numPages;
-                    for (int i = 0; i &lt; numPages; i++) {
+                    for (int i = 0; i < numPages; i++) {
                         newRank[i] += contribution;
                     }
                 }
@@ -7794,15 +7668,15 @@ public:
             
             // Check convergence
             double diff = 0;
-            for (int i = 0; i &lt; numPages; i++) {
+            for (int i = 0; i < numPages; i++) {
                 diff += abs(newRank[i] - rank[i]);
             }
             
             rank = newRank;
             
-            if (diff &lt; 1e-6) {
-                cout &lt;&lt; "Converged after " &lt;&lt; (iter + 1) 
-                     &lt;&lt; " iterations" &lt;&lt; endl;
+            if (diff < 1e-6) {
+                cout << "Converged after " << (iter + 1) 
+                     << " iterations" << endl;
                 break;
             }
         }
@@ -7812,9 +7686,9 @@ public:
     
     void printRanks() {
         auto ranks = calculate();
-        cout &lt;&lt; "PageRank scores:" &lt;&lt; endl;
-        for (int i = 0; i &lt; numPages; i++) {
-            cout &lt;&lt; "Page " &lt;&lt; i &lt;&lt; ": " &lt;&lt; ranks[i] &lt;&lt; endl;
+        cout << "PageRank scores:" << endl;
+        for (int i = 0; i < numPages; i++) {
+            cout << "Page " << i << ": " << ranks[i] << endl;
         }
     }
 };</pre>
@@ -7981,36 +7855,36 @@ public:
     <p class="academic-text">Finding the maximum clique is NP-complete - one of the hardest problems in computer science! However, we can find all maximal cliques efficiently using the Bron-Kerbosch algorithm.</p>
     
     <pre class="code-block">// Clique Detection using Bron-Kerbosch Algorithm
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_set&gt;
-#include &lt;algorithm&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
 
 class CliqueFinder {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;vector&lt;int&gt;&gt; allCliques;
+    vector<vector<int>> adj;
+    vector<vector<int>> allCliques;
     
-    void bronKerbosch(unordered_set&lt;int&gt; R,
-                      unordered_set&lt;int&gt; P,
-                      unordered_set&lt;int&gt; X) {
+    void bronKerbosch(unordered_set<int> R,
+                      unordered_set<int> P,
+                      unordered_set<int> X) {
         if (P.empty() && X.empty()) {
-            vector&lt;int&gt; clique(R.begin(), R.end());
+            vector<int> clique(R.begin(), R.end());
             allCliques.push_back(clique);
             return;
         }
         
-        unordered_set&lt;int&gt; candidates = P;
+        unordered_set<int> candidates = P;
         for (int v : candidates) {
-            unordered_set&lt;int&gt; neighbors;
+            unordered_set<int> neighbors;
             for (int u : adj[v]) neighbors.insert(u);
             
-            unordered_set&lt;int&gt; newR = R;
+            unordered_set<int> newR = R;
             newR.insert(v);
             
-            unordered_set&lt;int&gt; newP, newX;
+            unordered_set<int> newP, newX;
             for (int u : P) {
                 if (neighbors.count(u)) newP.insert(u);
             }
@@ -8034,19 +7908,19 @@ public:
         adj[v].push_back(u);
     }
     
-    vector&lt;vector&lt;int&gt;&gt; findAllMaximalCliques() {
+    vector<vector<int>> findAllMaximalCliques() {
         allCliques.clear();
-        unordered_set&lt;int&gt; R, P, X;
-        for (int i = 0; i &lt; V; i++) P.insert(i);
+        unordered_set<int> R, P, X;
+        for (int i = 0; i < V; i++) P.insert(i);
         bronKerbosch(R, P, X);
         return allCliques;
     }
     
-    vector&lt;int&gt; findMaximumClique() {
+    vector<int> findMaximumClique() {
         auto cliques = findAllMaximalCliques();
-        vector&lt;int&gt; maxClique;
-        for (const auto&amp; clique : cliques) {
-            if (clique.size() &gt; maxClique.size()) {
+        vector<int> maxClique;
+        for (const auto& clique : cliques) {
+            if (clique.size() > maxClique.size()) {
                 maxClique = clique;
             }
         }
@@ -8098,23 +7972,23 @@ public:
     </div>
 
     <pre class="code-block">// Louvain Method for Community Detection
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_map&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_map>
 using namespace std;
 
 class CommunityDetector {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;int&gt; community;
+    vector<vector<int>> adj;
+    vector<int> community;
     double totalEdges;
     
     double calculateModularity() {
         double Q = 0.0;
         double m2 = 2.0 * totalEdges;
         
-        for (int i = 0; i &lt; V; i++) {
+        for (int i = 0; i < V; i++) {
             for (int j : adj[i]) {
                 if (community[i] == community[j]) {
                     double kikj = adj[i].size() * adj[j].size();
@@ -8129,7 +8003,7 @@ public:
     CommunityDetector(int vertices) : V(vertices), totalEdges(0) {
         adj.resize(V);
         community.resize(V);
-        for (int i = 0; i &lt; V; i++) community[i] = i;
+        for (int i = 0; i < V; i++) community[i] = i;
     }
     
     void addEdge(int u, int v) {
@@ -8138,11 +8012,11 @@ public:
         totalEdges++;
     }
     
-    vector&lt;int&gt; detectCommunities() {
+    vector<int> detectCommunities() {
         bool improved = true;
         while (improved) {
             improved = false;
-            for (int node = 0; node &lt; V; node++) {
+            for (int node = 0; node < V; node++) {
                 int bestCommunity = community[node];
                 // Try moving to neighbor communities
                 for (int neighbor : adj[node]) {
@@ -8205,33 +8079,60 @@ public:
         
     <div class="chapter-number">Chapter 15</div>
     <h1 class="chapter-title">Graphs in Real Life & Human Decisions</h1>
-    
+
     <div class="definition-box">
-        "The algorithms you've learned aren't just for computers - they're mental models for navigating life's complex decisions and relationships."
+        "The algorithms you've learned aren't just for computers - they're mental models for navigating life's complex
+        decisions and relationships."
     </div>
 
-    <p class="academic-text">Graph theory transcends the boundaries of computer science to become a powerful framework for understanding and optimizing human life itself. The same mathematical principles that enable computers to find optimal paths, manage resources, and solve complex problems can be applied to navigate career decisions, build meaningful relationships, manage time effectively, and make strategic life choices. This isn't just metaphorical thinking - it's a practical methodology for bringing algorithmic clarity to life's inherent complexity.</p>
-    
-    <p class="academic-text">The power of graph thinking lies in its ability to transform overwhelming, interconnected problems into structured, analyzable systems. When you view your career as a graph of skills and opportunities, your social network as a web of relationships with different strengths and values, or your goals as a dependency graph requiring careful ordering, you gain the tools to make decisions with mathematical precision rather than pure intuition.</p>
+    <p class="academic-text">Graph theory transcends the boundaries of computer science to become a powerful framework
+        for understanding and optimizing human life itself. The same mathematical principles that enable computers to
+        find optimal paths, manage resources, and solve complex problems can be applied to navigate career decisions,
+        build meaningful relationships, manage time effectively, and make strategic life choices. This isn't just
+        metaphorical thinking - it's a practical methodology for bringing algorithmic clarity to life's inherent
+        complexity.</p>
 
-    <p class="academic-text">This approach doesn't eliminate the human elements of decision-making - emotions, values, and personal preferences remain crucial. Instead, graph thinking provides a structured framework for organizing complex information, identifying optimal strategies, and understanding the long-term consequences of your choices. It's about bringing the clarity and systematic thinking of computer science to the art of living well.</p>
-    
-    <p class="academic-text"><strong>Graph algorithms provide practical frameworks for life's complex decisions:</strong></p>
+    <p class="academic-text">The power of graph thinking lies in its ability to transform overwhelming, interconnected
+        problems into structured, analyzable systems. When you view your career as a graph of skills and opportunities,
+        your social network as a web of relationships with different strengths and values, or your goals as a dependency
+        graph requiring careful ordering, you gain the tools to make decisions with mathematical precision rather than
+        pure intuition.</p>
+
+    <p class="academic-text">This approach doesn't eliminate the human elements of decision-making - emotions, values,
+        and personal preferences remain crucial. Instead, graph thinking provides a structured framework for organizing
+        complex information, identifying optimal strategies, and understanding the long-term consequences of your
+        choices. It's about bringing the clarity and systematic thinking of computer science to the art of living well.
+    </p>
+
+    <p class="academic-text"><strong>Graph algorithms provide practical frameworks for life's complex
+            decisions:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Strategic career development:</strong> Model your career as a graph where skills are nodes and learning paths are edges, then use shortest path algorithms to find the most efficient route to your dream job</li>
-        <li class="academic-text"><strong>Relationship optimization:</strong> Apply network analysis to understand your social connections, identify key relationships that bridge different communities, and invest time in connections that provide the most mutual value</li>
-        <li class="academic-text"><strong>Goal achievement systems:</strong> Use topological sorting to order your objectives based on dependencies, ensuring you build foundational skills before attempting advanced goals</li>
-        <li class="academic-text"><strong>Time and resource management:</strong> Apply graph coloring principles to schedule activities without conflicts, and use flow algorithms to optimize how you allocate limited time and energy</li>
-        <li class="academic-text"><strong>Decision tree analysis:</strong> Map out complex decisions as trees, analyzing different paths and their potential outcomes to make choices with greater confidence and foresight</li>
-        <li class="academic-text"><strong>Life optimization:</strong> Use minimum spanning tree concepts to identify the essential connections and activities that provide maximum life satisfaction with minimum complexity</li>
+        <li class="academic-text"><strong>Strategic career development:</strong> Model your career as a graph where
+            skills are nodes and learning paths are edges, then use shortest path algorithms to find the most efficient
+            route to your dream job</li>
+        <li class="academic-text"><strong>Relationship optimization:</strong> Apply network analysis to understand your
+            social connections, identify key relationships that bridge different communities, and invest time in
+            connections that provide the most mutual value</li>
+        <li class="academic-text"><strong>Goal achievement systems:</strong> Use topological sorting to order your
+            objectives based on dependencies, ensuring you build foundational skills before attempting advanced goals
+        </li>
+        <li class="academic-text"><strong>Time and resource management:</strong> Apply graph coloring principles to
+            schedule activities without conflicts, and use flow algorithms to optimize how you allocate limited time and
+            energy</li>
+        <li class="academic-text"><strong>Decision tree analysis:</strong> Map out complex decisions as trees, analyzing
+            different paths and their potential outcomes to make choices with greater confidence and foresight</li>
+        <li class="academic-text"><strong>Life optimization:</strong> Use minimum spanning tree concepts to identify the
+            essential connections and activities that provide maximum life satisfaction with minimum complexity</li>
     </ul>
-    
-    <p class="academic-text">This chapter demonstrates how to apply the algorithmic thinking you've learned to create a more intentional, optimized, and fulfilling approach to life's challenges and opportunities.</p>
+
+    <p class="academic-text">This chapter demonstrates how to apply the algorithmic thinking you've learned to create a
+        more intentional, optimized, and fulfilling approach to life's challenges and opportunities.</p>
 
     <h2 class="section-title" id="ch15-1">15.1 Case Study: Career Pathfinding as Dijkstra's Algorithm</h2>
-    
-    <p class="academic-text">Your career is a graph! Skills are nodes, learning paths are edges, and time/effort are weights. Finding your optimal career path is literally Dijkstra's algorithm.</p>
-    
+
+    <p class="academic-text">Your career is a graph! Skills are nodes, learning paths are edges, and time/effort are
+        weights. Finding your optimal career path is literally Dijkstra's algorithm.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🎯 Career Graph Model</h3>
         <ul style="margin: 8px 0 16px 24px;">
@@ -8241,11 +8142,12 @@ public:
             <li class="academic-text"><strong>Goal:</strong> Find shortest path from current state to dream job</li>
         </ul>
     </div>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Career Path Example (Software Engineer to ML Engineer):</strong><br><br>
         <div class="mermaid">
-        graph TD
+            graph TD
             A[Junior Dev] -->|6 months| B[Mid-level Dev]
             A -->|1 year| C[Data Analyst]
             B -->|1 year| D[Senior Dev]
@@ -8253,31 +8155,38 @@ public:
             D -->|6 months| F[ML Engineer]
             E -->|4 months| F
             B -->|1.5 years| F
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
             style F fill:#ffebee,stroke:#f44336,stroke-width:3px
             style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Shortest path: Junior → Mid-level → Senior → ML Engineer (2.5 years)</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Shortest path:
+            Junior → Mid-level → Senior → ML Engineer (2.5 years)</p>
     </div>
 
     <p class="academic-text"><strong>Applying Dijkstra's to Your Career:</strong></p>
     <ol style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Map your current skills:</strong> What's your starting node?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Define your goal:</strong> What's your destination node?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify possible transitions:</strong> What edges exist? (courses, jobs, projects)</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Estimate costs:</strong> Time, money, effort for each edge</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Run Dijkstra's:</strong> Find the optimal path</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute:</strong> Follow the path, one edge at a time</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Map your current skills:</strong> What's your
+            starting node?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Define your goal:</strong> What's your
+            destination node?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify possible transitions:</strong> What
+            edges exist? (courses, jobs, projects)</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Estimate costs:</strong> Time, money, effort for
+            each edge</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Run Dijkstra's:</strong> Find the optimal path
+        </li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute:</strong> Follow the path, one edge at a
+            time</li>
     </ol>
 
     <pre class="code-block">// Career Path Planner using Dijkstra's Algorithm
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;queue&gt;
-#include &lt;unordered_map&gt;
-#include &lt;string&gt;
-#include &lt;limits&gt;
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <string>
+#include <limits>
 using namespace std;
 
 class CareerPathPlanner {
@@ -8288,38 +8197,38 @@ private:
         string action;  // What to do (course, job, etc.)
     };
     
-    unordered_map&lt;string, vector&lt;Edge&gt;&gt; graph;
+    unordered_map<string, vector<Edge>> graph;
     
 public:
     void addPath(string from, string to, int months, string action) {
         graph[from].push_back({to, months, action});
     }
     
-    vector&lt;string&gt; findOptimalPath(string start, string goal) {
-        unordered_map&lt;string, int&gt; distance;
-        unordered_map&lt;string, string&gt; parent;
-        unordered_map&lt;string, string&gt; action;
+    vector<string> findOptimalPath(string start, string goal) {
+        unordered_map<string, int> distance;
+        unordered_map<string, string> parent;
+        unordered_map<string, string> action;
         
-        for (auto&amp; [node, _] : graph) {
-            distance[node] = numeric_limits&lt;int&gt;::max();
+        for (auto& [node, _] : graph) {
+            distance[node] = numeric_limits<int>::max();
         }
         distance[start] = 0;
         
-        priority_queue&lt;pair&lt;int, string&gt;, 
-                       vector&lt;pair&lt;int, string&gt;&gt;,
-                       greater&lt;pair&lt;int, string&gt;&gt;&gt; pq;
+        priority_queue<pair<int, string>, 
+                       vector<pair<int, string>>,
+                       greater<pair<int, string>>> pq;
         pq.push({0, start});
         
         while (!pq.empty()) {
             auto [dist, current] = pq.top();
             pq.pop();
             
-            if (dist &gt; distance[current]) continue;
+            if (dist > distance[current]) continue;
             if (current == goal) break;
             
-            for (auto&amp; edge : graph[current]) {
+            for (auto& edge : graph[current]) {
                 int newDist = distance[current] + edge.months;
-                if (newDist &lt; distance[edge.to]) {
+                if (newDist < distance[edge.to]) {
                     distance[edge.to] = newDist;
                     parent[edge.to] = current;
                     action[edge.to] = edge.action;
@@ -8329,7 +8238,7 @@ public:
         }
         
         // Reconstruct path
-        vector&lt;string&gt; path;
+        vector<string> path;
         string current = goal;
         while (current != start) {
             path.push_back(current);
@@ -8339,11 +8248,11 @@ public:
         reverse(path.begin(), path.end());
         
         // Print plan
-        cout &lt;&lt; "Optimal Career Path (" &lt;&lt; distance[goal] 
-             &lt;&lt; " months):" &lt;&lt; endl;
-        for (int i = 0; i &lt; path.size() - 1; i++) {
-            cout &lt;&lt; path[i] &lt;&lt; " → " &lt;&lt; path[i+1] 
-                 &lt;&lt; " (" &lt;&lt; action[path[i+1]] &lt;&lt; ")" &lt;&lt; endl;
+        cout << "Optimal Career Path (" << distance[goal] 
+             << " months):" << endl;
+        for (int i = 0; i < path.size() - 1; i++) {
+            cout << path[i] << " → " << path[i+1] 
+                 << " (" << action[path[i+1]] << ")" << endl;
         }
         
         return path;
@@ -8360,35 +8269,40 @@ public:
 
     <h2 class="section-title" id="ch15-2">15.2 Case Study: Social Network Pruning as MST</h2>
 
-    <p class="academic-text">You can't maintain deep relationships with everyone. Minimum Spanning Tree algorithms help you identify which relationships to prioritize - keeping your network connected while minimizing emotional overhead.</p>
-    
+    <p class="academic-text">You can't maintain deep relationships with everyone. Minimum Spanning Tree algorithms help
+        you identify which relationships to prioritize - keeping your network connected while minimizing emotional
+        overhead.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">👥 Relationship Graph Model</h3>
         <ul style="margin: 8px 0 16px 24px;">
             <li class="academic-text"><strong>Nodes:</strong> People in your network</li>
             <li class="academic-text"><strong>Edges:</strong> Relationships</li>
             <li class="academic-text"><strong>Weights:</strong> Maintenance cost (time, energy, emotional labor)</li>
-            <li class="academic-text"><strong>Goal:</strong> Stay connected to everyone while minimizing total effort</li>
+            <li class="academic-text"><strong>Goal:</strong> Stay connected to everyone while minimizing total effort
+            </li>
         </ul>
     </div>
 
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Social Network MST:</strong><br><br>
         <div class="mermaid">
-        graph LR
+            graph LR
             You[You] ---|2| A[Close Friend A]
             You ---|3| B[Friend B]
             You ---|5| C[Acquaintance C]
             A ---|1| B
             B ---|2| C
             A ---|4| C
-            
+
             style You fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
             style A fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
             style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
             style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">MST: Maintain You-A (2), A-B (1), B-C (2). Total effort: 5 units</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">MST: Maintain You-A
+            (2), A-B (1), B-C (2). Total effort: 5 units</p>
     </div>
 
     <p class="academic-text"><strong>Relationship Pruning Strategy:</strong></p>
@@ -8401,56 +8315,68 @@ public:
 
     <h2 class="section-title" id="ch15-3">15.3 Case Study: Goal Dependencies as Topological Sorting</h2>
 
-    <p class="academic-text">Your goals have dependencies! You can't run a marathon before learning to jog. Topological sorting reveals the correct order to tackle your goals.</p>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <p class="academic-text">Your goals have dependencies! You can't run a marathon before learning to jog. Topological
+        sorting reveals the correct order to tackle your goals.</p>
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Goal Dependency Graph:</strong><br><br>
         <div class="mermaid">
-        graph TD
+            graph TD
             A[Learn basics] --> B[Build project]
             A --> C[Read documentation]
             B --> D[Get job]
             C --> B
             C --> E[Contribute to open source]
             E --> D
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
             style D fill:#ffebee,stroke:#f44336,stroke-width:3px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Valid order: Learn basics → Read docs → Build project/Contribute → Get job</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Valid order: Learn
+            basics → Read docs → Build project/Contribute → Get job</p>
     </div>
 
     <p class="academic-text"><strong>Applying Topological Sort to Goals:</strong></p>
     <ol style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>List all goals:</strong> What do you want to achieve?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify dependencies:</strong> What must come before what?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Build DAG:</strong> Goals as nodes, dependencies as edges</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Detect cycles:</strong> Circular dependencies = impossible goals</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Topological sort:</strong> Get valid execution order</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute in order:</strong> Work through goals sequentially</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>List all goals:</strong> What do you want to
+            achieve?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify dependencies:</strong> What must come
+            before what?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Build DAG:</strong> Goals as nodes, dependencies
+            as edges</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Detect cycles:</strong> Circular dependencies =
+            impossible goals</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Topological sort:</strong> Get valid execution
+            order</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute in order:</strong> Work through goals
+            sequentially</li>
     </ol>
 
     <h2 class="section-title" id="ch15-4">15.4 Case Study: Time Management as Graph Coloring</h2>
 
-    <p class="academic-text">Scheduling your day is graph coloring! Activities are nodes, conflicts are edges, time slots are colors. Minimize colors (time slots) while avoiding conflicts.</p>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <p class="academic-text">Scheduling your day is graph coloring! Activities are nodes, conflicts are edges, time
+        slots are colors. Minimize colors (time slots) while avoiding conflicts.</p>
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Daily Schedule as Graph Coloring:</strong><br><br>
         <div class="mermaid">
-        graph LR
+            graph LR
             A[Work] --- B[Gym]
             A --- C[Cooking]
             B --- C
             D[Reading] --- E[Family time]
             C --- E
-            
+
             style A fill:#ff6b6b,stroke:#333,stroke-width:2px
             style B fill:#4ecdc4,stroke:#333,stroke-width:2px
             style C fill:#ffe66d,stroke:#333,stroke-width:2px
             style D fill:#ff6b6b,stroke:#333,stroke-width:2px
             style E fill:#4ecdc4,stroke:#333,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">3 time slots needed: Red (Work, Reading), Blue (Gym, Family), Yellow (Cooking)</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">3 time slots
+            needed: Red (Work, Reading), Blue (Gym, Family), Yellow (Cooking)</p>
     </div>
 
     <p class="academic-text"><strong>Time Management Insights:</strong></p>
@@ -8463,8 +8389,9 @@ public:
 
     <h2 class="section-title" id="ch15-5">15.5 Mind Mapping and Decision Making</h2>
 
-    <p class="academic-text">Mind maps are graphs! Use graph thinking to structure your thoughts, explore decisions, and find insights.</p>
-    
+    <p class="academic-text">Mind maps are graphs! Use graph thinking to structure your thoughts, explore decisions, and
+        find insights.</p>
+
     <p class="academic-text"><strong>Decision Trees as Graphs:</strong></p>
     <ul style="margin: 8px 0 16px 24px;">
         <li class="academic-text"><strong>Nodes:</strong> Decisions or outcomes</li>
@@ -8483,8 +8410,9 @@ public:
             <li class="academic-text">✅ <strong>Time management</strong> - Graph coloring for scheduling</li>
             <li class="academic-text">✅ <strong>Decision making</strong> - Graph thinking for clarity</li>
         </ul>
-        
-        <p class="academic-text">Graph algorithms aren't just for computers - they're mental models for navigating life's complexity!</p>
+
+        <p class="academic-text">Graph algorithms aren't just for computers - they're mental models for navigating
+            life's complexity!</p>
     </div>
 
     </div>

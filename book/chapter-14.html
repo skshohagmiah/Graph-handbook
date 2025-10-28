@@ -77,36 +77,36 @@
     <p class="academic-text">Finding the maximum clique is NP-complete - one of the hardest problems in computer science! However, we can find all maximal cliques efficiently using the Bron-Kerbosch algorithm.</p>
     
     <pre class="code-block">// Clique Detection using Bron-Kerbosch Algorithm
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_set&gt;
-#include &lt;algorithm&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
 
 class CliqueFinder {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;vector&lt;int&gt;&gt; allCliques;
+    vector<vector<int>> adj;
+    vector<vector<int>> allCliques;
     
-    void bronKerbosch(unordered_set&lt;int&gt; R,
-                      unordered_set&lt;int&gt; P,
-                      unordered_set&lt;int&gt; X) {
+    void bronKerbosch(unordered_set<int> R,
+                      unordered_set<int> P,
+                      unordered_set<int> X) {
         if (P.empty() && X.empty()) {
-            vector&lt;int&gt; clique(R.begin(), R.end());
+            vector<int> clique(R.begin(), R.end());
             allCliques.push_back(clique);
             return;
         }
         
-        unordered_set&lt;int&gt; candidates = P;
+        unordered_set<int> candidates = P;
         for (int v : candidates) {
-            unordered_set&lt;int&gt; neighbors;
+            unordered_set<int> neighbors;
             for (int u : adj[v]) neighbors.insert(u);
             
-            unordered_set&lt;int&gt; newR = R;
+            unordered_set<int> newR = R;
             newR.insert(v);
             
-            unordered_set&lt;int&gt; newP, newX;
+            unordered_set<int> newP, newX;
             for (int u : P) {
                 if (neighbors.count(u)) newP.insert(u);
             }
@@ -130,19 +130,19 @@ public:
         adj[v].push_back(u);
     }
     
-    vector&lt;vector&lt;int&gt;&gt; findAllMaximalCliques() {
+    vector<vector<int>> findAllMaximalCliques() {
         allCliques.clear();
-        unordered_set&lt;int&gt; R, P, X;
-        for (int i = 0; i &lt; V; i++) P.insert(i);
+        unordered_set<int> R, P, X;
+        for (int i = 0; i < V; i++) P.insert(i);
         bronKerbosch(R, P, X);
         return allCliques;
     }
     
-    vector&lt;int&gt; findMaximumClique() {
+    vector<int> findMaximumClique() {
         auto cliques = findAllMaximalCliques();
-        vector&lt;int&gt; maxClique;
-        for (const auto&amp; clique : cliques) {
-            if (clique.size() &gt; maxClique.size()) {
+        vector<int> maxClique;
+        for (const auto& clique : cliques) {
+            if (clique.size() > maxClique.size()) {
                 maxClique = clique;
             }
         }
@@ -194,23 +194,23 @@ public:
     </div>
 
     <pre class="code-block">// Louvain Method for Community Detection
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_map&gt;
+#include <iostream>
+#include <vector>
+#include <unordered_map>
 using namespace std;
 
 class CommunityDetector {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; adj;
-    vector&lt;int&gt; community;
+    vector<vector<int>> adj;
+    vector<int> community;
     double totalEdges;
     
     double calculateModularity() {
         double Q = 0.0;
         double m2 = 2.0 * totalEdges;
         
-        for (int i = 0; i &lt; V; i++) {
+        for (int i = 0; i < V; i++) {
             for (int j : adj[i]) {
                 if (community[i] == community[j]) {
                     double kikj = adj[i].size() * adj[j].size();
@@ -225,7 +225,7 @@ public:
     CommunityDetector(int vertices) : V(vertices), totalEdges(0) {
         adj.resize(V);
         community.resize(V);
-        for (int i = 0; i &lt; V; i++) community[i] = i;
+        for (int i = 0; i < V; i++) community[i] = i;
     }
     
     void addEdge(int u, int v) {
@@ -234,11 +234,11 @@ public:
         totalEdges++;
     }
     
-    vector&lt;int&gt; detectCommunities() {
+    vector<int> detectCommunities() {
         bool improved = true;
         while (improved) {
             improved = false;
-            for (int node = 0; node &lt; V; node++) {
+            for (int node = 0; node < V; node++) {
                 int bestCommunity = community[node];
                 // Try moving to neighbor communities
                 for (int neighbor : adj[node]) {

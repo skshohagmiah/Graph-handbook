@@ -375,33 +375,21 @@ public:
     <p class="academic-text">The tree structure of file systems isn't just convenient - it's essential for performance and organization. It enables efficient path resolution (finding files by their full path), supports recursive operations (like calculating directory sizes), and provides the foundation for file permissions, backup systems, and search indexing. Without tree structure, managing millions of files would be chaotic and inefficient.</p>
     
     <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
-        <strong>File System Example:</strong><br><br>
-        <div class="mermaid">
-        graph TD
-            A[/] --> B[home]
-            A --> C[usr]
-            A --> D[var]
-            B --> E[user1]
-            B --> F[user2]
-            E --> G[Documents]
-            E --> H[Pictures]
-            G --> I[resume.pdf]
-            G --> J[notes.txt]
-            H --> K[vacation.jpg]
-            
-            style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
-            style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-            style C fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-            style D fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-            style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-            style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-            style G fill:#ffebee,stroke:#f44336,stroke-width:2px
-            style H fill:#ffebee,stroke:#f44336,stroke-width:2px
-            style I fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-            style J fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-            style K fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-        </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Each path from root to file is unique - no cycles!</p>
+        <strong>File System Tree Structure:</strong><br><br>
+        <pre style="font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.4; margin: 0; background: none; border: none; padding: 0;">
+/                    (root directory)
+├── home/           (user directories)
+│   ├── user1/
+│   │   ├── Documents/
+│   │   │   ├── resume.pdf
+│   │   │   └── notes.txt
+│   │   └── Pictures/
+│   │       └── vacation.jpg
+│   └── user2/
+├── usr/            (system programs)
+└── var/            (variable data)
+        </pre>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;"><strong>Each path from root to file is unique - no cycles!</strong></p>
     </div>
 
     <pre class="code-block">// Simple file system tree
@@ -423,53 +411,30 @@ struct FileNode {
 
 class FileSystem {
 public:
-    // Build a sample file system
-    static FileNode* buildSampleFileSystem() {
-        FileNode* root = new FileNode("/", false);
-        FileNode* home = new FileNode("home", false);
-        FileNode* user = new FileNode("user1", false);
-        FileNode* docs = new FileNode("Documents", false);
-        FileNode* pics = new FileNode("Pictures", false);
+    // Print tree structure with indentation showing hierarchy
+    static void printTree(FileNode* node, int depth = 0) {
+        if (!node) return;
         
-        FileNode* resume = new FileNode("resume.pdf", true, 1024);
-        FileNode* notes = new FileNode("notes.txt", true, 512);
-        FileNode* photo = new FileNode("vacation.jpg", true, 2048);
-        
-        // Build the tree structure
-        root->children = {home};
-        home->children = {user};
-        user->children = {docs, pics};
-        docs->children = {resume, notes};
-        pics->children = {photo};
-        
-        return root;
-    }
-    
-    // Print file system tree
-    static void printFileSystem(FileNode* root, int indent = 0) {
-        if (root == nullptr) return;
-        
-        for (int i = 0; i < indent; i++) cout << "  ";
-        cout << root->name;
-        if (root->isFile) {
-            cout << " (" << root->size << " bytes)";
-        } else {
-            cout << "/";
-        }
+        // Print indentation based on depth
+        for (int i = 0; i < depth; i++) cout << "  ";
+        cout << node->name;
+        if (node->isFile) cout << " (" << node->size << "B)";
         cout << endl;
         
-        for (FileNode* child : root->children) {
-            printFileSystem(child, indent + 1);
+        // Recursively print all children
+        for (FileNode* child : node->children) {
+            printTree(child, depth + 1);
         }
     }
     
-    // Calculate total directory size
-    static int getTotalSize(FileNode* root) {
-        if (root->isFile) return root->size;
+    // Calculate total size of directory (recursive)
+    static int getSize(FileNode* node) {
+        if (node->isFile) return node->size; // Base case: file size
         
         int total = 0;
-        for (FileNode* child : root->children) {
-            total += getTotalSize(child);
+        // Sum up sizes of all children
+        for (FileNode* child : node->children) {
+            total += getSize(child);
         }
         return total;
     }

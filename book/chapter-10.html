@@ -135,23 +135,23 @@
     </div>
 
     <pre class="code-block">// Ford-Fulkerson Method Implementation
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;queue&gt;
-#include &lt;climits&gt;
-#include &lt;cstring&gt;
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+#include <cstring>
 using namespace std;
 
 class FordFulkerson {
 private:
     int V; // Number of vertices
-    vector&lt;vector&lt;int&gt;&gt; capacity;  // Capacity matrix
-    vector&lt;vector&lt;int&gt;&gt; flow;      // Flow matrix
+    vector<vector<int>> capacity;  // Capacity matrix
+    vector<vector<int>> flow;      // Flow matrix
     
     // BFS to find if there's a path from source to sink
-    bool bfs(int source, int sink, vector&lt;int&gt;&amp; parent) {
-        vector&lt;bool&gt; visited(V, false);
-        queue&lt;int&gt; q;
+    bool bfs(int source, int sink, vector<int>& parent) {
+        vector<bool> visited(V, false);
+        queue<int> q;
         q.push(source);
         visited[source] = true;
         parent[source] = -1;
@@ -160,11 +160,11 @@ private:
             int u = q.front();
             q.pop();
             
-            for (int v = 0; v &lt; V; v++) {
+            for (int v = 0; v < V; v++) {
                 // Check if there's residual capacity
                 int residual = capacity[u][v] - flow[u][v];
                 
-                if (!visited[v] &amp;&amp; residual &gt; 0) {
+                if (!visited[v] && residual > 0) {
                     visited[v] = true;
                     parent[v] = u;
                     q.push(v);
@@ -178,8 +178,8 @@ private:
     
 public:
     FordFulkerson(int vertices) : V(vertices) {
-        capacity.resize(V, vector&lt;int&gt;(V, 0));
-        flow.resize(V, vector&lt;int&gt;(V, 0));
+        capacity.resize(V, vector<int>(V, 0));
+        flow.resize(V, vector<int>(V, 0));
     }
     
     // Add edge with capacity
@@ -190,7 +190,7 @@ public:
     // Compute maximum flow from source to sink
     int maxFlow(int source, int sink) {
         int totalFlow = 0;
-        vector&lt;int&gt; parent(V);
+        vector<int> parent(V);
         
         // While there exists an augmenting path
         while (bfs(source, sink, parent)) {
@@ -216,10 +216,10 @@ public:
     }
     
     // Get the min-cut (vertices reachable from source in residual graph)
-    vector&lt;int&gt; getMinCut(int source) {
-        vector&lt;int&gt; reachable;
-        vector&lt;bool&gt; visited(V, false);
-        queue&lt;int&gt; q;
+    vector<int> getMinCut(int source) {
+        vector<int> reachable;
+        vector<bool> visited(V, false);
+        queue<int> q;
         q.push(source);
         visited[source] = true;
         
@@ -228,9 +228,9 @@ public:
             q.pop();
             reachable.push_back(u);
             
-            for (int v = 0; v &lt; V; v++) {
+            for (int v = 0; v < V; v++) {
                 int residual = capacity[u][v] - flow[u][v];
-                if (!visited[v] &amp;&amp; residual &gt; 0) {
+                if (!visited[v] && residual > 0) {
                     visited[v] = true;
                     q.push(v);
                 }
@@ -263,22 +263,22 @@ public:
     </ul>
 
     <pre class="code-block">// Edmonds-Karp Algorithm (Ford-Fulkerson with BFS)
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;queue&gt;
-#include &lt;climits&gt;
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
 using namespace std;
 
 class EdmondsKarp {
 private:
     int V;
-    vector&lt;vector&lt;int&gt;&gt; capacity;
+    vector<vector<int>> capacity;
     
     // BFS to find shortest augmenting path
-    bool bfs(int source, int sink, vector&lt;int&gt;&amp; parent, 
-             vector&lt;vector&lt;int&gt;&gt;&amp; residual) {
-        vector&lt;bool&gt; visited(V, false);
-        queue&lt;int&gt; q;
+    bool bfs(int source, int sink, vector<int>& parent, 
+             vector<vector<int>>& residual) {
+        vector<bool> visited(V, false);
+        queue<int> q;
         q.push(source);
         visited[source] = true;
         parent[source] = -1;
@@ -288,8 +288,8 @@ private:
             q.pop();
             
             // Try all neighbors
-            for (int v = 0; v &lt; V; v++) {
-                if (!visited[v] &amp;&amp; residual[u][v] &gt; 0) {
+            for (int v = 0; v < V; v++) {
+                if (!visited[v] && residual[u][v] > 0) {
                     visited[v] = true;
                     parent[v] = u;
                     q.push(v);
@@ -303,7 +303,7 @@ private:
     
 public:
     EdmondsKarp(int vertices) : V(vertices) {
-        capacity.resize(V, vector&lt;int&gt;(V, 0));
+        capacity.resize(V, vector<int>(V, 0));
     }
     
     void addEdge(int u, int v, int cap) {
@@ -312,8 +312,8 @@ public:
     
     int maxFlow(int source, int sink) {
         // Create residual graph (initially same as capacity)
-        vector&lt;vector&lt;int&gt;&gt; residual = capacity;
-        vector&lt;int&gt; parent(V);
+        vector<vector<int>> residual = capacity;
+        vector<int> parent(V);
         int maxFlowValue = 0;
         
         // While there exists an augmenting path from source to sink
@@ -340,10 +340,10 @@ public:
     
     // Print flow decomposition
     void printFlow(int source, int sink) {
-        vector&lt;vector&lt;int&gt;&gt; residual = capacity;
-        vector&lt;int&gt; parent(V);
+        vector<vector<int>> residual = capacity;
+        vector<int> parent(V);
         
-        cout &lt;&lt; "Flow paths:" &lt;&lt; endl;
+        cout << "Flow paths:" << endl;
         int pathNum = 1;
         
         while (bfs(source, sink, parent, residual)) {
@@ -353,18 +353,18 @@ public:
                 pathFlow = min(pathFlow, residual[u][v]);
             }
             
-            cout &lt;&lt; "Path " &lt;&lt; pathNum++ &lt;&lt; " (flow=" &lt;&lt; pathFlow &lt;&lt; "): ";
-            vector&lt;int&gt; path;
+            cout << "Path " << pathNum++ << " (flow=" << pathFlow << "): ";
+            vector<int> path;
             for (int v = sink; v != source; v = parent[v]) {
                 path.push_back(v);
             }
             path.push_back(source);
             
-            for (int i = path.size() - 1; i &gt;= 0; i--) {
-                cout &lt;&lt; path[i];
-                if (i &gt; 0) cout &lt;&lt; " -> ";
+            for (int i = path.size() - 1; i >= 0; i--) {
+                cout << path[i];
+                if (i > 0) cout << " -> ";
             }
-            cout &lt;&lt; endl;
+            cout << endl;
             
             for (int v = sink; v != source; v = parent[v]) {
                 int u = parent[v];
@@ -437,9 +437,9 @@ public:
     </div>
 
     <pre class="code-block">// Bipartite Matching using Max Flow
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;string&gt;
+#include <iostream>
+#include <vector>
+#include <string>
 using namespace std;
 
 class BipartiteMatching {
@@ -456,12 +456,12 @@ public:
         sink = left + right + 1;
         
         // Connect source to all left nodes
-        for (int i = 1; i &lt;= left; i++) {
+        for (int i = 1; i <= left; i++) {
             flowNetwork.addEdge(source, i, 1);
         }
         
         // Connect all right nodes to sink
-        for (int i = 1; i &lt;= right; i++) {
+        for (int i = 1; i <= right; i++) {
             flowNetwork.addEdge(left + i, sink, 1);
         }
     }
@@ -497,8 +497,8 @@ void solveJobAssignment() {
     matcher.addCompatibility(3, 3);
     
     int maxAssignments = matcher.maxMatching();
-    cout &lt;&lt; "Maximum workers that can be assigned: " 
-         &lt;&lt; maxAssignments &lt;&lt; endl;
+    cout << "Maximum workers that can be assigned: " 
+         << maxAssignments << endl;
 }</pre>
 
     <div class="performance-summary">

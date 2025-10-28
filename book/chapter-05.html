@@ -109,20 +109,20 @@
     </ul>
 
     <pre class="code-block">// Simple heap implementation using array
-#include <iostream>
-#include <vector>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
 using namespace std;
 
 class MinHeap {
 private:
-    vector<int> heap;
+    vector&lt;int&gt; heap;  // Array representation of binary heap
     
-    // Get parent, left child, right child indices
-    int parent(int i) { return (i - 1) / 2; }
-    int leftChild(int i) { return 2 * i + 1; }
-    int rightChild(int i) { return 2 * i + 2; }
+    // Navigation helpers for binary tree in array
+    int parent(int i) { return (i - 1) / 2; }      // Parent at (i-1)/2
+    int leftChild(int i) { return 2 * i + 1; }    // Left child at 2i+1
+    int rightChild(int i) { return 2 * i + 2; }   // Right child at 2i+2
     
-    // Swap two elements
+    // Utility function to swap two elements
     void swap(int i, int j) {
         int temp = heap[i];
         heap[i] = heap[j];
@@ -130,40 +130,27 @@ private:
     }
     
 public:
-    // Check if heap is empty
+    // Check if heap is empty - O(1)
     bool isEmpty() {
         return heap.empty();
     }
     
-    // Get the minimum element (root)
+    // Peek at minimum element (always at root) - O(1)
     int getMin() {
         if (isEmpty()) return -1;
-        return heap[0];
+        return heap[0];  // Root is always minimum in min-heap
     }
     
-    // Get heap size
+    // Get current number of elements - O(1)
     int size() {
         return heap.size();
     }
     
-    // Print heap as array
+    // Display heap as array (level-order traversal)
     void printHeap() {
         cout << "Heap: ";
-        for (int val : heap) {
-            cout << val << " ";
-        }
+        for (int val : heap) cout << val << " ";
         cout << endl;
-    }
-    
-    // Build a sample min-heap
-    static MinHeap* buildSampleHeap() {
-        MinHeap* h = new MinHeap();
-        vector<int> values = {3, 7, 1, 8, 2, 5, 4};
-        
-        for (int val : values) {
-            h->insert(val);
-        }
-        return h;
     }
 };</pre>
 
@@ -313,9 +300,9 @@ public:
     </ul>
 
     <pre class="code-block">// Priority Queue using heap
-#include <iostream>
-#include <vector>
-#include <string>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
 using namespace std;
 
 // Task with priority

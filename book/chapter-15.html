@@ -1,41 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 15: Graphs in Real Life & Human Decisions</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="max-w-4xl mx-auto px-8 py-16 font-sans">
     <div class="chapter-number">Chapter 15</div>
     <h1 class="chapter-title">Graphs in Real Life & Human Decisions</h1>
-    
+
     <div class="definition-box">
-        "The algorithms you've learned aren't just for computers - they're mental models for navigating life's complex decisions and relationships."
+        "The algorithms you've learned aren't just for computers - they're mental models for navigating life's complex
+        decisions and relationships."
     </div>
 
-    <p class="academic-text">Graph theory transcends the boundaries of computer science to become a powerful framework for understanding and optimizing human life itself. The same mathematical principles that enable computers to find optimal paths, manage resources, and solve complex problems can be applied to navigate career decisions, build meaningful relationships, manage time effectively, and make strategic life choices. This isn't just metaphorical thinking - it's a practical methodology for bringing algorithmic clarity to life's inherent complexity.</p>
-    
-    <p class="academic-text">The power of graph thinking lies in its ability to transform overwhelming, interconnected problems into structured, analyzable systems. When you view your career as a graph of skills and opportunities, your social network as a web of relationships with different strengths and values, or your goals as a dependency graph requiring careful ordering, you gain the tools to make decisions with mathematical precision rather than pure intuition.</p>
+    <p class="academic-text">Graph theory transcends the boundaries of computer science to become a powerful framework
+        for understanding and optimizing human life itself. The same mathematical principles that enable computers to
+        find optimal paths, manage resources, and solve complex problems can be applied to navigate career decisions,
+        build meaningful relationships, manage time effectively, and make strategic life choices. This isn't just
+        metaphorical thinking - it's a practical methodology for bringing algorithmic clarity to life's inherent
+        complexity.</p>
 
-    <p class="academic-text">This approach doesn't eliminate the human elements of decision-making - emotions, values, and personal preferences remain crucial. Instead, graph thinking provides a structured framework for organizing complex information, identifying optimal strategies, and understanding the long-term consequences of your choices. It's about bringing the clarity and systematic thinking of computer science to the art of living well.</p>
-    
-    <p class="academic-text"><strong>Graph algorithms provide practical frameworks for life's complex decisions:</strong></p>
+    <p class="academic-text">The power of graph thinking lies in its ability to transform overwhelming, interconnected
+        problems into structured, analyzable systems. When you view your career as a graph of skills and opportunities,
+        your social network as a web of relationships with different strengths and values, or your goals as a dependency
+        graph requiring careful ordering, you gain the tools to make decisions with mathematical precision rather than
+        pure intuition.</p>
+
+    <p class="academic-text">This approach doesn't eliminate the human elements of decision-making - emotions, values,
+        and personal preferences remain crucial. Instead, graph thinking provides a structured framework for organizing
+        complex information, identifying optimal strategies, and understanding the long-term consequences of your
+        choices. It's about bringing the clarity and systematic thinking of computer science to the art of living well.
+    </p>
+
+    <p class="academic-text"><strong>Graph algorithms provide practical frameworks for life's complex
+            decisions:</strong></p>
     <ul style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text"><strong>Strategic career development:</strong> Model your career as a graph where skills are nodes and learning paths are edges, then use shortest path algorithms to find the most efficient route to your dream job</li>
-        <li class="academic-text"><strong>Relationship optimization:</strong> Apply network analysis to understand your social connections, identify key relationships that bridge different communities, and invest time in connections that provide the most mutual value</li>
-        <li class="academic-text"><strong>Goal achievement systems:</strong> Use topological sorting to order your objectives based on dependencies, ensuring you build foundational skills before attempting advanced goals</li>
-        <li class="academic-text"><strong>Time and resource management:</strong> Apply graph coloring principles to schedule activities without conflicts, and use flow algorithms to optimize how you allocate limited time and energy</li>
-        <li class="academic-text"><strong>Decision tree analysis:</strong> Map out complex decisions as trees, analyzing different paths and their potential outcomes to make choices with greater confidence and foresight</li>
-        <li class="academic-text"><strong>Life optimization:</strong> Use minimum spanning tree concepts to identify the essential connections and activities that provide maximum life satisfaction with minimum complexity</li>
+        <li class="academic-text"><strong>Strategic career development:</strong> Model your career as a graph where
+            skills are nodes and learning paths are edges, then use shortest path algorithms to find the most efficient
+            route to your dream job</li>
+        <li class="academic-text"><strong>Relationship optimization:</strong> Apply network analysis to understand your
+            social connections, identify key relationships that bridge different communities, and invest time in
+            connections that provide the most mutual value</li>
+        <li class="academic-text"><strong>Goal achievement systems:</strong> Use topological sorting to order your
+            objectives based on dependencies, ensuring you build foundational skills before attempting advanced goals
+        </li>
+        <li class="academic-text"><strong>Time and resource management:</strong> Apply graph coloring principles to
+            schedule activities without conflicts, and use flow algorithms to optimize how you allocate limited time and
+            energy</li>
+        <li class="academic-text"><strong>Decision tree analysis:</strong> Map out complex decisions as trees, analyzing
+            different paths and their potential outcomes to make choices with greater confidence and foresight</li>
+        <li class="academic-text"><strong>Life optimization:</strong> Use minimum spanning tree concepts to identify the
+            essential connections and activities that provide maximum life satisfaction with minimum complexity</li>
     </ul>
-    
-    <p class="academic-text">This chapter demonstrates how to apply the algorithmic thinking you've learned to create a more intentional, optimized, and fulfilling approach to life's challenges and opportunities.</p>
+
+    <p class="academic-text">This chapter demonstrates how to apply the algorithmic thinking you've learned to create a
+        more intentional, optimized, and fulfilling approach to life's challenges and opportunities.</p>
 
     <h2 class="section-title" id="ch15-1">15.1 Case Study: Career Pathfinding as Dijkstra's Algorithm</h2>
-    
-    <p class="academic-text">Your career is a graph! Skills are nodes, learning paths are edges, and time/effort are weights. Finding your optimal career path is literally Dijkstra's algorithm.</p>
-    
+
+    <p class="academic-text">Your career is a graph! Skills are nodes, learning paths are edges, and time/effort are
+        weights. Finding your optimal career path is literally Dijkstra's algorithm.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">🎯 Career Graph Model</h3>
         <ul style="margin: 8px 0 16px 24px;">
@@ -45,11 +74,12 @@
             <li class="academic-text"><strong>Goal:</strong> Find shortest path from current state to dream job</li>
         </ul>
     </div>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Career Path Example (Software Engineer to ML Engineer):</strong><br><br>
         <div class="mermaid">
-        graph TD
+            graph TD
             A[Junior Dev] -->|6 months| B[Mid-level Dev]
             A -->|1 year| C[Data Analyst]
             B -->|1 year| D[Senior Dev]
@@ -57,31 +87,38 @@
             D -->|6 months| F[ML Engineer]
             E -->|4 months| F
             B -->|1.5 years| F
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
             style F fill:#ffebee,stroke:#f44336,stroke-width:3px
             style E fill:#fff3e0,stroke:#ff9800,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Shortest path: Junior → Mid-level → Senior → ML Engineer (2.5 years)</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Shortest path:
+            Junior → Mid-level → Senior → ML Engineer (2.5 years)</p>
     </div>
 
     <p class="academic-text"><strong>Applying Dijkstra's to Your Career:</strong></p>
     <ol style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Map your current skills:</strong> What's your starting node?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Define your goal:</strong> What's your destination node?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify possible transitions:</strong> What edges exist? (courses, jobs, projects)</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Estimate costs:</strong> Time, money, effort for each edge</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Run Dijkstra's:</strong> Find the optimal path</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute:</strong> Follow the path, one edge at a time</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Map your current skills:</strong> What's your
+            starting node?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Define your goal:</strong> What's your
+            destination node?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify possible transitions:</strong> What
+            edges exist? (courses, jobs, projects)</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Estimate costs:</strong> Time, money, effort for
+            each edge</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Run Dijkstra's:</strong> Find the optimal path
+        </li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute:</strong> Follow the path, one edge at a
+            time</li>
     </ol>
 
     <pre class="code-block">// Career Path Planner using Dijkstra's Algorithm
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;queue&gt;
-#include &lt;unordered_map&gt;
-#include &lt;string&gt;
-#include &lt;limits&gt;
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <string>
+#include <limits>
 using namespace std;
 
 class CareerPathPlanner {
@@ -92,38 +129,38 @@ private:
         string action;  // What to do (course, job, etc.)
     };
     
-    unordered_map&lt;string, vector&lt;Edge&gt;&gt; graph;
+    unordered_map<string, vector<Edge>> graph;
     
 public:
     void addPath(string from, string to, int months, string action) {
         graph[from].push_back({to, months, action});
     }
     
-    vector&lt;string&gt; findOptimalPath(string start, string goal) {
-        unordered_map&lt;string, int&gt; distance;
-        unordered_map&lt;string, string&gt; parent;
-        unordered_map&lt;string, string&gt; action;
+    vector<string> findOptimalPath(string start, string goal) {
+        unordered_map<string, int> distance;
+        unordered_map<string, string> parent;
+        unordered_map<string, string> action;
         
-        for (auto&amp; [node, _] : graph) {
-            distance[node] = numeric_limits&lt;int&gt;::max();
+        for (auto& [node, _] : graph) {
+            distance[node] = numeric_limits<int>::max();
         }
         distance[start] = 0;
         
-        priority_queue&lt;pair&lt;int, string&gt;, 
-                       vector&lt;pair&lt;int, string&gt;&gt;,
-                       greater&lt;pair&lt;int, string&gt;&gt;&gt; pq;
+        priority_queue<pair<int, string>, 
+                       vector<pair<int, string>>,
+                       greater<pair<int, string>>> pq;
         pq.push({0, start});
         
         while (!pq.empty()) {
             auto [dist, current] = pq.top();
             pq.pop();
             
-            if (dist &gt; distance[current]) continue;
+            if (dist > distance[current]) continue;
             if (current == goal) break;
             
-            for (auto&amp; edge : graph[current]) {
+            for (auto& edge : graph[current]) {
                 int newDist = distance[current] + edge.months;
-                if (newDist &lt; distance[edge.to]) {
+                if (newDist < distance[edge.to]) {
                     distance[edge.to] = newDist;
                     parent[edge.to] = current;
                     action[edge.to] = edge.action;
@@ -133,7 +170,7 @@ public:
         }
         
         // Reconstruct path
-        vector&lt;string&gt; path;
+        vector<string> path;
         string current = goal;
         while (current != start) {
             path.push_back(current);
@@ -143,11 +180,11 @@ public:
         reverse(path.begin(), path.end());
         
         // Print plan
-        cout &lt;&lt; "Optimal Career Path (" &lt;&lt; distance[goal] 
-             &lt;&lt; " months):" &lt;&lt; endl;
-        for (int i = 0; i &lt; path.size() - 1; i++) {
-            cout &lt;&lt; path[i] &lt;&lt; " → " &lt;&lt; path[i+1] 
-                 &lt;&lt; " (" &lt;&lt; action[path[i+1]] &lt;&lt; ")" &lt;&lt; endl;
+        cout << "Optimal Career Path (" << distance[goal] 
+             << " months):" << endl;
+        for (int i = 0; i < path.size() - 1; i++) {
+            cout << path[i] << " → " << path[i+1] 
+                 << " (" << action[path[i+1]] << ")" << endl;
         }
         
         return path;
@@ -164,35 +201,40 @@ public:
 
     <h2 class="section-title" id="ch15-2">15.2 Case Study: Social Network Pruning as MST</h2>
 
-    <p class="academic-text">You can't maintain deep relationships with everyone. Minimum Spanning Tree algorithms help you identify which relationships to prioritize - keeping your network connected while minimizing emotional overhead.</p>
-    
+    <p class="academic-text">You can't maintain deep relationships with everyone. Minimum Spanning Tree algorithms help
+        you identify which relationships to prioritize - keeping your network connected while minimizing emotional
+        overhead.</p>
+
     <div class="definition-box" style="margin: 20px 0;">
         <h3 style="margin-top: 0; color: #1976d2;">👥 Relationship Graph Model</h3>
         <ul style="margin: 8px 0 16px 24px;">
             <li class="academic-text"><strong>Nodes:</strong> People in your network</li>
             <li class="academic-text"><strong>Edges:</strong> Relationships</li>
             <li class="academic-text"><strong>Weights:</strong> Maintenance cost (time, energy, emotional labor)</li>
-            <li class="academic-text"><strong>Goal:</strong> Stay connected to everyone while minimizing total effort</li>
+            <li class="academic-text"><strong>Goal:</strong> Stay connected to everyone while minimizing total effort
+            </li>
         </ul>
     </div>
 
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Social Network MST:</strong><br><br>
         <div class="mermaid">
-        graph LR
+            graph LR
             You[You] ---|2| A[Close Friend A]
             You ---|3| B[Friend B]
             You ---|5| C[Acquaintance C]
             A ---|1| B
             B ---|2| C
             A ---|4| C
-            
+
             style You fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
             style A fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
             style B fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
             style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">MST: Maintain You-A (2), A-B (1), B-C (2). Total effort: 5 units</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">MST: Maintain You-A
+            (2), A-B (1), B-C (2). Total effort: 5 units</p>
     </div>
 
     <p class="academic-text"><strong>Relationship Pruning Strategy:</strong></p>
@@ -205,56 +247,68 @@ public:
 
     <h2 class="section-title" id="ch15-3">15.3 Case Study: Goal Dependencies as Topological Sorting</h2>
 
-    <p class="academic-text">Your goals have dependencies! You can't run a marathon before learning to jog. Topological sorting reveals the correct order to tackle your goals.</p>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <p class="academic-text">Your goals have dependencies! You can't run a marathon before learning to jog. Topological
+        sorting reveals the correct order to tackle your goals.</p>
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Goal Dependency Graph:</strong><br><br>
         <div class="mermaid">
-        graph TD
+            graph TD
             A[Learn basics] --> B[Build project]
             A --> C[Read documentation]
             B --> D[Get job]
             C --> B
             C --> E[Contribute to open source]
             E --> D
-            
+
             style A fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
             style D fill:#ffebee,stroke:#f44336,stroke-width:3px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Valid order: Learn basics → Read docs → Build project/Contribute → Get job</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">Valid order: Learn
+            basics → Read docs → Build project/Contribute → Get job</p>
     </div>
 
     <p class="academic-text"><strong>Applying Topological Sort to Goals:</strong></p>
     <ol style="margin: 16px 0; padding-left: 24px;">
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>List all goals:</strong> What do you want to achieve?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify dependencies:</strong> What must come before what?</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Build DAG:</strong> Goals as nodes, dependencies as edges</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Detect cycles:</strong> Circular dependencies = impossible goals</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Topological sort:</strong> Get valid execution order</li>
-        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute in order:</strong> Work through goals sequentially</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>List all goals:</strong> What do you want to
+            achieve?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Identify dependencies:</strong> What must come
+            before what?</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Build DAG:</strong> Goals as nodes, dependencies
+            as edges</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Detect cycles:</strong> Circular dependencies =
+            impossible goals</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Topological sort:</strong> Get valid execution
+            order</li>
+        <li class="academic-text" style="margin-bottom: 12px;"><strong>Execute in order:</strong> Work through goals
+            sequentially</li>
     </ol>
 
     <h2 class="section-title" id="ch15-4">15.4 Case Study: Time Management as Graph Coloring</h2>
 
-    <p class="academic-text">Scheduling your day is graph coloring! Activities are nodes, conflicts are edges, time slots are colors. Minimize colors (time slots) while avoiding conflicts.</p>
-    
-    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <p class="academic-text">Scheduling your day is graph coloring! Activities are nodes, conflicts are edges, time
+        slots are colors. Minimize colors (time slots) while avoiding conflicts.</p>
+
+    <div
+        style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
         <strong>Daily Schedule as Graph Coloring:</strong><br><br>
         <div class="mermaid">
-        graph LR
+            graph LR
             A[Work] --- B[Gym]
             A --- C[Cooking]
             B --- C
             D[Reading] --- E[Family time]
             C --- E
-            
+
             style A fill:#ff6b6b,stroke:#333,stroke-width:2px
             style B fill:#4ecdc4,stroke:#333,stroke-width:2px
             style C fill:#ffe66d,stroke:#333,stroke-width:2px
             style D fill:#ff6b6b,stroke:#333,stroke-width:2px
             style E fill:#4ecdc4,stroke:#333,stroke-width:2px
         </div>
-        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">3 time slots needed: Red (Work, Reading), Blue (Gym, Family), Yellow (Cooking)</p>
+        <p style="margin: 10px 0 0 0; font-family: sans-serif; font-size: 12px; text-align: center;">3 time slots
+            needed: Red (Work, Reading), Blue (Gym, Family), Yellow (Cooking)</p>
     </div>
 
     <p class="academic-text"><strong>Time Management Insights:</strong></p>
@@ -267,8 +321,9 @@ public:
 
     <h2 class="section-title" id="ch15-5">15.5 Mind Mapping and Decision Making</h2>
 
-    <p class="academic-text">Mind maps are graphs! Use graph thinking to structure your thoughts, explore decisions, and find insights.</p>
-    
+    <p class="academic-text">Mind maps are graphs! Use graph thinking to structure your thoughts, explore decisions, and
+        find insights.</p>
+
     <p class="academic-text"><strong>Decision Trees as Graphs:</strong></p>
     <ul style="margin: 8px 0 16px 24px;">
         <li class="academic-text"><strong>Nodes:</strong> Decisions or outcomes</li>
@@ -287,8 +342,10 @@ public:
             <li class="academic-text">✅ <strong>Time management</strong> - Graph coloring for scheduling</li>
             <li class="academic-text">✅ <strong>Decision making</strong> - Graph thinking for clarity</li>
         </ul>
-        
-        <p class="academic-text">Graph algorithms aren't just for computers - they're mental models for navigating life's complexity!</p>
+
+        <p class="academic-text">Graph algorithms aren't just for computers - they're mental models for navigating
+            life's complexity!</p>
     </div>
 </body>
+
 </html>
