@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2: Binary Search - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 2</div>
+        <h1 class="chapter-title">Binary Search</h1>
+        
+        <p class="academic-text">
+            Binary search is a highly efficient searching algorithm that works on sorted arrays by repeatedly dividing the search interval in half. It's one of the most fundamental algorithms in computer science and forms the basis for many other algorithms.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a sorted array of n elements and a target value, find the index of the target value in the array. If the target is not present, return -1.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Sorted array arr[] of size n, target value x<br>
+            <strong>Output:</strong> Index of x in arr[], or -1 if not found<br>
+            <strong>Prerequisite:</strong> Array must be sorted in ascending order
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Binary search uses the divide-and-conquer strategy:
+        </p>
+        
+        <ol>
+            <li>Compare the target with the middle element of the array</li>
+            <li>If the target equals the middle element, return its index</li>
+            <li>If the target is less than the middle element, search the left half</li>
+            <li>If the target is greater than the middle element, search the right half</li>
+            <li>Repeat until the target is found or the search space is empty</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: BinarySearch(arr, left, right, x)
+1. if right >= left then
+2.     mid = left + (right - left) / 2
+3.     if arr[mid] == x then
+4.         return mid
+5.     else if arr[mid] > x then
+6.         return BinarySearch(arr, left, mid-1, x)
+7.     else
+8.         return BinarySearch(arr, mid+1, right, x)
+9.     end if
+10. end if
+11. return -1
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+/**
+ * Binary Search - Iterative Implementation
+ * Searches for target in a sorted array using binary search
+ * 
+ * @param arr: sorted input array
+ * @param target: element to search for
+ * @return: index of target element, -1 if not found
+ */
+int binarySearch(const vector&lt;int&gt;&amp; arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+    
+    while (left &lt;= right) {
+        // Calculate middle index (avoids integer overflow)
+        int mid = left + (right - left) / 2;
+        
+        // Check if target is at mid
+        if (arr[mid] == target) {
+            return mid;
+        }
+        
+        // If target is smaller, search left half
+        if (arr[mid] > target) {
+            right = mid - 1;
+        }
+        // If target is larger, search right half
+        else {
+            left = mid + 1;
+        }
+    }
+    
+    return -1;  // Target not found
+}
+
+/**
+ * Binary Search - Recursive Implementation
+ * Recursive version of binary search
+ */
+int binarySearchRecursive(const vector&lt;int&gt;&amp; arr, int left, int right, int target) {
+    // Base case: search space is empty
+    if (left > right) {
+        return -1;
+    }
+    
+    int mid = left + (right - left) / 2;
+    
+    // Target found
+    if (arr[mid] == target) {
+        return mid;
+    }
+    
+    // Search left half
+    if (arr[mid] > target) {
+        return binarySearchRecursive(arr, left, mid - 1, target);
+    }
+    
+    // Search right half
+    return binarySearchRecursive(arr, mid + 1, right, target);
+}
+
+/**
+ * Find First Occurrence (Lower Bound)
+ * Finds the first occurrence of target in a sorted array with duplicates
+ */
+int findFirstOccurrence(const vector&lt;int&gt;&amp; arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+    int result = -1;
+    
+    while (left &lt;= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            result = mid;
+            right = mid - 1;  // Continue searching left for first occurrence
+        }
+        else if (arr[mid] > target) {
+            right = mid - 1;
+        }
+        else {
+            left = mid + 1;
+        }
+    }
+    
+    return result;
+}
+
+/**
+ * Find Last Occurrence (Upper Bound)
+ * Finds the last occurrence of target in a sorted array with duplicates
+ */
+int findLastOccurrence(const vector&lt;int&gt;&amp; arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+    int result = -1;
+    
+    while (left &lt;= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            result = mid;
+            left = mid + 1;  // Continue searching right for last occurrence
+        }
+        else if (arr[mid] > target) {
+            right = mid - 1;
+        }
+        else {
+            left = mid + 1;
+        }
+    }
+    
+    return result;
+}
+
+/**
+ * Search Insert Position
+ * Finds the position where target should be inserted to maintain sorted order
+ */
+int searchInsertPosition(const vector&lt;int&gt;&amp; arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+    
+    while (left &lt;= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            return mid;
+        }
+        else if (arr[mid] > target) {
+            right = mid - 1;
+        }
+        else {
+            left = mid + 1;
+        }
+    }
+    
+    return left;  // Insert position
+}
+
+// Example usage and testing
+int main() {
+    vector&lt;int&gt; arr = {2, 3, 4, 10, 40, 50, 80};
+    int target = 10;
+    
+    cout &lt;&lt; "Sorted Array: ";
+    for (int x : arr) {
+        cout &lt;&lt; x &lt;&lt; " ";
+    }
+    cout &lt;&lt; endl;
+    
+    // Test iterative binary search
+    int result = binarySearch(arr, target);
+    if (result != -1) {
+        cout &lt;&lt; "Element " &lt;&lt; target &lt;&lt; " found at index " &lt;&lt; result &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; "Element " &lt;&lt; target &lt;&lt; " not found" &lt;&lt; endl;
+    }
+    
+    // Test recursive binary search
+    int recursiveResult = binarySearchRecursive(arr, 0, arr.size() - 1, target);
+    cout &lt;&lt; "Recursive result: " &lt;&lt; recursiveResult &lt;&lt; endl;
+    
+    // Test with duplicates
+    vector&lt;int&gt; arrWithDuplicates = {1, 2, 2, 2, 3, 4, 4, 5};
+    int duplicateTarget = 2;
+    
+    cout &lt;&lt; "\\nArray with duplicates: ";
+    for (int x : arrWithDuplicates) {
+        cout &lt;&lt; x &lt;&lt; " ";
+    }
+    cout &lt;&lt; endl;
+    
+    cout &lt;&lt; "First occurrence of " &lt;&lt; duplicateTarget &lt;&lt; ": " 
+         &lt;&lt; findFirstOccurrence(arrWithDuplicates, duplicateTarget) &lt;&lt; endl;
+    cout &lt;&lt; "Last occurrence of " &lt;&lt; duplicateTarget &lt;&lt; ": " 
+         &lt;&lt; findLastOccurrence(arrWithDuplicates, duplicateTarget) &lt;&lt; endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(1) - Target is the middle element</li>
+                <li><strong>Average Case:</strong> O(log n) - Target requires log n comparisons</li>
+                <li><strong>Worst Case:</strong> O(log n) - Target is at the end of search path</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Iterative:</strong> O(1) - Constant extra space</li>
+                <li><strong>Recursive:</strong> O(log n) - Due to recursion stack</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through binary search on array [2, 3, 4, 10, 40, 50, 80] searching for target = 10:
+        </p>
+        
+        <div class="code-block">
+Array: [2, 3, 4, 10, 40, 50, 80]  (indices 0-6)
+Target: 10
+
+Iteration 1:
+  left=0, right=6, mid=3
+  arr[3]=10, target=10
+  10 == 10, FOUND! Return index 3
+
+Result: Element found at index 3
+        </div>
+        
+        <p class="academic-text">
+            Let's trace another example searching for target = 50:
+        </p>
+        
+        <div class="code-block">
+Array: [2, 3, 4, 10, 40, 50, 80]
+Target: 50
+
+Iteration 1:
+  left=0, right=6, mid=3
+  arr[3]=10, target=50
+  10 < 50, search right half
+  left=4, right=6
+
+Iteration 2:
+  left=4, right=6, mid=5
+  arr[5]=50, target=50
+  50 == 50, FOUND! Return index 5
+
+Result: Element found at index 5
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Binary search has numerous applications:
+        </p>
+        
+        <ul>
+            <li><strong>Database Indexing:</strong> B-trees use binary search principles</li>
+            <li><strong>Library Functions:</strong> std::binary_search, std::lower_bound, std::upper_bound</li>
+            <li><strong>Finding Square Root:</strong> Binary search on answer space</li>
+            <li><strong>Peak Finding:</strong> Finding local maxima in arrays</li>
+            <li><strong>Rotated Array Search:</strong> Modified binary search for rotated sorted arrays</li>
+            <li><strong>Range Queries:</strong> Finding elements in a specific range</li>
+            <li><strong>Optimization Problems:</strong> Binary search on answer (BSOA)</li>
+        </ul>
+        
+        <h2 class="section-title">Advanced Variations</h2>
+        
+        <h3>1. Binary Search on Answer</h3>
+        <div class="code-block">
+/**
+ * Example: Find minimum capacity to ship packages within D days
+ * Binary search on the answer space
+ */
+bool canShip(const vector&lt;int&gt;&amp; weights, int capacity, int days) {
+    int currentWeight = 0;
+    int daysNeeded = 1;
+    
+    for (int weight : weights) {
+        if (currentWeight + weight > capacity) {
+            daysNeeded++;
+            currentWeight = weight;
+        } else {
+            currentWeight += weight;
+        }
+    }
+    
+    return daysNeeded &lt;= days;
+}
+
+int shipWithinDays(vector&lt;int&gt;&amp; weights, int days) {
+    int left = *max_element(weights.begin(), weights.end());
+    int right = accumulate(weights.begin(), weights.end(), 0);
+    
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        
+        if (canShip(weights, mid, days)) {
+            right = mid;
+        } else {
+            left = mid + 1;
+        }
+    }
+    
+    return left;
+}
+        </div>
+        
+        <h3>2. Search in Rotated Sorted Array</h3>
+        <div class="code-block">
+int searchRotated(const vector&lt;int&gt;&amp; arr, int target) {
+    int left = 0;
+    int right = arr.size() - 1;
+    
+    while (left &lt;= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            return mid;
+        }
+        
+        // Left half is sorted
+        if (arr[left] &lt;= arr[mid]) {
+            if (target >= arr[left] &amp;&amp; target < arr[mid]) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        // Right half is sorted
+        else {
+            if (target > arr[mid] &amp;&amp; target &lt;= arr[right]) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+    }
+    
+    return -1;
+}
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Integer Overflow:</strong> Use <code>mid = left + (right - left) / 2</code> instead of <code>(left + right) / 2</code></li>
+            <li><strong>Infinite Loop:</strong> Ensure loop termination with proper boundary updates</li>
+            <li><strong>Off-by-One Errors:</strong> Be careful with <code>&lt;</code> vs <code>&lt;=</code> in loop condition</li>
+            <li><strong>Unsorted Input:</strong> Binary search only works on sorted data</li>
+            <li><strong>Empty Array:</strong> Handle edge case of empty input</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Template:</strong> Master the standard binary search template and its variations</li>
+            <li><strong>Boundary Conditions:</strong> Always clarify how to handle duplicates and edge cases</li>
+            <li><strong>Variants:</strong> Be prepared to implement lower_bound, upper_bound, and search insert position</li>
+            <li><strong>Applications:</strong> Discuss binary search on answer space for optimization problems</li>
+            <li><strong>Comparison:</strong> Explain when to use binary search vs linear search</li>
+        </ul>
+        
+        <div class="definition-box">
+            <strong>Binary Search Template:</strong><br>
+            The key insight is that binary search maintains the invariant that the answer (if it exists) is always within the current search range [left, right].
+        </div>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Binary search reduces search time from O(n) to O(log n)</li>
+                <li>Requires sorted input data as a prerequisite</li>
+                <li>Master both iterative and recursive implementations</li>
+                <li>Understanding variants like lower_bound and upper_bound is crucial</li>
+                <li>Can be applied to optimization problems through "binary search on answer"</li>
+                <li>Avoid integer overflow and off-by-one errors</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 9: Selection Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 9</div>
+        <h1 class="chapter-title">Selection Sort</h1>
+        
+        <p class="academic-text">
+            Selection sort is a simple comparison-based sorting algorithm that works by dividing the array into two parts: a sorted portion and an unsorted portion. It repeatedly finds the minimum element from the unsorted portion and moves it to the end of the sorted portion. Despite its simplicity, selection sort is inefficient for large datasets but has some interesting properties that make it useful in specific scenarios.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n elements, sort the array in ascending order using the selection sort algorithm. The algorithm should find the minimum element in each iteration and place it in its correct position.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with comparable elements<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Not stable (can change relative order of equal elements)
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Selection sort works through the following process:
+        </p>
+        
+        <ol>
+            <li>Find the minimum element in the entire array</li>
+            <li>Swap it with the first element</li>
+            <li>Find the minimum element in the remaining array (excluding the first element)</li>
+            <li>Swap it with the second element</li>
+            <li>Continue this process until the entire array is sorted</li>
+            <li>After k iterations, the first k elements are in their final sorted positions</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: SelectionSort(arr, n)
+1. for i = 0 to n-2 do
+2.     minIndex = i
+3.     for j = i+1 to n-1 do
+4.         if arr[j] < arr[minIndex] then
+5.             minIndex = j
+6.         end if
+7.     end for
+8.     if minIndex != i then
+9.         swap(arr[i], arr[minIndex])
+10.    end if
+11. end for
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+using namespace std;
+
+/**
+ * Selection Sort - Basic Implementation
+ * Sorts array in ascending order using selection sort algorithm
+ * 
+ * @param arr: input array to be sorted
+ */
+void selectionSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    // One by one move boundary of unsorted subarray
+    for (int i = 0; i < n - 1; i++) {
+        // Find the minimum element in remaining unsorted array
+        int minIndex = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        // Swap the found minimum element with the first element
+        if (minIndex != i) {
+            swap(arr[i], arr[minIndex]);
+        }
+    }
+}
+
+/**
+ * Selection Sort with Statistics
+ * Tracks comparisons and swaps for analysis
+ */
+struct SelectionSortStats {
+    int comparisons;
+    int swaps;
+    int passes;
+    vector<vector<int>> stateHistory;
+    vector<int> minIndicesFound;
+};
+
+SelectionSortStats selectionSortWithStats(vector<int>& arr) {
+    SelectionSortStats stats = {0, 0, 0, {}, {}};
+    int n = arr.size();
+    
+    // Save initial state
+    stats.stateHistory.push_back(arr);
+    
+    for (int i = 0; i < n - 1; i++) {
+        stats.passes++;
+        int minIndex = i;
+        
+        // Find minimum element in remaining array
+        for (int j = i + 1; j < n; j++) {
+            stats.comparisons++;
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        stats.minIndicesFound.push_back(minIndex);
+        
+        // Swap if necessary
+        if (minIndex != i) {
+            swap(arr[i], arr[minIndex]);
+            stats.swaps++;
+        }
+        
+        // Save state after each pass
+        stats.stateHistory.push_back(arr);
+    }
+    
+    return stats;
+}
+
+/**
+ * Stable Selection Sort
+ * Modified version that maintains stability
+ */
+void stableSelectionSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    for (int i = 0; i < n - 1; i++) {
+        // Find minimum element in remaining array
+        int minIndex = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        // Instead of swapping, shift elements to maintain stability
+        int minValue = arr[minIndex];
+        
+        // Shift all elements from i to minIndex-1 one position right
+        for (int k = minIndex; k > i; k--) {
+            arr[k] = arr[k - 1];
+        }
+        
+        // Place minimum element at position i
+        arr[i] = minValue;
+    }
+}
+
+/**
+ * Bidirectional Selection Sort
+ * Finds both minimum and maximum in each pass
+ */
+void bidirectionalSelectionSort(vector<int>& arr) {
+    int n = arr.size();
+    int left = 0, right = n - 1;
+    
+    while (left < right) {
+        int minIndex = left, maxIndex = left;
+        
+        // Find both minimum and maximum in current range
+        for (int i = left; i <= right; i++) {
+            if (arr[i] < arr[minIndex]) {
+                minIndex = i;
+            }
+            if (arr[i] > arr[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+        
+        // Swap minimum element to left position
+        if (minIndex != left) {
+            swap(arr[left], arr[minIndex]);
+            
+            // If maxIndex was at left position, update it
+            if (maxIndex == left) {
+                maxIndex = minIndex;
+            }
+        }
+        
+        // Swap maximum element to right position
+        if (maxIndex != right) {
+            swap(arr[right], arr[maxIndex]);
+        }
+        
+        left++;
+        right--;
+    }
+}
+
+/**
+ * Recursive Selection Sort
+ * Recursive implementation of selection sort
+ */
+void recursiveSelectionSort(vector<int>& arr, int startIndex = 0) {
+    int n = arr.size();
+    
+    // Base case
+    if (startIndex >= n - 1) {
+        return;
+    }
+    
+    // Find minimum element in remaining array
+    int minIndex = startIndex;
+    for (int i = startIndex + 1; i < n; i++) {
+        if (arr[i] < arr[minIndex]) {
+            minIndex = i;
+        }
+    }
+    
+    // Swap minimum element with first element of remaining array
+    if (minIndex != startIndex) {
+        swap(arr[startIndex], arr[minIndex]);
+    }
+    
+    // Recursively sort the remaining array
+    recursiveSelectionSort(arr, startIndex + 1);
+}
+
+/**
+ * Generic Selection Sort with Custom Comparator
+ * Works with any comparable type and custom comparison function
+ */
+template<typename T, typename Compare>
+void selectionSortGeneric(vector<T>& arr, Compare comp) {
+    int n = arr.size();
+    
+    for (int i = 0; i < n - 1; i++) {
+        int selectedIndex = i;
+        
+        for (int j = i + 1; j < n; j++) {
+            if (comp(arr[j], arr[selectedIndex])) {
+                selectedIndex = j;
+            }
+        }
+        
+        if (selectedIndex != i) {
+            swap(arr[i], arr[selectedIndex]);
+        }
+    }
+}
+
+/**
+ * Selection Sort with Early Termination
+ * Optimized version that can terminate early in some cases
+ */
+void optimizedSelectionSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    for (int i = 0; i < n - 1; i++) {
+        int minIndex = i;
+        bool foundSmaller = false;
+        
+        // Find minimum element in remaining array
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+                foundSmaller = true;
+            }
+        }
+        
+        // If no smaller element found, remaining array is already sorted
+        if (!foundSmaller) {
+            break;
+        }
+        
+        // Swap minimum element with current position
+        if (minIndex != i) {
+            swap(arr[i], arr[minIndex]);
+        }
+    }
+}
+
+/**
+ * Selection Sort for Finding K Smallest Elements
+ * Modified to find only k smallest elements
+ */
+vector<int> findKSmallest(vector<int>& arr, int k) {
+    int n = arr.size();
+    k = min(k, n);  // Ensure k doesn't exceed array size
+    
+    // Perform selection sort for first k elements only
+    for (int i = 0; i < k; i++) {
+        int minIndex = i;
+        
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        if (minIndex != i) {
+            swap(arr[i], arr[minIndex]);
+        }
+    }
+    
+    // Return first k elements
+    return vector<int>(arr.begin(), arr.begin() + k);
+}
+
+/**
+ * Selection Sort with Memory Access Optimization
+ * Reduces memory writes by avoiding unnecessary swaps
+ */
+void memoryOptimizedSelectionSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    for (int i = 0; i < n - 1; i++) {
+        int minIndex = i;
+        
+        // Find minimum element in remaining array
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        // Only swap if minimum element is not already in correct position
+        if (minIndex != i) {
+            swap(arr[i], arr[minIndex]);
+        }
+    }
+}
+
+// Utility functions for demonstration
+void printArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Test basic selection sort
+    vector<int> arr1 = {64, 25, 12, 22, 11};
+    cout << "=== Basic Selection Sort ===" << endl;
+    printArray(arr1, "Original");
+    
+    selectionSort(arr1);
+    printArray(arr1, "Sorted");
+    
+    // Test selection sort with statistics
+    vector<int> arr2 = {5, 2, 8, 1, 9};
+    cout << "\n=== Selection Sort with Statistics ===" << endl;
+    printArray(arr2, "Original");
+    
+    SelectionSortStats stats = selectionSortWithStats(arr2);
+    printArray(arr2, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Comparisons: " << stats.comparisons << endl;
+    cout << "  Swaps: " << stats.swaps << endl;
+    cout << "  Passes: " << stats.passes << endl;
+    
+    cout << "  State history:" << endl;
+    for (int i = 0; i < stats.stateHistory.size(); i++) {
+        cout << "    Pass " << i << ": ";
+        printArray(stats.stateHistory[i], "");
+        if (i > 0 && i <= stats.minIndicesFound.size()) {
+            cout << "      (Selected min from index " << stats.minIndicesFound[i-1] << ")" << endl;
+        }
+    }
+    
+    // Test stable selection sort
+    vector<int> arr3 = {4, 2, 3, 2, 1};
+    cout << "\n=== Stable Selection Sort ===" << endl;
+    printArray(arr3, "Original");
+    
+    stableSelectionSort(arr3);
+    printArray(arr3, "Sorted (Stable)");
+    
+    // Test bidirectional selection sort
+    vector<int> arr4 = {3, 7, 1, 9, 4, 6, 2, 8};
+    cout << "\n=== Bidirectional Selection Sort ===" << endl;
+    printArray(arr4, "Original");
+    
+    bidirectionalSelectionSort(arr4);
+    printArray(arr4, "Sorted");
+    
+    // Test recursive selection sort
+    vector<int> arr5 = {9, 5, 1, 4, 3};
+    cout << "\n=== Recursive Selection Sort ===" << endl;
+    printArray(arr5, "Original");
+    
+    recursiveSelectionSort(arr5);
+    printArray(arr5, "Sorted");
+    
+    // Test finding k smallest elements
+    vector<int> arr6 = {7, 2, 9, 1, 5, 6};
+    int k = 3;
+    cout << "\n=== Finding " << k << " Smallest Elements ===" << endl;
+    printArray(arr6, "Original");
+    
+    vector<int> kSmallest = findKSmallest(arr6, k);
+    printArray(kSmallest, "3 Smallest");
+    printArray(arr6, "Array after partial sort");
+    
+    // Test generic selection sort with custom comparator
+    vector<string> words = {"banana", "apple", "cherry", "date"};
+    cout << "\n=== Generic Selection Sort (Strings, Descending) ===" << endl;
+    cout << "Original: [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << words[i];
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    selectionSortGeneric(words, [](const string& a, const string& b) {
+        return a > b;  // Descending order
+    });
+    
+    cout << "Sorted (Desc): [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << words[i];
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(n²) - Even if array is sorted, still needs to find minimum</li>
+                <li><strong>Average Case:</strong> O(n²) - Always performs the same number of comparisons</li>
+                <li><strong>Worst Case:</strong> O(n²) - Same as best and average case</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(1) - Only uses constant extra space</li>
+                <li><strong>In-place:</strong> Yes - Sorts the array without using extra space</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> No - Can change relative order of equal elements</li>
+                <li><strong>Adaptive:</strong> No - Performance doesn't improve on partially sorted arrays</li>
+                <li><strong>Minimum Swaps:</strong> At most n-1 swaps (optimal for minimizing writes)</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through selection sort on array [5, 2, 8, 1, 9]:
+        </p>
+        
+        <div class="code-block">
+Initial: [5, 2, 8, 1, 9]
+
+Pass 1 (i=0):
+  Find minimum in [5, 2, 8, 1, 9]: minimum is 1 at index 3
+  Swap arr[0] and arr[3]: [1, 2, 8, 5, 9]
+  Sorted portion: [1]
+
+Pass 2 (i=1):
+  Find minimum in [2, 8, 5, 9]: minimum is 2 at index 1
+  No swap needed: [1, 2, 8, 5, 9]
+  Sorted portion: [1, 2]
+
+Pass 3 (i=2):
+  Find minimum in [8, 5, 9]: minimum is 5 at index 3
+  Swap arr[2] and arr[3]: [1, 2, 5, 8, 9]
+  Sorted portion: [1, 2, 5]
+
+Pass 4 (i=3):
+  Find minimum in [8, 9]: minimum is 8 at index 3
+  No swap needed: [1, 2, 5, 8, 9]
+  Sorted portion: [1, 2, 5, 8]
+
+Final: [1, 2, 5, 8, 9]
+Total comparisons: 10, Total swaps: 2
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Selection sort has specific applications where its properties are advantageous:
+        </p>
+        
+        <ul>
+            <li><strong>Memory Write Minimization:</strong> When write operations are expensive (flash memory, EEPROM)</li>
+            <li><strong>Finding K Smallest/Largest:</strong> Can be stopped after k iterations</li>
+            <li><strong>Simple Implementation:</strong> When code simplicity is more important than efficiency</li>
+            <li><strong>Small Datasets:</strong> Reasonable performance for very small arrays</li>
+            <li><strong>Educational Purposes:</strong> Teaching sorting concepts and algorithm analysis</li>
+            <li><strong>Embedded Systems:</strong> When memory is limited and simplicity is valued</li>
+        </ul>
+        
+        <h2 class="section-title">Optimizations and Variations</h2>
+        
+        <h3>1. Bidirectional Selection Sort</h3>
+        <div class="code-block">
+// Find both minimum and maximum in each pass
+void bidirectionalSelectionSort(vector<int>& arr) {
+    int left = 0, right = arr.size() - 1;
+    
+    while (left < right) {
+        int minIndex = left, maxIndex = left;
+        
+        // Find both min and max in current range
+        for (int i = left; i <= right; i++) {
+            if (arr[i] < arr[minIndex]) minIndex = i;
+            if (arr[i] > arr[maxIndex]) maxIndex = i;
+        }
+        
+        // Place min and max in correct positions
+        swap(arr[left], arr[minIndex]);
+        if (maxIndex == left) maxIndex = minIndex;
+        swap(arr[right], arr[maxIndex]);
+        
+        left++; right--;
+    }
+}
+        </div>
+        
+        <h3>2. Heap Selection Sort</h3>
+        <div class="code-block">
+// Use heap to efficiently find minimum elements
+void heapSelectionSort(vector<int>& arr) {
+    // Build min heap from array
+    make_heap(arr.begin(), arr.end(), greater<int>());
+    
+    vector<int> result;
+    while (!arr.empty()) {
+        // Extract minimum element
+        pop_heap(arr.begin(), arr.end(), greater<int>());
+        result.push_back(arr.back());
+        arr.pop_back();
+    }
+    
+    arr = result;
+}
+        </div>
+        
+        <h3>3. Stable Selection Sort</h3>
+        <div class="code-block">
+// Maintain stability by shifting instead of swapping
+void stableSelectionSort(vector<int>& arr) {
+    for (int i = 0; i < arr.size() - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < arr.size(); j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        // Shift elements to maintain stability
+        int minValue = arr[minIndex];
+        for (int k = minIndex; k > i; k--) {
+            arr[k] = arr[k - 1];
+        }
+        arr[i] = minValue;
+    }
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Selection Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Selection Sort When:</strong><br>
+            • Minimizing memory writes is critical (flash memory, EEPROM)<br>
+            • You need to find only k smallest/largest elements<br>
+            • Dataset is very small (< 20 elements)<br>
+            • Simplicity is more important than efficiency<br>
+            • Memory is extremely constrained<br>
+            • Teaching sorting algorithm concepts<br><br>
+            
+            <strong>Don't Use Selection Sort When:</strong><br>
+            • Dataset is large (> 50 elements)<br>
+            • Performance is critical<br>
+            • You need a stable sorting algorithm<br>
+            • Data is already partially sorted (no advantage)<br>
+            • Working with production systems requiring efficiency
+        </div>
+        
+        <h2 class="section-title">Comparison with Other O(n²) Algorithms</h2>
+        
+        <div class="code-block">
+Algorithm Comparison:
+
+Selection Sort:
+- Time: O(n²) always
+- Swaps: O(n) - minimum possible
+- Stable: No
+- Adaptive: No
+- Best for: Minimizing writes
+
+Bubble Sort:
+- Time: O(n²) worst, O(n) best
+- Swaps: O(n²)
+- Stable: Yes
+- Adaptive: Yes
+- Best for: Nearly sorted data
+
+Insertion Sort:
+- Time: O(n²) worst, O(n) best
+- Swaps: O(n²)
+- Stable: Yes
+- Adaptive: Yes
+- Best for: Small or nearly sorted data
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Assuming Stability:</strong> Selection sort is not stable by default</li>
+            <li><strong>Unnecessary Swaps:</strong> Always check if minIndex != i before swapping</li>
+            <li><strong>Off-by-One Errors:</strong> Loop should go to n-2, not n-1</li>
+            <li><strong>Not Handling Edge Cases:</strong> Empty arrays or single-element arrays</li>
+            <li><strong>Using for Large Data:</strong> Don't use selection sort for large datasets</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Minimum Swaps:</strong> Emphasize that selection sort minimizes the number of swaps</li>
+            <li><strong>Consistent Performance:</strong> Always O(n²) regardless of input</li>
+            <li><strong>Memory Writes:</strong> Discuss scenarios where minimizing writes is important</li>
+            <li><strong>Finding K Elements:</strong> Mention that it can find k smallest elements efficiently</li>
+            <li><strong>Stability Issues:</strong> Explain why it's not stable and how to make it stable</li>
+            <li><strong>Variations:</strong> Discuss bidirectional selection sort as an optimization</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Selection sort consistently performs O(n²) comparisons regardless of input</li>
+                <li>Minimizes the number of swaps - at most n-1 swaps total</li>
+                <li>Not stable by default but can be made stable with modifications</li>
+                <li>Not adaptive - doesn't perform better on partially sorted data</li>
+                <li>Excellent when minimizing memory writes is critical</li>
+                <li>Can be efficiently used to find k smallest/largest elements</li>
+                <li>Simple to implement but inefficient for large datasets</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

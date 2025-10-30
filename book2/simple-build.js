@@ -1,0 +1,492 @@
+const fs = require('fs');
+
+console.log('📚 Building Essential Algorithms Handbook...');
+
+// List of files to combine
+const files = [
+    'cover.html',
+    'preface.html',
+    'how-to-use.html',
+    'complexity-cheat-sheet.html',
+    'cpp-reference.html',
+    'table-of-contents.html',
+    'chapter-01.html',  // Linear Search
+    'chapter-02.html',  // Binary Search
+    'chapter-03.html',  // Ternary Search
+    'chapter-04.html',  // Jump Search
+    'chapter-05.html',  // Interpolation Search
+    'chapter-06.html',  // Exponential Search
+    'chapter-07.html',  // Fibonacci Search
+    'chapter-08.html',  // Bubble Sort
+    'chapter-09.html',  // Selection Sort
+    'chapter-10.html',  // Insertion Sort
+    'chapter-11.html',  // Merge Sort
+    'chapter-12.html',  // Quick Sort
+    'chapter-13.html',  // Heap Sort
+    'chapter-14.html',  // Counting Sort
+    'chapter-15.html',  // Radix Sort
+    'chapter-16.html',  // Bucket Sort
+    'chapter-17.html',  // Shell Sort
+    'chapter-18.html',  // Breadth-First Search (BFS)
+    'chapter-19.html',  // Depth-First Search (DFS)
+    'chapter-20.html',  // Dijkstra's Algorithm
+    'chapter-21.html',  // Bellman-Ford Algorithm
+    // More chapters will be added as they are created
+];
+
+let combinedHTML = `<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essential Algorithms Handbook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        // Configure Mermaid for better print rendering
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#f9f9f9',
+                primaryTextColor: '#000000',
+                primaryBorderColor: '#333333',
+                lineColor: '#333333',
+                fontSize: '14px'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: false,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true
+            },
+            gantt: {
+                useMaxWidth: true
+            },
+            fontFamily: 'Arial, sans-serif',
+            fontSize: 14
+        });
+        
+        // Fix for print rendering
+        window.addEventListener('beforeprint', function() {
+            mermaid.init();
+        });
+    </script>
+    <style>
+        /* Academic book styling like CPH */
+        body { 
+            font-family: 'Times New Roman', serif; 
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Times New Roman', serif;
+            font-weight: normal;
+        }
+        
+        .academic-content {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+        
+        .chapter-number {
+            font-size: 16px;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+        
+        .chapter-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 40px;
+            line-height: 1.2;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a202c;
+            margin: 45px 0 20px 0;
+            border-bottom: 2px solid #4299e1;
+            padding-bottom: 10px;
+        }
+        
+        .academic-text {
+            font-size: 12pt;
+            line-height: 1.7;
+            color: #2d3748;
+            text-align: justify;
+            margin-bottom: 14px;
+        }
+        
+        .code-block {
+            background-color: #2d2d2d; /* deeper gray for print clarity */
+            color: #f8f8f2; /* softer white */
+            border: 1.5px solid #444;
+            border-left: 4px solid #3b82f6; /* subtle blue accent */
+            border-radius: 6px;
+            padding: 14px 18px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 10pt;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.5;
+            box-shadow: none; /* remove for PDF */
+            }
+
+        
+        .definition-box {
+            border-left: 4px solid #2196f3;
+            background-color: #f8f9fa;
+            padding: 16px;
+            margin: 20px 0;
+            font-style: italic;
+            border-radius: 4px;
+        }
+        
+        /* Mermaid diagram styling */
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .cover-title {
+            font-size: 48px;
+            font-weight: normal;
+            color: black;
+            margin-bottom: 40px;
+            line-height: 1.3;
+            text-align: center;
+        }
+        
+        .cover-divider {
+            width: 128px;
+            height: 1px;
+            background: black;
+            margin: 0 auto 40px auto;
+        }
+        
+        .cover-subtitle {
+            font-size: 18px;
+            color: black;
+            font-weight: 300;
+            max-width: 400px;
+            line-height: 1.5;
+            margin: 0 auto 100px auto;
+            text-align: center;
+        }
+        
+        .cover-author {
+            font-size: 18px;
+            color: black;
+            font-weight: normal;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .cover-year {
+            font-size: 16px;
+            color: black;
+            font-weight: 300;
+            text-align: center;
+        }
+        
+        /* Cover page container styling */
+        .cover-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 48px;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .cover-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .cover-main {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .cover-footer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 60px;
+        }
+        
+        /* Summary section styling to match diagram backgrounds */
+        .summary-section {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .performance-summary {
+            background-color: #f8f9fa;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .completion-summary {
+            background-color: #f8f9fa;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        @media print {
+            body {
+                font-family: Times, serif !important;
+                font-size: 14pt !important;
+                line-height: 1.5 !important;
+                margin: 0.1in !important;
+                color: black !important;
+                background: white !important;
+            }
+            
+            /* Keep chapter titles with content */
+            .chapter-number {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: 0 0 6pt 0 !important;
+                page-break-before: always;
+                page-break-after: avoid;
+            }
+            
+            .chapter-title {
+                font-size: 24pt !important;
+                font-weight: bold !important;
+                margin: 6pt 0 15pt 0 !important;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+            }
+            
+            .section-title, h2 {
+                font-size: 18pt !important;
+                font-weight: bold !important;
+                margin: 15pt 0 10pt 0 !important;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: 12pt 0 8pt 0 !important;
+                page-break-after: avoid;
+            }
+            
+            p, .academic-text {
+                margin: 0 0 8pt 0 !important;
+                text-align: justify !important;
+            }
+            
+            /* Keep first content with chapter title */
+            .chapter-title + p,
+            .chapter-title + .academic-text,
+            .chapter-title + ul,
+            .chapter-title + ol,
+            .chapter-title + pre,
+            .chapter-title + .code-block {
+                page-break-before: avoid !important;
+            }
+            
+            pre, .code-block {
+                font-family: 'Courier New', Courier, monospace !important;
+                font-size: 9pt !important;
+                line-height: 1.3 !important;
+                background-color: #1a1a1a !important;
+                color: #f0f0f0 !important;
+                border: 2pt solid #444444 !important;
+                padding: 10pt !important;
+                margin: 12pt 0 !important;
+                page-break-inside: avoid !important;
+                white-space: pre-wrap !important;
+                word-wrap: break-word !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            ul, ol {
+                margin: 8pt 0 10pt 20pt !important;
+            }
+            
+            li {
+                margin-bottom: 3pt !important;
+            }
+            
+            .mermaid {
+                margin: 12pt 0 !important;
+                text-align: center !important;
+            }
+            
+            .definition-box {
+                background: #f9f9f9 !important;
+                border-left: 3pt solid #333 !important;
+                padding: 8pt !important;
+                margin: 10pt 0 !important;
+            }
+            
+            /* Cover page with author/year at bottom */
+            .cover-container {
+                page-break-inside: avoid !important;
+                page-break-after: always !important;
+                page-break-before: auto !important;
+                text-align: center !important;
+                padding: 30pt !important;
+                min-height: calc(100vh - 60pt) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+            }
+            
+            .cover-container * {
+                page-break-inside: avoid !important;
+                page-break-before: avoid !important;
+                page-break-after: avoid !important;
+            }
+            
+            .cover-title {
+                font-size: 26pt !important;
+                font-weight: bold !important;
+                margin: 10pt 0 15pt 0 !important;
+                line-height: 1.1 !important;
+                text-align: center !important;
+            }
+            
+            .cover-subtitle {
+                font-size: 14pt !important;
+                margin: 0 0 20pt 0 !important;
+                line-height: 1.3 !important;
+                text-align: center !important;
+            }
+            
+            .cover-author {
+                font-size: 16pt !important;
+                font-weight: bold !important;
+                margin: auto 0 5pt 0 !important;
+                text-align: center !important;
+            }
+            
+            .cover-year {
+                font-size: 14pt !important;
+                margin: 0 !important;
+                text-align: center !important;
+            }
+        }
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-white">
+`;
+
+// Add each file as a separate page
+files.forEach((filename, index) => {
+    if (fs.existsSync(filename)) {
+        console.log(`✅ Adding ${filename}`);
+
+        const content = fs.readFileSync(filename, 'utf8');
+
+        // Extract body content
+        const bodyMatch = content.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+        if (bodyMatch) {
+            let pageId = 'page' + index;
+            if (filename === 'cover.html') pageId = 'cover';
+            else if (filename === 'preface.html') pageId = 'preface';
+            else if (filename === 'how-to-use.html') pageId = 'how-to-use';
+            else if (filename === 'complexity-cheat-sheet.html') pageId = 'complexity';
+            else if (filename === 'cpp-reference.html') pageId = 'cpp-ref';
+            else if (filename === 'table-of-contents.html') pageId = 'toc';
+            else if (filename === 'chapter-01.html') pageId = 'ch1';
+            else if (filename === 'chapter-02.html') pageId = 'ch2';
+            else if (filename === 'chapter-03.html') pageId = 'ch3';
+            else if (filename === 'chapter-04.html') pageId = 'ch4';
+            else if (filename === 'chapter-05.html') pageId = 'ch5';
+            else if (filename === 'chapter-06.html') pageId = 'ch6';
+            else if (filename === 'chapter-07.html') pageId = 'ch7';
+            else if (filename === 'chapter-08.html') pageId = 'ch8';
+            else if (filename === 'chapter-09.html') pageId = 'ch9';
+            else if (filename === 'chapter-10.html') pageId = 'ch10';
+            else if (filename === 'chapter-11.html') pageId = 'ch11';
+            else if (filename === 'chapter-12.html') pageId = 'ch12';
+            else if (filename === 'chapter-13.html') pageId = 'ch13';
+            else if (filename === 'chapter-14.html') pageId = 'ch14';
+            else if (filename === 'chapter-15.html') pageId = 'ch15';
+            else if (filename === 'chapter-16.html') pageId = 'ch16';
+            else if (filename === 'chapter-17.html') pageId = 'ch17';
+            else if (filename === 'chapter-18.html') pageId = 'ch18';
+            else if (filename === 'chapter-19.html') pageId = 'ch19';
+            else if (filename === 'chapter-20.html') pageId = 'ch20';
+            else if (filename === 'chapter-21.html') pageId = 'ch21';
+
+            // Add appropriate container classes based on file type
+            let containerClass = "min-h-screen";
+            if (filename === 'cover.html') {
+                containerClass = "cover-page"; // Cover uses its own styling
+            } else {
+                containerClass += " academic-content"; // All other pages use academic styling
+            }
+
+            combinedHTML += `
+    <div class="${containerClass} ${index > 0 ? 'page-break' : ''}" id="${pageId}">
+        ${bodyMatch[1]}
+    </div>
+            `;
+        }
+    } else {
+        console.log(`❌ File not found: ${filename}`);
+    }
+});
+
+combinedHTML += `
+</body>
+</html>`;
+
+// Write combined file
+fs.writeFileSync('./ESSENTIAL-ALGORITHMS-HANDBOOK.html', combinedHTML);
+
+console.log('');
+console.log('🎉 Essential Algorithms Handbook built!');
+console.log('📖 Output: ESSENTIAL-ALGORITHMS-HANDBOOK.html');
+console.log(`📏 File size: ${Math.round(combinedHTML.length / 1024)} KB`);
+console.log('');
+console.log('✨ Current Progress:');
+console.log('  📝 Front Matter: Complete (5 sections)');
+console.log('  🔍 Part I - Searching Algorithms: Complete (7 algorithms)');
+console.log('  📊 Part II - Sorting Algorithms: Complete (10/10 algorithms)');
+console.log('  🔗 Part III - Graph Algorithms: In Progress (4/? algorithms)');
+console.log('  🌳 Parts IV-XIII: Pending (49 algorithms)');
+console.log('');
+console.log('📚 Total: 21/70 algorithms completed (30%)');
+console.log('');
+console.log('🖨️ Ready for PDF conversion!');
+console.log('💡 To continue: Add more chapter files and update the files array');

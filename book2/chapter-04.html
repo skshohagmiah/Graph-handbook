@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: Jump Search - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 4</div>
+        <h1 class="chapter-title">Jump Search</h1>
+        
+        <p class="academic-text">
+            Jump search (also known as block search) is a searching algorithm that works on sorted arrays by jumping ahead by fixed steps and then performing a linear search within the identified block. It provides a balance between linear search and binary search.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a sorted array of n elements and a target value, find the index of the target value in the array using jump search technique. If the target is not present, return -1.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Sorted array arr[] of size n, target value x<br>
+            <strong>Output:</strong> Index of x in arr[], or -1 if not found<br>
+            <strong>Optimal Jump Size:</strong> √n for minimum number of comparisons
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Jump search works in two phases:
+        </p>
+        
+        <ol>
+            <li><strong>Jumping Phase:</strong> Jump ahead by fixed steps until we find a block where the target might exist</li>
+            <li><strong>Linear Search Phase:</strong> Perform linear search within the identified block</li>
+        </ol>
+        
+        <p class="academic-text">
+            The optimal jump size is √n, which minimizes the total number of comparisons.
+        </p>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: JumpSearch(arr, n, x)
+1. step = √n
+2. prev = 0
+3. 
+4. // Jumping phase
+5. while arr[min(step, n)-1] < x do
+6.     prev = step
+7.     step += √n
+8.     if prev >= n then
+9.         return -1
+10.    end if
+11. end while
+12.
+13. // Linear search phase
+14. while arr[prev] < x do
+15.     prev++
+16.     if prev == min(step, n) then
+17.         return -1
+18.     end if
+19. end while
+20.
+21. if arr[prev] == x then
+22.     return prev
+23. end if
+24. return -1
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+/**
+ * Jump Search - Standard Implementation
+ * Searches for target in a sorted array using jump search
+ * 
+ * @param arr: sorted input array
+ * @param target: element to search for
+ * @return: index of target element, -1 if not found
+ */
+int jumpSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Calculate optimal jump size
+    int step = sqrt(n);
+    int prev = 0;
+    
+    // Jumping phase: find the block where element may be present
+    while (arr[min(step, n) - 1] < target) {
+        prev = step;
+        step += sqrt(n);
+        
+        // If we've gone beyond the array
+        if (prev >= n) {
+            return -1;
+        }
+    }
+    
+    // Linear search phase: search within the identified block
+    while (arr[prev] < target) {
+        prev++;
+        
+        // If we've reached the end of current block or array
+        if (prev == min(step, n)) {
+            return -1;
+        }
+    }
+    
+    // Check if element is found
+    if (arr[prev] == target) {
+        return prev;
+    }
+    
+    return -1;  // Element not found
+}
+
+/**
+ * Jump Search with Custom Step Size
+ * Allows specification of custom jump size
+ */
+int jumpSearchCustomStep(const vector<int>& arr, int target, int stepSize) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    int step = stepSize;
+    int prev = 0;
+    
+    // Jumping phase
+    while (arr[min(step, n) - 1] < target) {
+        prev = step;
+        step += stepSize;
+        
+        if (prev >= n) {
+            return -1;
+        }
+    }
+    
+    // Linear search phase
+    while (arr[prev] < target) {
+        prev++;
+        
+        if (prev == min(step, n)) {
+            return -1;
+        }
+    }
+    
+    if (arr[prev] == target) {
+        return prev;
+    }
+    
+    return -1;
+}
+
+/**
+ * Jump Search with Block Information
+ * Returns both index and block information for analysis
+ */
+struct JumpSearchResult {
+    int index;
+    int blockStart;
+    int blockEnd;
+    int jumps;
+    int linearSteps;
+};
+
+JumpSearchResult jumpSearchDetailed(const vector<int>& arr, int target) {
+    JumpSearchResult result = {-1, -1, -1, 0, 0};
+    int n = arr.size();
+    
+    if (n == 0) return result;
+    
+    int step = sqrt(n);
+    int prev = 0;
+    
+    // Jumping phase
+    while (arr[min(step, n) - 1] < target) {
+        prev = step;
+        step += sqrt(n);
+        result.jumps++;
+        
+        if (prev >= n) {
+            return result;
+        }
+    }
+    
+    result.blockStart = prev;
+    result.blockEnd = min(step, n) - 1;
+    
+    // Linear search phase
+    while (arr[prev] < target) {
+        prev++;
+        result.linearSteps++;
+        
+        if (prev == min(step, n)) {
+            return result;
+        }
+    }
+    
+    if (arr[prev] == target) {
+        result.index = prev;
+    }
+    
+    return result;
+}
+
+/**
+ * Adaptive Jump Search
+ * Adjusts jump size based on array characteristics
+ */
+int adaptiveJumpSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Start with smaller jumps for better cache performance
+    int step = max(1, (int)sqrt(n) / 2);
+    int prev = 0;
+    
+    // Jumping phase with adaptive step size
+    while (prev < n && arr[min(prev + step, n) - 1] < target) {
+        prev += step;
+        
+        // Increase step size as we go further
+        step = min(step * 2, (int)sqrt(n));
+        
+        if (prev >= n) {
+            return -1;
+        }
+    }
+    
+    // Linear search phase
+    int end = min(prev + step, n);
+    for (int i = prev; i < end; i++) {
+        if (arr[i] == target) {
+            return i;
+        }
+        if (arr[i] > target) {
+            break;
+        }
+    }
+    
+    return -1;
+}
+
+/**
+ * Jump Search for Finding All Occurrences
+ * Finds all indices where target appears
+ */
+vector<int> jumpSearchAll(const vector<int>& arr, int target) {
+    vector<int> indices;
+    int n = arr.size();
+    
+    if (n == 0) return indices;
+    
+    int step = sqrt(n);
+    int prev = 0;
+    
+    // Find the first occurrence using standard jump search
+    while (arr[min(step, n) - 1] < target) {
+        prev = step;
+        step += sqrt(n);
+        
+        if (prev >= n) {
+            return indices;
+        }
+    }
+    
+    // Find all occurrences in the identified block
+    int end = min(step, n);
+    for (int i = prev; i < end; i++) {
+        if (arr[i] == target) {
+            indices.push_back(i);
+        } else if (arr[i] > target) {
+            break;  // No more occurrences possible
+        }
+    }
+    
+    return indices;
+}
+
+// Example usage and testing
+int main() {
+    vector<int> arr = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610};
+    int target = 55;
+    
+    cout << "Sorted Array: ";
+    for (int x : arr) {
+        cout << x << " ";
+    }
+    cout << endl;
+    cout << "Array size: " << arr.size() << ", Optimal jump size: " << (int)sqrt(arr.size()) << endl;
+    
+    // Test standard jump search
+    int result = jumpSearch(arr, target);
+    if (result != -1) {
+        cout << "Element " << target << " found at index " << result << endl;
+    } else {
+        cout << "Element " << target << " not found" << endl;
+    }
+    
+    // Test detailed jump search
+    JumpSearchResult detailed = jumpSearchDetailed(arr, target);
+    if (detailed.index != -1) {
+        cout << "\nDetailed Analysis:" << endl;
+        cout << "Found at index: " << detailed.index << endl;
+        cout << "Block range: [" << detailed.blockStart << ", " << detailed.blockEnd << "]" << endl;
+        cout << "Number of jumps: " << detailed.jumps << endl;
+        cout << "Linear search steps: " << detailed.linearSteps << endl;
+        cout << "Total comparisons: " << (detailed.jumps + detailed.linearSteps + 1) << endl;
+    }
+    
+    // Test with different step sizes
+    cout << "\nTesting different step sizes:" << endl;
+    vector<int> stepSizes = {2, 4, 6, 8};
+    for (int step : stepSizes) {
+        int result = jumpSearchCustomStep(arr, target, step);
+        cout << "Step size " << step << ": " << (result != -1 ? "Found" : "Not found") << endl;
+    }
+    
+    // Test finding all occurrences
+    vector<int> arrWithDuplicates = {1, 2, 2, 2, 3, 4, 4, 5, 6, 7, 8, 9};
+    int duplicateTarget = 2;
+    vector<int> allIndices = jumpSearchAll(arrWithDuplicates, duplicateTarget);
+    
+    cout << "\nArray with duplicates: ";
+    for (int x : arrWithDuplicates) {
+        cout << x << " ";
+    }
+    cout << endl;
+    
+    cout << "All occurrences of " << duplicateTarget << ": ";
+    for (int idx : allIndices) {
+        cout << idx << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(1) - Target is at the first position checked</li>
+                <li><strong>Average Case:</strong> O(√n) - Optimal jump size minimizes comparisons</li>
+                <li><strong>Worst Case:</strong> O(√n) - Target is at the end of a block</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(1) - Only uses constant extra space</li>
+            </ul>
+            
+            <h3>Comparison with Other Algorithms</h3>
+            <ul>
+                <li><strong>Linear Search:</strong> O(n) - Jump search is faster</li>
+                <li><strong>Binary Search:</strong> O(log n) - Binary search is faster</li>
+                <li><strong>Jump Search:</strong> O(√n) - Good balance for certain scenarios</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Mathematical Analysis</h2>
+        
+        <p class="academic-text">
+            Let's derive why √n is the optimal jump size:
+        </p>
+        
+        <div class="code-block">
+Let jump size = m
+- Number of jumps in worst case = n/m
+- Linear search steps in worst case = m-1
+- Total comparisons = n/m + m-1
+
+To minimize total comparisons, take derivative and set to 0:
+d/dm (n/m + m-1) = -n/m² + 1 = 0
+=> n/m² = 1
+=> m² = n
+=> m = √n
+
+Therefore, optimal jump size is √n, giving O(√n) complexity.
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through jump search on array [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610] searching for target = 55:
+        </p>
+        
+        <div class="code-block">
+Array: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610]
+Indices:[0, 1, 2, 3, 4, 5, 6, 7,  8,  9,  10, 11, 12,  13,  14,  15]
+Array size: 16, Jump size: √16 = 4
+Target: 55
+
+Jumping Phase:
+Step 1: prev=0, step=4, check arr[3]=2, 2 < 55, continue
+Step 2: prev=4, step=8, check arr[7]=13, 13 < 55, continue  
+Step 3: prev=8, step=12, check arr[11]=89, 89 > 55, stop jumping
+
+Linear Search Phase:
+Block to search: indices 8 to 11 [21, 34, 55, 89]
+- Check arr[8]=21, 21 < 55, continue
+- Check arr[9]=34, 34 < 55, continue
+- Check arr[10]=55, 55 == 55, FOUND!
+
+Result: Element found at index 10
+Total comparisons: 3 (jumping) + 3 (linear) = 6 comparisons
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Jump search is particularly useful in the following scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Systems with Expensive Random Access:</strong> When jumping costs less than random access (like binary search)</li>
+            <li><strong>Cache-Friendly Searching:</strong> Sequential access patterns are cache-friendly</li>
+            <li><strong>Linked Lists with Skip Pointers:</strong> When you have skip pointers at regular intervals</li>
+            <li><strong>Database Index Scanning:</strong> When you can't use binary search but need better than linear</li>
+            <li><strong>Embedded Systems:</strong> When memory access patterns matter more than theoretical complexity</li>
+            <li><strong>Large Datasets on Disk:</strong> When sequential reads are much faster than random seeks</li>
+        </ul>
+        
+        <h2 class="section-title">Advanced Variations</h2>
+        
+        <h3>1. Exponential Jump Search</h3>
+        <div class="code-block">
+/**
+ * Exponential Jump Search
+ * Uses exponentially increasing jump sizes
+ */
+int exponentialJumpSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    if (arr[0] == target) return 0;
+    
+    // Find range for binary search by repeated doubling
+    int i = 1;
+    while (i < n && arr[i] <= target) {
+        if (arr[i] == target) return i;
+        i *= 2;
+    }
+    
+    // Perform linear search in the found range
+    int start = i / 2;
+    int end = min(i, n);
+    
+    for (int j = start; j < end; j++) {
+        if (arr[j] == target) return j;
+        if (arr[j] > target) break;
+    }
+    
+    return -1;
+}
+        </div>
+        
+        <h3>2. Fibonacci Jump Search</h3>
+        <div class="code-block">
+/**
+ * Fibonacci Jump Search
+ * Uses Fibonacci numbers as jump sizes
+ */
+int fibonacciJumpSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Generate Fibonacci numbers
+    int fib2 = 0;  // (m-2)'th Fibonacci number
+    int fib1 = 1;  // (m-1)'th Fibonacci number
+    int fib = fib2 + fib1;  // m'th Fibonacci number
+    
+    // Find smallest Fibonacci number >= n
+    while (fib < n) {
+        fib2 = fib1;
+        fib1 = fib;
+        fib = fib2 + fib1;
+    }
+    
+    int offset = -1;
+    
+    while (fib > 1) {
+        int i = min(offset + fib2, n - 1);
+        
+        if (arr[i] < target) {
+            fib = fib1;
+            fib1 = fib2;
+            fib2 = fib - fib1;
+            offset = i;
+        }
+        else if (arr[i] > target) {
+            fib = fib2;
+            fib1 = fib1 - fib2;
+            fib2 = fib - fib1;
+        }
+        else {
+            return i;
+        }
+    }
+    
+    if (fib1 && offset + 1 < n && arr[offset + 1] == target) {
+        return offset + 1;
+    }
+    
+    return -1;
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Jump Search</h2>
+        
+        <div class="definition-box">
+            <strong>Use Jump Search When:</strong><br>
+            • Array is sorted but binary search is not feasible<br>
+            • Sequential access is much faster than random access<br>
+            • Working with systems where cache performance matters<br>
+            • You need a balance between simplicity and efficiency<br>
+            • Memory access patterns are more important than theoretical complexity<br><br>
+            
+            <strong>Don't Use Jump Search When:</strong><br>
+            • Random access is as fast as sequential access (use binary search)<br>
+            • Array is unsorted (use linear search or sort first)<br>
+            • You need the absolute best time complexity<br>
+            • Working with very small arrays (overhead not worth it)
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Wrong Jump Size:</strong> Using non-optimal jump size reduces efficiency</li>
+            <li><strong>Boundary Conditions:</strong> Handle cases where jump goes beyond array bounds</li>
+            <li><strong>Empty Array:</strong> Check for empty input arrays</li>
+            <li><strong>Single Element:</strong> Handle edge case of single-element arrays</li>
+            <li><strong>Integer Overflow:</strong> Be careful with jump size calculations for very large arrays</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Optimal Jump Size:</strong> Explain why √n is optimal and derive it mathematically</li>
+            <li><strong>Comparison:</strong> Compare jump search with linear and binary search</li>
+            <li><strong>Use Cases:</strong> Discuss scenarios where jump search is preferred</li>
+            <li><strong>Implementation:</strong> Be able to implement both phases clearly</li>
+            <li><strong>Variations:</strong> Mention exponential and Fibonacci jump search variants</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Jump search provides O(√n) time complexity, between linear and binary search</li>
+                <li>Optimal jump size is √n, derived from minimizing total comparisons</li>
+                <li>Consists of two phases: jumping and linear search within block</li>
+                <li>Cache-friendly due to sequential access patterns</li>
+                <li>Useful when random access is expensive compared to sequential access</li>
+                <li>Can be adapted with different jump size strategies</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

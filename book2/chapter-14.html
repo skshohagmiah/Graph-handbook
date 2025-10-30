@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 14: Counting Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 14</div>
+        <h1 class="chapter-title">Counting Sort</h1>
+        
+        <p class="academic-text">
+            Counting sort is a non-comparison based sorting algorithm that works by counting the occurrences of each distinct element in the input array. It then uses this count information to place elements directly in their correct positions. When the range of input elements is small compared to the number of elements, counting sort achieves linear time complexity O(n + k), making it extremely efficient for specific use cases.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n elements where each element is in the range [0, k], sort the array in ascending order using counting sort. The algorithm should count occurrences of each element and use this information to determine positions.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with elements in range [0, k]<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Stable sorting algorithm (maintains relative order of equal elements)
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Counting sort works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Count:</strong> Count occurrences of each element</li>
+            <li><strong>Accumulate:</strong> Transform counts to actual positions</li>
+            <li><strong>Place:</strong> Place elements in their correct positions</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: CountingSort(arr, n, k)
+1. // Create count array
+2. count[0..k] = {0}
+3. 
+4. // Count occurrences of each element
+5. for i = 0 to n-1 do
+6.     count[arr[i]]++
+7. end for
+8. 
+9. // Transform count[i] to actual position of element i
+10. for i = 1 to k do
+11.     count[i] += count[i-1]
+12. end for
+13. 
+14. // Build output array
+15. for i = n-1 down to 0 do
+16.     output[count[arr[i]] - 1] = arr[i]
+17.     count[arr[i]]--
+18. end for
+19. 
+20. // Copy output array to original array
+21. for i = 0 to n-1 do
+22.     arr[i] = output[i]
+23. end for
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+/**
+ * Counting Sort - Basic Implementation
+ * Sorts array with elements in range [0, k]
+ * 
+ * @param arr: input array to be sorted
+ * @param k: maximum element value in array
+ */
+void countingSort(vector<int>& arr, int k) {
+    int n = arr.size();
+    
+    // Create count array and output array
+    vector<int> count(k + 1, 0);
+    vector<int> output(n);
+    
+    // Count occurrences of each element
+    for (int i = 0; i < n; i++) {
+        count[arr[i]]++;
+    }
+    
+    // Transform count[i] to actual position of element i in output array
+    for (int i = 1; i <= k; i++) {
+        count[i] += count[i - 1];
+    }
+    
+    // Build output array (traverse from right to maintain stability)
+    for (int i = n - 1; i >= 0; i--) {
+        output[count[arr[i]] - 1] = arr[i];
+        count[arr[i]]--;
+    }
+    
+    // Copy output array back to original array
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+
+/**
+ * Counting Sort with Statistics
+ * Tracks operations and intermediate states
+ */
+struct CountingSortStats {
+    int countOperations;
+    int accumulateOperations;
+    int placeOperations;
+    vector<vector<int>> countArrayHistory;
+    vector<vector<int>> outputHistory;
+};
+
+CountingSortStats countingSortWithStats(vector<int>& arr, int k) {
+    CountingSortStats stats = {0, 0, 0, {}, {}};
+    int n = arr.size();
+    
+    vector<int> count(k + 1, 0);
+    vector<int> output(n);
+    
+    // Phase 1: Count occurrences
+    for (int i = 0; i < n; i++) {
+        count[arr[i]]++;
+        stats.countOperations++;
+    }
+    stats.countArrayHistory.push_back(count);
+    
+    // Phase 2: Accumulate counts
+    for (int i = 1; i <= k; i++) {
+        count[i] += count[i - 1];
+        stats.accumulateOperations++;
+    }
+    stats.countArrayHistory.push_back(count);
+    
+    // Phase 3: Place elements
+    for (int i = n - 1; i >= 0; i--) {
+        output[count[arr[i]] - 1] = arr[i];
+        count[arr[i]]--;
+        stats.placeOperations++;
+        
+        // Save intermediate state
+        stats.outputHistory.push_back(output);
+    }
+    
+    // Copy back
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+    
+    return stats;
+}
+
+/**
+ * Counting Sort for Negative Numbers
+ * Handles arrays with negative elements
+ */
+void countingSortNegative(vector<int>& arr) {
+    if (arr.empty()) return;
+    
+    // Find minimum and maximum elements
+    int minElement = *min_element(arr.begin(), arr.end());
+    int maxElement = *max_element(arr.begin(), arr.end());
+    
+    int range = maxElement - minElement + 1;
+    int n = arr.size();
+    
+    vector<int> count(range, 0);
+    vector<int> output(n);
+    
+    // Count occurrences (shift by minElement)
+    for (int i = 0; i < n; i++) {
+        count[arr[i] - minElement]++;
+    }
+    
+    // Accumulate counts
+    for (int i = 1; i < range; i++) {
+        count[i] += count[i - 1];
+    }
+    
+    // Build output array
+    for (int i = n - 1; i >= 0; i--) {
+        output[count[arr[i] - minElement] - 1] = arr[i];
+        count[arr[i] - minElement]--;
+    }
+    
+    // Copy back
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+
+/**
+ * Counting Sort for Characters
+ * Specialized version for sorting characters
+ */
+void countingSortChars(vector<char>& arr) {
+    int n = arr.size();
+    vector<int> count(256, 0);  // ASCII range
+    vector<char> output(n);
+    
+    // Count character occurrences
+    for (int i = 0; i < n; i++) {
+        count[arr[i]]++;
+    }
+    
+    // Accumulate counts
+    for (int i = 1; i < 256; i++) {
+        count[i] += count[i - 1];
+    }
+    
+    // Build output
+    for (int i = n - 1; i >= 0; i--) {
+        output[count[arr[i]] - 1] = arr[i];
+        count[arr[i]]--;
+    }
+    
+    // Copy back
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+
+/**
+ * Counting Sort for Objects
+ * Sorts objects based on a key function
+ */
+struct Person {
+    string name;
+    int age;
+    
+    Person(string n, int a) : name(n), age(a) {}
+};
+
+void countingSortObjects(vector<Person>& people, int maxAge) {
+    int n = people.size();
+    vector<int> count(maxAge + 1, 0);
+    vector<Person> output;
+    output.reserve(n);
+    
+    // Count occurrences by age
+    for (int i = 0; i < n; i++) {
+        count[people[i].age]++;
+    }
+    
+    // Use counting sort principle but with objects
+    for (int age = 0; age <= maxAge; age++) {
+        for (int i = 0; i < n; i++) {
+            if (people[i].age == age && count[age] > 0) {
+                output.push_back(people[i]);
+                count[age]--;
+            }
+        }
+    }
+    
+    people = output;
+}
+
+/**
+ * In-place Counting Sort (when possible)
+ * Modifies array in-place when range is small
+ */
+void inPlaceCountingSort(vector<int>& arr, int k) {
+    int n = arr.size();
+    
+    // Only works when k < n and elements are in [0, k-1]
+    if (k >= n) {
+        countingSort(arr, k);
+        return;
+    }
+    
+    // Use array indices as counters
+    for (int i = 0; i < n; i++) {
+        arr[arr[i] % k] += k;
+    }
+    
+    // Reconstruct array
+    int index = 0;
+    for (int i = 0; i < k; i++) {
+        int count = arr[i] / k;
+        for (int j = 0; j < count; j++) {
+            arr[index++] = i;
+        }
+    }
+}
+
+/**
+ * Counting Sort with Custom Range
+ * Automatically determines range from input
+ */
+void adaptiveCountingSort(vector<int>& arr) {
+    if (arr.empty()) return;
+    
+    int minVal = *min_element(arr.begin(), arr.end());
+    int maxVal = *max_element(arr.begin(), arr.end());
+    int range = maxVal - minVal + 1;
+    int n = arr.size();
+    
+    // Check if counting sort is efficient
+    if (range > 2 * n) {
+        cout << "Warning: Range too large for efficient counting sort" << endl;
+        sort(arr.begin(), arr.end());  // Fall back to comparison sort
+        return;
+    }
+    
+    vector<int> count(range, 0);
+    vector<int> output(n);
+    
+    // Count with offset
+    for (int i = 0; i < n; i++) {
+        count[arr[i] - minVal]++;
+    }
+    
+    // Accumulate
+    for (int i = 1; i < range; i++) {
+        count[i] += count[i - 1];
+    }
+    
+    // Place elements
+    for (int i = n - 1; i >= 0; i--) {
+        output[count[arr[i] - minVal] - 1] = arr[i];
+        count[arr[i] - minVal]--;
+    }
+    
+    // Copy back
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+
+// Utility functions
+void printArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+void printCountArray(const vector<int>& count, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < count.size(); i++) {
+        cout << count[i];
+        if (i < count.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Test basic counting sort
+    vector<int> arr1 = {4, 2, 2, 8, 3, 3, 1};
+    cout << "=== Basic Counting Sort ===" << endl;
+    printArray(arr1, "Original");
+    
+    countingSort(arr1, 8);  // k = 8 (max element)
+    printArray(arr1, "Sorted");
+    
+    // Test counting sort with statistics
+    vector<int> arr2 = {1, 4, 1, 2, 7, 5, 2};
+    cout << "\n=== Counting Sort with Statistics ===" << endl;
+    printArray(arr2, "Original");
+    
+    CountingSortStats stats = countingSortWithStats(arr2, 7);
+    printArray(arr2, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Count operations: " << stats.countOperations << endl;
+    cout << "  Accumulate operations: " << stats.accumulateOperations << endl;
+    cout << "  Place operations: " << stats.placeOperations << endl;
+    
+    cout << "  Count array history:" << endl;
+    for (int i = 0; i < stats.countArrayHistory.size(); i++) {
+        cout << "    Phase " << (i + 1) << ": ";
+        printCountArray(stats.countArrayHistory[i], "");
+    }
+    
+    // Test counting sort with negative numbers
+    vector<int> arr3 = {-5, -10, 0, -3, 8, 5, -1};
+    cout << "\n=== Counting Sort with Negative Numbers ===" << endl;
+    printArray(arr3, "Original");
+    
+    countingSortNegative(arr3);
+    printArray(arr3, "Sorted");
+    
+    // Test counting sort for characters
+    vector<char> chars = {'g', 'e', 'e', 'k', 's', 'f', 'o', 'r', 'g', 'e', 'e', 'k', 's'};
+    cout << "\n=== Counting Sort for Characters ===" << endl;
+    cout << "Original: [";
+    for (int i = 0; i < chars.size(); i++) {
+        cout << chars[i];
+        if (i < chars.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    countingSortChars(chars);
+    
+    cout << "Sorted: [";
+    for (int i = 0; i < chars.size(); i++) {
+        cout << chars[i];
+        if (i < chars.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    // Test counting sort for objects
+    vector<Person> people = {
+        Person("Alice", 25),
+        Person("Bob", 30),
+        Person("Charlie", 25),
+        Person("David", 35),
+        Person("Eve", 30)
+    };
+    
+    cout << "\n=== Counting Sort for Objects (by age) ===" << endl;
+    cout << "Original:" << endl;
+    for (const auto& p : people) {
+        cout << "  " << p.name << " (age " << p.age << ")" << endl;
+    }
+    
+    countingSortObjects(people, 35);
+    
+    cout << "Sorted by age:" << endl;
+    for (const auto& p : people) {
+        cout << "  " << p.name << " (age " << p.age << ")" << endl;
+    }
+    
+    // Test adaptive counting sort
+    vector<int> arr4 = {100, 50, 75, 25, 90, 60};
+    cout << "\n=== Adaptive Counting Sort ===" << endl;
+    printArray(arr4, "Original");
+    
+    adaptiveCountingSort(arr4);
+    printArray(arr4, "Sorted");
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(n + k) - Linear in input size and range</li>
+                <li><strong>Average Case:</strong> O(n + k) - Consistent performance</li>
+                <li><strong>Worst Case:</strong> O(n + k) - Same as best case</li>
+                <li><strong>When k = O(n):</strong> O(n) - Linear time sorting!</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(k) - For count array</li>
+                <li><strong>Output Array:</strong> O(n) - For stable sorting</li>
+                <li><strong>Total Space:</strong> O(n + k)</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> Yes - Maintains relative order of equal elements</li>
+                <li><strong>Non-comparison:</strong> Doesn't compare elements directly</li>
+                <li><strong>Integer Sorting:</strong> Works only with integer keys</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through counting sort on array [4, 2, 2, 8, 3, 3, 1] with k = 8:
+        </p>
+        
+        <div class="code-block">
+Initial: [4, 2, 2, 8, 3, 3, 1]
+Range: 0 to 8 (k = 8)
+
+Step 1: Count occurrences
+count = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        0  1  2  3  4  5  6  7  8
+
+Process each element:
+- arr[0] = 4: count[4]++ → count = [0, 0, 0, 0, 1, 0, 0, 0, 0]
+- arr[1] = 2: count[2]++ → count = [0, 0, 1, 0, 1, 0, 0, 0, 0]
+- arr[2] = 2: count[2]++ → count = [0, 0, 2, 0, 1, 0, 0, 0, 0]
+- arr[3] = 8: count[8]++ → count = [0, 0, 2, 0, 1, 0, 0, 0, 1]
+- arr[4] = 3: count[3]++ → count = [0, 0, 2, 1, 1, 0, 0, 0, 1]
+- arr[5] = 3: count[3]++ → count = [0, 0, 2, 2, 1, 0, 0, 0, 1]
+- arr[6] = 1: count[1]++ → count = [0, 1, 2, 2, 1, 0, 0, 0, 1]
+
+Step 2: Accumulate counts (positions)
+count[1] = count[1] + count[0] = 1 + 0 = 1
+count[2] = count[2] + count[1] = 2 + 1 = 3
+count[3] = count[3] + count[2] = 2 + 3 = 5
+count[4] = count[4] + count[3] = 1 + 5 = 6
+count[8] = count[8] + count[7] = 1 + 6 = 7
+
+Final count = [0, 1, 3, 5, 6, 6, 6, 6, 7]
+
+Step 3: Place elements (right to left for stability)
+output = [_, _, _, _, _, _, _]
+
+- arr[6] = 1: place at position count[1]-1 = 0, count[1]-- → output = [1, _, _, _, _, _, _]
+- arr[5] = 3: place at position count[3]-1 = 4, count[3]-- → output = [1, _, _, _, 3, _, _]
+- arr[4] = 3: place at position count[3]-1 = 3, count[3]-- → output = [1, _, _, 3, 3, _, _]
+- arr[3] = 8: place at position count[8]-1 = 6, count[8]-- → output = [1, _, _, 3, 3, _, 8]
+- arr[2] = 2: place at position count[2]-1 = 2, count[2]-- → output = [1, _, 2, 3, 3, _, 8]
+- arr[1] = 2: place at position count[2]-1 = 1, count[2]-- → output = [1, 2, 2, 3, 3, _, 8]
+- arr[0] = 4: place at position count[4]-1 = 5, count[4]-- → output = [1, 2, 2, 3, 3, 4, 8]
+
+Final: [1, 2, 2, 3, 3, 4, 8]
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Counting sort is particularly useful in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Small Range Data:</strong> When k (range) is much smaller than n²</li>
+            <li><strong>Integer Sorting:</strong> Ages, grades, small ID numbers</li>
+            <li><strong>Stable Sorting:</strong> When relative order of equal elements matters</li>
+            <li><strong>Radix Sort Component:</strong> Used as subroutine in radix sort</li>
+            <li><strong>Histogram Generation:</strong> Counting frequencies of elements</li>
+            <li><strong>Character Sorting:</strong> Sorting strings by individual characters</li>
+        </ul>
+        
+        <h2 class="section-title">When to Use Counting Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Counting Sort When:</strong><br>
+            • Range of elements (k) is small compared to number of elements (n)<br>
+            • Elements are non-negative integers or can be mapped to them<br>
+            • Stability is required<br>
+            • Linear time sorting is needed<br>
+            • Working with frequency counting problems<br><br>
+            
+            <strong>Don't Use Counting Sort When:</strong><br>
+            • Range k is very large (k >> n)<br>
+            • Elements are floating-point numbers or complex objects<br>
+            • Memory usage is a critical constraint<br>
+            • Elements cannot be easily mapped to integers
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Large Range:</strong> Don't use when k >> n (wastes memory and time)</li>
+            <li><strong>Negative Numbers:</strong> Handle by shifting range or using offset</li>
+            <li><strong>Stability:</strong> Process elements from right to left to maintain stability</li>
+            <li><strong>Memory Allocation:</strong> Ensure count array is properly sized</li>
+            <li><strong>Integer Assumption:</strong> Only works with integer keys or mappable data</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Linear Time:</strong> Emphasize O(n + k) complexity for small k</li>
+            <li><strong>Non-comparison:</strong> Explain that it doesn't compare elements</li>
+            <li><strong>Stability:</strong> Highlight stable sorting property</li>
+            <li><strong>Range Dependency:</strong> Discuss when it's efficient vs inefficient</li>
+            <li><strong>Applications:</strong> Mention use in radix sort and histogram problems</li>
+            <li><strong>Space Trade-off:</strong> More space for better time complexity</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Counting sort achieves O(n + k) time complexity for integer sorting</li>
+                <li>Non-comparison based algorithm that counts element frequencies</li>
+                <li>Stable sorting algorithm that preserves relative order</li>
+                <li>Efficient when range k is small compared to input size n</li>
+                <li>Uses O(n + k) extra space for count and output arrays</li>
+                <li>Foundation for radix sort and other non-comparison algorithms</li>
+                <li>Limited to integer keys or data mappable to integers</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

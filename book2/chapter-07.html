@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Fibonacci Search - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 7</div>
+        <h1 class="chapter-title">Fibonacci Search</h1>
+        
+        <p class="academic-text">
+            Fibonacci search is a comparison-based technique that uses Fibonacci numbers to divide the array into unequal parts. Unlike binary search which divides the array into two equal halves, Fibonacci search divides the array according to Fibonacci numbers, which can be more efficient in certain scenarios, especially when division is expensive.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a sorted array of n elements and a target value, find the index of the target value using Fibonacci numbers to determine the division points. This algorithm is particularly useful when the cost of division is high or when working with systems that favor addition over division.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Sorted array arr[] of size n, target value x<br>
+            <strong>Output:</strong> Index of x in arr[], or -1 if not found<br>
+            <strong>Advantage:</strong> Uses only addition and subtraction, no division or multiplication
+        </div>
+        
+        <h2 class="section-title">Fibonacci Numbers Background</h2>
+        
+        <p class="academic-text">
+            The Fibonacci sequence is: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ...
+        </p>
+        
+        <p class="academic-text">
+            Each number is the sum of the two preceding ones: F(n) = F(n-1) + F(n-2)
+        </p>
+        
+        <p class="academic-text">
+            The key property used in Fibonacci search is that any Fibonacci number can be expressed as the sum of two smaller Fibonacci numbers, allowing us to divide the array into two parts whose sizes are Fibonacci numbers.
+        </p>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: FibonacciSearch(arr, n, x)
+1. Find smallest Fibonacci number >= n
+2. Initialize Fibonacci numbers: fibM, fibM1, fibM2
+3. offset = -1
+4. 
+5. while fibM > 1 do
+6.     i = min(offset + fibM2, n-1)
+7.     
+8.     if arr[i] < x then
+9.         fibM = fibM1
+10.        fibM1 = fibM2
+11.        fibM2 = fibM - fibM1
+12.        offset = i
+13.    else if arr[i] > x then
+14.        fibM = fibM2
+15.        fibM1 = fibM1 - fibM2
+16.        fibM2 = fibM - fibM1
+17.    else
+18.        return i
+19.    end if
+20. end while
+21.
+22. if fibM1 AND arr[offset+1] == x then
+23.     return offset+1
+24. end if
+25. return -1
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+/**
+ * Fibonacci Search - Standard Implementation
+ * Uses Fibonacci numbers to divide the search space
+ * 
+ * @param arr: sorted input array
+ * @param target: element to search for
+ * @return: index of target element, -1 if not found
+ */
+int fibonacciSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Initialize Fibonacci numbers
+    int fibM2 = 0;  // (m-2)'th Fibonacci number
+    int fibM1 = 1;  // (m-1)'th Fibonacci number
+    int fibM = fibM2 + fibM1;  // m'th Fibonacci number
+    
+    // Find the smallest Fibonacci number greater than or equal to n
+    while (fibM < n) {
+        fibM2 = fibM1;
+        fibM1 = fibM;
+        fibM = fibM2 + fibM1;
+    }
+    
+    // Marks the eliminated range from front
+    int offset = -1;
+    
+    // While there are elements to be inspected
+    while (fibM > 1) {
+        // Check if fibM2 is a valid location
+        int i = min(offset + fibM2, n - 1);
+        
+        // If target is greater than the value at index fibM2, cut the subarray from offset to i
+        if (arr[i] < target) {
+            fibM = fibM1;
+            fibM1 = fibM2;
+            fibM2 = fibM - fibM1;
+            offset = i;
+        }
+        // If target is less than the value at index fibM2, cut the subarray after i+1
+        else if (arr[i] > target) {
+            fibM = fibM2;
+            fibM1 = fibM1 - fibM2;
+            fibM2 = fibM - fibM1;
+        }
+        // Element found, return index
+        else {
+            return i;
+        }
+    }
+    
+    // Comparing the last element with target
+    if (fibM1 && offset + 1 < n && arr[offset + 1] == target) {
+        return offset + 1;
+    }
+    
+    return -1;  // Element not found
+}
+
+/**
+ * Fibonacci Search with Detailed Statistics
+ * Tracks the search process for analysis
+ */
+struct FibonacciSearchStats {
+    int index;
+    int iterations;
+    int comparisons;
+    vector<int> fibonacciNumbers;
+    vector<int> positionsChecked;
+    vector<int> offsetHistory;
+};
+
+FibonacciSearchStats fibonacciSearchWithStats(const vector<int>& arr, int target) {
+    FibonacciSearchStats stats = {-1, 0, 0, {}, {}, {}};
+    int n = arr.size();
+    
+    if (n == 0) return stats;
+    
+    // Generate Fibonacci numbers
+    int fibM2 = 0, fibM1 = 1, fibM = 1;
+    stats.fibonacciNumbers = {fibM2, fibM1};
+    
+    while (fibM < n) {
+        fibM2 = fibM1;
+        fibM1 = fibM;
+        fibM = fibM2 + fibM1;
+        stats.fibonacciNumbers.push_back(fibM);
+    }
+    
+    int offset = -1;
+    
+    while (fibM > 1) {
+        stats.iterations++;
+        stats.offsetHistory.push_back(offset);
+        
+        int i = min(offset + fibM2, n - 1);
+        stats.positionsChecked.push_back(i);
+        stats.comparisons++;
+        
+        if (arr[i] < target) {
+            fibM = fibM1;
+            fibM1 = fibM2;
+            fibM2 = fibM - fibM1;
+            offset = i;
+        }
+        else if (arr[i] > target) {
+            fibM = fibM2;
+            fibM1 = fibM1 - fibM2;
+            fibM2 = fibM - fibM1;
+        }
+        else {
+            stats.index = i;
+            return stats;
+        }
+    }
+    
+    // Check last element
+    if (fibM1 && offset + 1 < n) {
+        stats.comparisons++;
+        if (arr[offset + 1] == target) {
+            stats.index = offset + 1;
+        }
+    }
+    
+    return stats;
+}
+
+/**
+ * Optimized Fibonacci Search
+ * Pre-computes Fibonacci numbers and uses optimizations
+ */
+class OptimizedFibonacciSearch {
+private:
+    vector<int> fibNumbers;
+    
+    void generateFibonacci(int maxN) {
+        fibNumbers.clear();
+        fibNumbers.push_back(0);
+        fibNumbers.push_back(1);
+        
+        while (fibNumbers.back() < maxN) {
+            int next = fibNumbers[fibNumbers.size()-1] + fibNumbers[fibNumbers.size()-2];
+            fibNumbers.push_back(next);
+        }
+    }
+    
+public:
+    int search(const vector<int>& arr, int target) {
+        int n = arr.size();
+        if (n == 0) return -1;
+        
+        // Generate Fibonacci numbers if not already done or if array is larger
+        if (fibNumbers.empty() || fibNumbers.back() < n) {
+            generateFibonacci(n * 2);  // Generate extra for safety
+        }
+        
+        // Find the smallest Fibonacci number >= n
+        int fibIndex = 0;
+        while (fibIndex < fibNumbers.size() && fibNumbers[fibIndex] < n) {
+            fibIndex++;
+        }
+        
+        if (fibIndex < 2) return (n > 0 && arr[0] == target) ? 0 : -1;
+        
+        int fibM = fibNumbers[fibIndex];
+        int fibM1 = fibNumbers[fibIndex - 1];
+        int fibM2 = fibNumbers[fibIndex - 2];
+        int offset = -1;
+        
+        while (fibM > 1) {
+            int i = min(offset + fibM2, n - 1);
+            
+            if (arr[i] < target) {
+                fibM = fibM1;
+                fibM1 = fibM2;
+                fibM2 = fibM - fibM1;
+                offset = i;
+            }
+            else if (arr[i] > target) {
+                fibM = fibM2;
+                fibM1 = fibM1 - fibM2;
+                fibM2 = fibM - fibM1;
+            }
+            else {
+                return i;
+            }
+        }
+        
+        if (fibM1 && offset + 1 < n && arr[offset + 1] == target) {
+            return offset + 1;
+        }
+        
+        return -1;
+    }
+};
+
+/**
+ * Fibonacci Search for Finding All Occurrences
+ * Finds all indices where target appears
+ */
+vector<int> fibonacciSearchAll(const vector<int>& arr, int target) {
+    vector<int> indices;
+    int n = arr.size();
+    
+    if (n == 0) return indices;
+    
+    // First find any occurrence using standard Fibonacci search
+    int firstIndex = fibonacciSearch(arr, target);
+    if (firstIndex == -1) return indices;
+    
+    // Find all occurrences around the first found index
+    int left = firstIndex, right = firstIndex;
+    
+    // Expand left
+    while (left > 0 && arr[left - 1] == target) {
+        left--;
+    }
+    
+    // Expand right
+    while (right < n - 1 && arr[right + 1] == target) {
+        right++;
+    }
+    
+    // Collect all indices
+    for (int i = left; i <= right; i++) {
+        indices.push_back(i);
+    }
+    
+    return indices;
+}
+
+/**
+ * Fibonacci Search with Early Termination
+ * Optimized version with various early termination conditions
+ */
+int fibonacciSearchOptimized(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Handle small arrays directly
+    if (n <= 3) {
+        for (int i = 0; i < n; i++) {
+            if (arr[i] == target) return i;
+        }
+        return -1;
+    }
+    
+    // Quick boundary checks
+    if (target < arr[0] || target > arr[n-1]) {
+        return -1;
+    }
+    
+    if (arr[0] == target) return 0;
+    if (arr[n-1] == target) return n-1;
+    
+    // Standard Fibonacci search for the rest
+    return fibonacciSearch(arr, target);
+}
+
+// Example usage and testing
+int main() {
+    vector<int> arr = {2, 3, 4, 10, 40, 50, 80, 100, 120, 140, 160, 180, 200};
+    int target = 120;
+    
+    cout << "Sorted Array: ";
+    for (int x : arr) {
+        cout << x << " ";
+    }
+    cout << endl;
+    cout << "Array size: " << arr.size() << endl;
+    
+    // Test standard Fibonacci search
+    int result = fibonacciSearch(arr, target);
+    if (result != -1) {
+        cout << "Standard: Element " << target << " found at index " << result << endl;
+    } else {
+        cout << "Standard: Element " << target << " not found" << endl;
+    }
+    
+    // Test with detailed statistics
+    FibonacciSearchStats stats = fibonacciSearchWithStats(arr, target);
+    cout << "\nDetailed Analysis:" << endl;
+    cout << "Found at index: " << stats.index << endl;
+    cout << "Iterations: " << stats.iterations << endl;
+    cout << "Comparisons: " << stats.comparisons << endl;
+    cout << "Fibonacci numbers used: ";
+    for (int fib : stats.fibonacciNumbers) {
+        cout << fib << " ";
+    }
+    cout << endl;
+    cout << "Positions checked: ";
+    for (int pos : stats.positionsChecked) {
+        cout << pos << " ";
+    }
+    cout << endl;
+    
+    // Test optimized version
+    OptimizedFibonacciSearch optimized;
+    int optimizedResult = optimized.search(arr, target);
+    cout << "Optimized: Element " << target << " found at index " << optimizedResult << endl;
+    
+    // Test finding all occurrences
+    vector<int> arrWithDuplicates = {1, 2, 2, 2, 3, 4, 4, 5, 6, 7, 8, 9};
+    int duplicateTarget = 2;
+    vector<int> allIndices = fibonacciSearchAll(arrWithDuplicates, duplicateTarget);
+    
+    cout << "\nArray with duplicates: ";
+    for (int x : arrWithDuplicates) {
+        cout << x << " ";
+    }
+    cout << endl;
+    
+    cout << "All occurrences of " << duplicateTarget << ": ";
+    for (int idx : allIndices) {
+        cout << idx << " ";
+    }
+    cout << endl;
+    
+    // Performance comparison with different array sizes
+    cout << "\nPerformance Analysis:" << endl;
+    vector<int> sizes = {10, 50, 100, 500};
+    
+    for (int size : sizes) {
+        vector<int> testArr(size);
+        for (int i = 0; i < size; i++) {
+            testArr[i] = i * 2;  // Even numbers
+        }
+        
+        int testTarget = (size / 2) * 2;  // Middle element
+        FibonacciSearchStats testStats = fibonacciSearchWithStats(testArr, testTarget);
+        
+        cout << "Array size " << size << ": " << testStats.comparisons << " comparisons, " 
+             << testStats.iterations << " iterations" << endl;
+    }
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(1) - Target is found at the first Fibonacci position checked</li>
+                <li><strong>Average Case:</strong> O(log n) - Similar to binary search</li>
+                <li><strong>Worst Case:</strong> O(log n) - Slightly better constant factor than binary search</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(1) - Only uses constant extra space</li>
+            </ul>
+            
+            <h3>Comparison with Binary Search</h3>
+            <ul>
+                <li><strong>Operations:</strong> Uses only addition/subtraction (no division)</li>
+                <li><strong>Comparisons:</strong> Slightly fewer comparisons on average</li>
+                <li><strong>Cache Performance:</strong> Better locality due to Fibonacci division</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through Fibonacci search on array [2, 3, 4, 10, 40, 50, 80, 100, 120, 140, 160, 180, 200] searching for target = 120:
+        </p>
+        
+        <div class="code-block">
+Array: [2, 3, 4, 10, 40, 50, 80, 100, 120, 140, 160, 180, 200]
+Indices:[0, 1, 2, 3,  4,  5,  6,  7,   8,   9,  10,  11,  12]
+Array size: 13
+Target: 120
+
+Fibonacci numbers: 0, 1, 1, 2, 3, 5, 8, 13, 21...
+Smallest Fibonacci >= 13 is 21
+fibM = 21, fibM1 = 13, fibM2 = 8
+
+Iteration 1:
+  offset = -1
+  i = min(-1 + 8, 12) = 7
+  arr[7] = 100, 100 < 120
+  Move to right part: fibM = 13, fibM1 = 8, fibM2 = 5, offset = 7
+
+Iteration 2:
+  offset = 7
+  i = min(7 + 5, 12) = 12
+  arr[12] = 200, 200 > 120
+  Move to left part: fibM = 5, fibM1 = 3, fibM2 = 2
+
+Iteration 3:
+  offset = 7
+  i = min(7 + 2, 12) = 9
+  arr[9] = 140, 140 > 120
+  Move to left part: fibM = 2, fibM1 = 1, fibM2 = 1
+
+Iteration 4:
+  offset = 7
+  i = min(7 + 1, 12) = 8
+  arr[8] = 120, 120 == 120, FOUND!
+
+Result: Element found at index 8
+Total comparisons: 4
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Fibonacci search is particularly useful in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Systems Without Division:</strong> When division operation is expensive or unavailable</li>
+            <li><strong>Embedded Systems:</strong> Microcontrollers where arithmetic operations are limited</li>
+            <li><strong>Cache-Sensitive Applications:</strong> Better memory access patterns than binary search</li>
+            <li><strong>Mathematical Computing:</strong> When working with golden ratio-based algorithms</li>
+            <li><strong>Parallel Processing:</strong> Fibonacci division can be more parallelizable</li>
+            <li><strong>Historical Systems:</strong> Older computers where multiplication/division was slow</li>
+        </ul>
+        
+        <h2 class="section-title">Mathematical Properties</h2>
+        
+        <div class="definition-box">
+            <strong>Golden Ratio Connection:</strong><br>
+            Fibonacci numbers are closely related to the golden ratio φ = (1 + √5)/2 ≈ 1.618<br>
+            F(n) ≈ φⁿ/√5 for large n<br><br>
+            
+            <strong>Division Property:</strong><br>
+            Any Fibonacci number F(n) = F(n-1) + F(n-2)<br>
+            This allows natural division of arrays into two parts whose sizes are also Fibonacci numbers
+        </div>
+        
+        <h2 class="section-title">Advanced Variations</h2>
+        
+        <h3>1. Generalized Fibonacci Search</h3>
+        <div class="code-block">
+/**
+ * Generalized Fibonacci Search using custom recurrence relation
+ * F(n) = a*F(n-1) + b*F(n-2) where a and b are parameters
+ */
+class GeneralizedFibonacciSearch {
+private:
+    vector<int> sequence;
+    int a, b;
+    
+    void generateSequence(int maxN, int a, int b) {
+        sequence.clear();
+        sequence.push_back(0);
+        sequence.push_back(1);
+        
+        while (sequence.back() < maxN) {
+            int next = a * sequence[sequence.size()-1] + b * sequence[sequence.size()-2];
+            if (next <= sequence.back()) break;  // Prevent infinite loop
+            sequence.push_back(next);
+        }
+    }
+    
+public:
+    GeneralizedFibonacciSearch(int a = 1, int b = 1) : a(a), b(b) {}
+    
+    int search(const vector<int>& arr, int target) {
+        int n = arr.size();
+        if (n == 0) return -1;
+        
+        generateSequence(n * 2, a, b);
+        
+        // Find appropriate sequence number
+        int seqIndex = 0;
+        while (seqIndex < sequence.size() && sequence[seqIndex] < n) {
+            seqIndex++;
+        }
+        
+        if (seqIndex < 2) return (n > 0 && arr[0] == target) ? 0 : -1;
+        
+        int seqM = sequence[seqIndex];
+        int seqM1 = sequence[seqIndex - 1];
+        int seqM2 = sequence[seqIndex - 2];
+        int offset = -1;
+        
+        while (seqM > 1) {
+            int i = min(offset + seqM2, n - 1);
+            
+            if (arr[i] < target) {
+                seqM = seqM1;
+                seqM1 = seqM2;
+                seqM2 = seqM - seqM1;
+                offset = i;
+            }
+            else if (arr[i] > target) {
+                seqM = seqM2;
+                seqM1 = seqM1 - seqM2;
+                seqM2 = seqM - seqM1;
+            }
+            else {
+                return i;
+            }
+        }
+        
+        if (seqM1 && offset + 1 < n && arr[offset + 1] == target) {
+            return offset + 1;
+        }
+        
+        return -1;
+    }
+};
+        </div>
+        
+        <h3>2. Interpolated Fibonacci Search</h3>
+        <div class="code-block">
+/**
+ * Combines Fibonacci search with interpolation for uniform data
+ */
+int interpolatedFibonacciSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Quick boundary checks
+    if (target < arr[0] || target > arr[n-1]) return -1;
+    if (arr[0] == target) return 0;
+    if (arr[n-1] == target) return n-1;
+    
+    // Use interpolation to get initial estimate
+    double ratio = (double)(target - arr[0]) / (arr[n-1] - arr[0]);
+    int estimatedPos = (int)(ratio * (n - 1));
+    
+    // Find Fibonacci numbers around the estimated position
+    int fibM2 = 0, fibM1 = 1, fibM = 1;
+    while (fibM < n) {
+        fibM2 = fibM1;
+        fibM1 = fibM;
+        fibM = fibM2 + fibM1;
+    }
+    
+    // Adjust starting position based on interpolation
+    int offset = max(-1, estimatedPos - fibM1);
+    
+    // Continue with standard Fibonacci search
+    while (fibM > 1) {
+        int i = min(offset + fibM2, n - 1);
+        
+        if (arr[i] < target) {
+            fibM = fibM1;
+            fibM1 = fibM2;
+            fibM2 = fibM - fibM1;
+            offset = i;
+        }
+        else if (arr[i] > target) {
+            fibM = fibM2;
+            fibM1 = fibM1 - fibM2;
+            fibM2 = fibM - fibM1;
+        }
+        else {
+            return i;
+        }
+    }
+    
+    if (fibM1 && offset + 1 < n && arr[offset + 1] == target) {
+        return offset + 1;
+    }
+    
+    return -1;
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Fibonacci Search</h2>
+        
+        <div class="definition-box">
+            <strong>Use Fibonacci Search When:</strong><br>
+            • Division operations are expensive or unavailable<br>
+            • Working with embedded systems or microcontrollers<br>
+            • Cache performance is critical<br>
+            • You want to avoid floating-point arithmetic<br>
+            • Working with systems that favor addition over division<br><br>
+            
+            <strong>Don't Use Fibonacci Search When:</strong><br>
+            • Division is as fast as addition (modern processors)<br>
+            • Array is very small (overhead not worth it)<br>
+            • You need the absolute simplest implementation<br>
+            • Working with non-uniform data (interpolation search better)
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Fibonacci Generation:</strong> Ensure Fibonacci numbers don't overflow</li>
+            <li><strong>Boundary Conditions:</strong> Handle edge cases carefully, especially the final check</li>
+            <li><strong>Index Calculations:</strong> Be careful with offset and Fibonacci number arithmetic</li>
+            <li><strong>Empty Arrays:</strong> Handle empty input arrays</li>
+            <li><strong>Single Element:</strong> Handle edge case of single-element arrays</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Fibonacci Properties:</strong> Explain the mathematical foundation and golden ratio connection</li>
+            <li><strong>Division Avoidance:</strong> Emphasize that it uses only addition and subtraction</li>
+            <li><strong>Use Cases:</strong> Discuss scenarios where Fibonacci search is preferred</li>
+            <li><strong>Implementation:</strong> Be careful with the three Fibonacci number tracking</li>
+            <li><strong>Comparison:</strong> Compare with binary search in terms of operations and performance</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Fibonacci search uses Fibonacci numbers to divide the search space</li>
+                <li>Time complexity is O(log n) with slightly better constants than binary search</li>
+                <li>Uses only addition and subtraction, no division operations</li>
+                <li>Better cache performance due to Fibonacci-based memory access patterns</li>
+                <li>Particularly useful in systems where division is expensive</li>
+                <li>Can be generalized to other recurrence relations</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

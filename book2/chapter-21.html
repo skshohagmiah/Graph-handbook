@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 21: Bellman-Ford Algorithm - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 21</div>
+        <h1 class="chapter-title">Bellman-Ford Algorithm</h1>
+        
+        <p class="academic-text">
+            The Bellman-Ford algorithm finds the shortest paths from a single source vertex to all other vertices in a weighted graph, even when the graph contains negative edge weights. Unlike Dijkstra's algorithm, Bellman-Ford can handle negative weights and can detect negative cycles. It uses dynamic programming principles and is essential for applications involving negative costs or detecting arbitrage opportunities.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a weighted directed graph G = (V, E) with possibly negative edge weights and a source vertex s, find the shortest path from s to all other vertices. If a negative cycle is reachable from the source, detect and report it.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Weighted graph G (can have negative weights) and source vertex s<br>
+            <strong>Output:</strong> Shortest distances and paths, or negative cycle detection<br>
+            <strong>Advantage:</strong> Handles negative edge weights unlike Dijkstra's algorithm
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Bellman-Ford algorithm works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Initialize:</strong> Set distance to source as 0, all others as infinity</li>
+            <li><strong>Relax Edges:</strong> For V-1 iterations, relax all edges</li>
+            <li><strong>Check Negative Cycles:</strong> Run one more iteration to detect negative cycles</li>
+            <li><strong>Report Results:</strong> Return distances or negative cycle detection</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: BellmanFord(graph, source)
+1. distance[all vertices] = infinity
+2. distance[source] = 0
+3. parent[all vertices] = null
+4. 
+5. // Relax all edges V-1 times
+6. for i = 1 to |V| - 1 do
+7.     for each edge (u, v) with weight w do
+8.         if distance[u] != infinity AND distance[u] + w < distance[v] then
+9.             distance[v] = distance[u] + w
+10.            parent[v] = u
+11.        end if
+12.    end for
+13. end for
+14. 
+15. // Check for negative cycles
+16. for each edge (u, v) with weight w do
+17.     if distance[u] != infinity AND distance[u] + w < distance[v] then
+18.         return "Negative cycle detected"
+19.     end if
+20. end for
+21. 
+22. return distance, parent
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <climits>
+using namespace std;
+
+/**
+ * Edge representation for weighted graph
+ */
+struct Edge {
+    int from, to, weight;
+    
+    Edge(int f, int t, int w) : from(f), to(t), weight(w) {}
+};
+
+/**
+ * Weighted Graph using edge list representation
+ */
+class WeightedGraph {
+private:
+    vector<Edge> edges;
+    unordered_map<int, vector<int>> adjList;  // For neighbor access
+    
+public:
+    void addEdge(int from, int to, int weight) {
+        edges.push_back(Edge(from, to, weight));
+        adjList[from].push_back(edges.size() - 1);  // Store edge index
+    }
+    
+    vector<Edge>& getEdges() {
+        return edges;
+    }
+    
+    vector<int> getAllVertices() {
+        unordered_map<int, bool> vertices;
+        for (const Edge& edge : edges) {
+            vertices[edge.from] = true;
+            vertices[edge.to] = true;
+        }
+        
+        vector<int> result;
+        for (auto& pair : vertices) {
+            result.push_back(pair.first);
+        }
+        return result;
+    }
+    
+    void printGraph() {
+        cout << "Edges:" << endl;
+        for (const Edge& edge : edges) {
+            cout << edge.from << " -> " << edge.to << " (weight: " << edge.weight << ")" << endl;
+        }
+    }
+};
+
+/**
+ * Bellman-Ford Algorithm Result
+ */
+struct BellmanFordResult {
+    unordered_map<int, long long> distances;
+    unordered_map<int, int> parents;
+    bool hasNegativeCycle;
+    vector<int> negativeCycle;
+};
+
+/**
+ * Basic Bellman-Ford Algorithm Implementation
+ */
+BellmanFordResult bellmanFord(WeightedGraph& graph, int source) {
+    BellmanFordResult result;
+    vector<int> vertices = graph.getAllVertices();
+    vector<Edge>& edges = graph.getEdges();
+    
+    // Initialize distances
+    for (int vertex : vertices) {
+        result.distances[vertex] = LLONG_MAX;
+        result.parents[vertex] = -1;
+    }
+    result.distances[source] = 0;
+    result.hasNegativeCycle = false;
+    
+    int V = vertices.size();
+    
+    // Relax all edges V-1 times
+    for (int i = 0; i < V - 1; i++) {
+        bool updated = false;
+        
+        for (const Edge& edge : edges) {
+            if (result.distances[edge.from] != LLONG_MAX) {
+                long long newDist = result.distances[edge.from] + edge.weight;
+                if (newDist < result.distances[edge.to]) {
+                    result.distances[edge.to] = newDist;
+                    result.parents[edge.to] = edge.from;
+                    updated = true;
+                }
+            }
+        }
+        
+        // Early termination if no updates
+        if (!updated) break;
+    }
+    
+    // Check for negative cycles
+    for (const Edge& edge : edges) {
+        if (result.distances[edge.from] != LLONG_MAX) {
+            long long newDist = result.distances[edge.from] + edge.weight;
+            if (newDist < result.distances[edge.to]) {
+                result.hasNegativeCycle = true;
+                
+                // Find negative cycle
+                unordered_map<int, bool> inCycle;
+                int current = edge.to;
+                
+                // Move V steps to ensure we're in the cycle
+                for (int i = 0; i < V; i++) {
+                    current = result.parents[current];
+                }
+                
+                // Collect cycle vertices
+                int start = current;
+                do {
+                    result.negativeCycle.push_back(current);
+                    current = result.parents[current];
+                } while (current != start);
+                
+                reverse(result.negativeCycle.begin(), result.negativeCycle.end());
+                break;
+            }
+        }
+    }
+    
+    return result;
+}
+
+/**
+ * Bellman-Ford with Statistics
+ */
+struct BellmanFordStats {
+    int iterations;
+    int edgeRelaxations;
+    int distanceUpdates;
+    vector<vector<long long>> distanceHistory;
+    bool earlyTermination;
+};
+
+BellmanFordStats bellmanFordWithStats(WeightedGraph& graph, int source) {
+    BellmanFordStats stats = {0, 0, 0, {}, false};
+    unordered_map<int, long long> distances;
+    vector<int> vertices = graph.getAllVertices();
+    vector<Edge>& edges = graph.getEdges();
+    
+    // Initialize
+    for (int vertex : vertices) {
+        distances[vertex] = LLONG_MAX;
+    }
+    distances[source] = 0;
+    
+    // Save initial state
+    vector<long long> initialState;
+    for (int vertex : vertices) {
+        initialState.push_back(distances[vertex]);
+    }
+    stats.distanceHistory.push_back(initialState);
+    
+    int V = vertices.size();
+    
+    // Main algorithm
+    for (int i = 0; i < V - 1; i++) {
+        stats.iterations++;
+        bool updated = false;
+        
+        for (const Edge& edge : edges) {
+            stats.edgeRelaxations++;
+            
+            if (distances[edge.from] != LLONG_MAX) {
+                long long newDist = distances[edge.from] + edge.weight;
+                if (newDist < distances[edge.to]) {
+                    distances[edge.to] = newDist;
+                    stats.distanceUpdates++;
+                    updated = true;
+                }
+            }
+        }
+        
+        // Save state after each iteration
+        vector<long long> currentState;
+        for (int vertex : vertices) {
+            currentState.push_back(distances[vertex]);
+        }
+        stats.distanceHistory.push_back(currentState);
+        
+        if (!updated) {
+            stats.earlyTermination = true;
+            break;
+        }
+    }
+    
+    return stats;
+}
+
+/**
+ * Bellman-Ford for Shortest Path to Specific Target
+ */
+pair<long long, vector<int>> bellmanFordPath(WeightedGraph& graph, int source, int target) {
+    BellmanFordResult result = bellmanFord(graph, source);
+    
+    if (result.hasNegativeCycle) {
+        return {LLONG_MIN, {}};  // Indicate negative cycle
+    }
+    
+    if (result.distances[target] == LLONG_MAX) {
+        return {LLONG_MAX, {}};  // No path
+    }
+    
+    // Reconstruct path
+    vector<int> path;
+    int current = target;
+    
+    while (current != -1) {
+        path.push_back(current);
+        current = result.parents[current];
+    }
+    
+    reverse(path.begin(), path.end());
+    return {result.distances[target], path};
+}
+
+/**
+ * Modified Bellman-Ford for Detecting All Negative Cycles
+ */
+vector<vector<int>> findAllNegativeCycles(WeightedGraph& graph) {
+    vector<vector<int>> cycles;
+    vector<int> vertices = graph.getAllVertices();
+    vector<Edge>& edges = graph.getEdges();
+    
+    for (int source : vertices) {
+        unordered_map<int, long long> distances;
+        unordered_map<int, int> parents;
+        
+        // Initialize
+        for (int vertex : vertices) {
+            distances[vertex] = LLONG_MAX;
+            parents[vertex] = -1;
+        }
+        distances[source] = 0;
+        
+        int V = vertices.size();
+        
+        // Relax edges V-1 times
+        for (int i = 0; i < V - 1; i++) {
+            for (const Edge& edge : edges) {
+                if (distances[edge.from] != LLONG_MAX) {
+                    long long newDist = distances[edge.from] + edge.weight;
+                    if (newDist < distances[edge.to]) {
+                        distances[edge.to] = newDist;
+                        parents[edge.to] = edge.from;
+                    }
+                }
+            }
+        }
+        
+        // Check for negative cycles
+        for (const Edge& edge : edges) {
+            if (distances[edge.from] != LLONG_MAX) {
+                long long newDist = distances[edge.from] + edge.weight;
+                if (newDist < distances[edge.to]) {
+                    // Found negative cycle, extract it
+                    vector<int> cycle;
+                    unordered_map<int, bool> visited;
+                    int current = edge.to;
+                    
+                    // Move to ensure we're in the cycle
+                    for (int i = 0; i < V; i++) {
+                        current = parents[current];
+                    }
+                    
+                    // Extract cycle
+                    int start = current;
+                    do {
+                        cycle.push_back(current);
+                        current = parents[current];
+                    } while (current != start);
+                    
+                    reverse(cycle.begin(), cycle.end());
+                    cycles.push_back(cycle);
+                    break;
+                }
+            }
+        }
+    }
+    
+    return cycles;
+}
+
+/**
+ * SPFA (Shortest Path Faster Algorithm) - Optimized Bellman-Ford
+ */
+BellmanFordResult spfa(WeightedGraph& graph, int source) {
+    BellmanFordResult result;
+    vector<int> vertices = graph.getAllVertices();
+    vector<Edge>& edges = graph.getEdges();
+    
+    // Build adjacency list for SPFA
+    unordered_map<int, vector<pair<int, int>>> adj;
+    for (const Edge& edge : edges) {
+        adj[edge.from].push_back({edge.to, edge.weight});
+    }
+    
+    // Initialize
+    for (int vertex : vertices) {
+        result.distances[vertex] = LLONG_MAX;
+        result.parents[vertex] = -1;
+    }
+    result.distances[source] = 0;
+    result.hasNegativeCycle = false;
+    
+    // SPFA using queue
+    queue<int> q;
+    unordered_map<int, bool> inQueue;
+    unordered_map<int, int> relaxCount;
+    
+    q.push(source);
+    inQueue[source] = true;
+    
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        inQueue[u] = false;
+        
+        for (auto& edge : adj[u]) {
+            int v = edge.first;
+            int weight = edge.second;
+            
+            if (result.distances[u] != LLONG_MAX) {
+                long long newDist = result.distances[u] + weight;
+                if (newDist < result.distances[v]) {
+                    result.distances[v] = newDist;
+                    result.parents[v] = u;
+                    
+                    if (!inQueue[v]) {
+                        q.push(v);
+                        inQueue[v] = true;
+                        relaxCount[v]++;
+                        
+                        // Negative cycle detection
+                        if (relaxCount[v] >= vertices.size()) {
+                            result.hasNegativeCycle = true;
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return result;
+}
+
+/**
+ * Bellman-Ford for Currency Arbitrage Detection
+ */
+bool detectArbitrage(vector<vector<double>>& exchangeRates) {
+    int n = exchangeRates.size();
+    
+    // Convert to negative log to use Bellman-Ford
+    WeightedGraph graph;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i != j && exchangeRates[i][j] > 0) {
+                int weight = (int)(-log(exchangeRates[i][j]) * 1000);  // Scale for integer
+                graph.addEdge(i, j, weight);
+            }
+        }
+    }
+    
+    // Run Bellman-Ford from each vertex
+    for (int source = 0; source < n; source++) {
+        BellmanFordResult result = bellmanFord(graph, source);
+        if (result.hasNegativeCycle) {
+            return true;  // Arbitrage opportunity found
+        }
+    }
+    
+    return false;
+}
+
+// Utility functions
+void printDistances(const unordered_map<int, long long>& distances, int source) {
+    cout << "Shortest distances from vertex " << source << ":" << endl;
+    for (auto& pair : distances) {
+        if (pair.second == LLONG_MAX) {
+            cout << "  To " << pair.first << ": INF" << endl;
+        } else {
+            cout << "  To " << pair.first << ": " << pair.second << endl;
+        }
+    }
+}
+
+void printPath(const vector<int>& path, long long distance) {
+    if (path.empty()) {
+        cout << "No path found" << endl;
+        return;
+    }
+    
+    cout << "Path (distance " << distance << "): ";
+    for (int i = 0; i < path.size(); i++) {
+        cout << path[i];
+        if (i < path.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+}
+
+void printNegativeCycle(const vector<int>& cycle) {
+    if (cycle.empty()) {
+        cout << "No negative cycle" << endl;
+        return;
+    }
+    
+    cout << "Negative cycle: ";
+    for (int i = 0; i < cycle.size(); i++) {
+        cout << cycle[i];
+        if (i < cycle.size() - 1) cout << " -> ";
+    }
+    cout << " -> " << cycle[0] << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Create sample weighted graph with negative edges
+    WeightedGraph graph;
+    
+    // Add edges (some with negative weights)
+    graph.addEdge(0, 1, 4);
+    graph.addEdge(0, 2, 2);
+    graph.addEdge(1, 2, -3);
+    graph.addEdge(1, 3, 2);
+    graph.addEdge(1, 4, 3);
+    graph.addEdge(2, 3, 4);
+    graph.addEdge(2, 4, 5);
+    graph.addEdge(3, 4, -5);
+    
+    cout << "=== Weighted Graph with Negative Edges ===" << endl;
+    graph.printGraph();
+    
+    // Test basic Bellman-Ford algorithm
+    cout << "\n=== Bellman-Ford Algorithm from vertex 0 ===" << endl;
+    BellmanFordResult result = bellmanFord(graph, 0);
+    
+    if (result.hasNegativeCycle) {
+        cout << "Negative cycle detected!" << endl;
+        printNegativeCycle(result.negativeCycle);
+    } else {
+        printDistances(result.distances, 0);
+    }
+    
+    // Test shortest path to specific target
+    cout << "\n=== Shortest Path from 0 to 4 ===" << endl;
+    auto pathResult = bellmanFordPath(graph, 0, 4);
+    
+    if (pathResult.first == LLONG_MIN) {
+        cout << "Cannot find shortest path due to negative cycle" << endl;
+    } else if (pathResult.first == LLONG_MAX) {
+        cout << "No path exists" << endl;
+    } else {
+        printPath(pathResult.second, pathResult.first);
+    }
+    
+    // Test Bellman-Ford with statistics
+    cout << "\n=== Bellman-Ford Statistics ===" << endl;
+    BellmanFordStats stats = bellmanFordWithStats(graph, 0);
+    cout << "Iterations completed: " << stats.iterations << endl;
+    cout << "Edge relaxations: " << stats.edgeRelaxations << endl;
+    cout << "Distance updates: " << stats.distanceUpdates << endl;
+    cout << "Early termination: " << (stats.earlyTermination ? "Yes" : "No") << endl;
+    
+    cout << "Distance evolution:" << endl;
+    vector<int> vertices = graph.getAllVertices();
+    sort(vertices.begin(), vertices.end());
+    
+    for (int iter = 0; iter < stats.distanceHistory.size(); iter++) {
+        cout << "  Iteration " << iter << ": ";
+        for (int i = 0; i < vertices.size(); i++) {
+            long long dist = stats.distanceHistory[iter][i];
+            if (dist == LLONG_MAX) {
+                cout << "INF ";
+            } else {
+                cout << dist << " ";
+            }
+        }
+        cout << endl;
+    }
+    
+    // Test SPFA algorithm
+    cout << "\n=== SPFA Algorithm from vertex 0 ===" << endl;
+    BellmanFordResult spfaResult = spfa(graph, 0);
+    
+    if (spfaResult.hasNegativeCycle) {
+        cout << "SPFA detected negative cycle!" << endl;
+    } else {
+        printDistances(spfaResult.distances, 0);
+    }
+    
+    // Test with graph containing negative cycle
+    cout << "\n=== Graph with Negative Cycle ===" << endl;
+    WeightedGraph negCycleGraph;
+    negCycleGraph.addEdge(0, 1, 1);
+    negCycleGraph.addEdge(1, 2, -3);
+    negCycleGraph.addEdge(2, 3, 2);
+    negCycleGraph.addEdge(3, 1, -1);  // Creates negative cycle: 1->2->3->1
+    
+    BellmanFordResult negResult = bellmanFord(negCycleGraph, 0);
+    if (negResult.hasNegativeCycle) {
+        cout << "Negative cycle found!" << endl;
+        printNegativeCycle(negResult.negativeCycle);
+    }
+    
+    // Test currency arbitrage detection
+    cout << "\n=== Currency Arbitrage Detection ===" << endl;
+    vector<vector<double>> exchangeRates = {
+        {1.0, 0.741, 0.657, 1.061},
+        {1.349, 1.0, 0.888, 1.433},
+        {1.521, 1.126, 1.0, 1.614},
+        {0.942, 0.698, 0.619, 1.0}
+    };
+    
+    bool hasArbitrage = detectArbitrage(exchangeRates);
+    cout << "Arbitrage opportunity: " << (hasArbitrage ? "Yes" : "No") << endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Standard Bellman-Ford:</strong> O(VE) - V-1 iterations over E edges</li>
+                <li><strong>SPFA (Average):</strong> O(E) - Queue-based optimization</li>
+                <li><strong>SPFA (Worst):</strong> O(VE) - Same as standard in worst case</li>
+                <li><strong>Dense Graphs:</strong> O(V³) when E ≈ V²</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Distance Array:</strong> O(V) - Store distances to all vertices</li>
+                <li><strong>Parent Array:</strong> O(V) - For path reconstruction</li>
+                <li><strong>Edge List:</strong> O(E) - Store all edges</li>
+                <li><strong>Total Space:</strong> O(V + E) auxiliary space</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Handles Negative Weights:</strong> Unlike Dijkstra's algorithm</li>
+                <li><strong>Detects Negative Cycles:</strong> Can identify and report cycles</li>
+                <li><strong>Dynamic Programming:</strong> Uses optimal substructure principle</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through Bellman-Ford algorithm on a graph with negative edges:
+        </p>
+        
+        <div class="code-block">
+Graph: 0 --4--> 1 --2--> 3
+       |        |       ^
+       2        -3      |
+       v        v       4
+       2 --------> 4 ---
+
+Bellman-Ford from vertex 0:
+
+Initial: dist[0]=0, dist[others]=∞
+
+Iteration 1: Relax all edges
+- Edge 0->1: dist[1] = min(∞, 0+4) = 4
+- Edge 0->2: dist[2] = min(∞, 0+2) = 2
+- Edge 1->2: dist[2] = min(2, 4+(-3)) = 1
+- Edge 1->3: dist[3] = min(∞, 4+2) = 6
+- Edge 2->4: dist[4] = min(∞, 1+5) = 6
+- Edge 4->3: dist[3] = min(6, 6+4) = 6
+
+After iteration 1: [0, 4, 1, 6, 6]
+
+Iteration 2: Relax all edges
+- Edge 0->1: dist[1] = min(4, 0+4) = 4 (no change)
+- Edge 0->2: dist[2] = min(1, 0+2) = 1 (no change)
+- Edge 1->2: dist[2] = min(1, 4+(-3)) = 1 (no change)
+- Edge 1->3: dist[3] = min(6, 4+2) = 6 (no change)
+- Edge 2->4: dist[4] = min(6, 1+5) = 6 (no change)
+- Edge 4->3: dist[3] = min(6, 6+4) = 6 (no change)
+
+After iteration 2: [0, 4, 1, 6, 6] (no changes)
+
+Iteration 3: No changes, algorithm can terminate early
+
+Negative Cycle Check: Run one more iteration
+- All edges produce no improvements
+- No negative cycle detected
+
+Final distances: 0->0:0, 0->1:4, 0->2:1, 0->3:6, 0->4:6
+Shortest path 0->3: 0 -> 1 -> 3 (distance 6)
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Bellman-Ford algorithm has important applications:
+        </p>
+        
+        <ul>
+            <li><strong>Currency Arbitrage:</strong> Detecting profitable currency exchange cycles</li>
+            <li><strong>Network Routing:</strong> Protocols like RIP use distance-vector algorithms</li>
+            <li><strong>Game Theory:</strong> Finding optimal strategies with negative payoffs</li>
+            <li><strong>Economics:</strong> Modeling markets with transaction costs</li>
+            <li><strong>Social Networks:</strong> Analyzing influence propagation with negative effects</li>
+            <li><strong>Constraint Systems:</strong> Solving difference constraint systems</li>
+            <li><strong>VLSI Design:</strong> Timing analysis with negative delays</li>
+            <li><strong>Transportation:</strong> Routes with tolls, fees, or penalties</li>
+        </ul>
+        
+        <h2 class="section-title">Bellman-Ford vs Dijkstra</h2>
+        
+        <div class="definition-box">
+            <strong>Bellman-Ford Advantages:</strong><br>
+            • Handles negative edge weights<br>
+            • Detects negative cycles<br>
+            • Simpler implementation<br>
+            • Works with any edge weight distribution<br><br>
+            
+            <strong>Bellman-Ford Disadvantages:</strong><br>
+            • Slower time complexity O(VE)<br>
+            • Not suitable for large dense graphs<br>
+            • Cannot handle negative cycles in paths<br><br>
+            
+            <strong>When to Use Bellman-Ford:</strong><br>
+            • Graph has negative edge weights<br>
+            • Need to detect negative cycles<br>
+            • Graph is sparse (E << V²)<br>
+            • Correctness more important than speed
+        </div>
+        
+        <h2 class="section-title">Algorithm Optimizations</h2>
+        
+        <p class="academic-text">
+            Several optimizations can improve Bellman-Ford performance:
+        </p>
+        
+        <ul>
+            <li><strong>Early Termination:</strong> Stop if no updates in an iteration</li>
+            <li><strong>SPFA:</strong> Use queue to process only vertices with updated distances</li>
+            <li><strong>Yen's Optimization:</strong> Maintain candidate list of vertices to process</li>
+            <li><strong>Parallel Processing:</strong> Relax edges in parallel</li>
+        </ul>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Negative Cycles:</strong> Algorithm cannot find shortest paths through negative cycles</li>
+            <li><strong>Integer Overflow:</strong> Large negative weights can cause overflow</li>
+            <li><strong>Initialization:</strong> Must initialize source distance to 0, others to infinity</li>
+            <li><strong>Edge Order:</strong> Different edge processing orders may affect convergence speed</li>
+            <li><strong>Cycle Detection:</strong> Must run additional iteration to detect negative cycles</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Negative Weights:</strong> Emphasize this key advantage over Dijkstra</li>
+            <li><strong>Dynamic Programming:</strong> Explain the DP principle behind the algorithm</li>
+            <li><strong>Relaxation:</strong> Clearly explain the edge relaxation process</li>
+            <li><strong>Negative Cycles:</strong> Know how to detect and handle them</li>
+            <li><strong>Applications:</strong> Mention currency arbitrage and network routing</li>
+            <li><strong>Complexity Trade-off:</strong> Discuss when to use vs Dijkstra</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Bellman-Ford finds shortest paths with negative edge weights</li>
+                <li>Can detect negative cycles in the graph</li>
+                <li>Uses dynamic programming with V-1 iterations of edge relaxation</li>
+                <li>Time complexity O(VE), slower than Dijkstra but more general</li>
+                <li>Space complexity O(V) for distance and parent arrays</li>
+                <li>Essential for applications with negative costs or cycle detection</li>
+                <li>Can be optimized with SPFA and early termination techniques</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Complexity Cheat Sheet - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <h1 class="chapter-title">Algorithm Complexity Cheat Sheet</h1>
+        
+        <p class="academic-text">
+            This cheat sheet provides a quick reference for the time and space complexities of all 70 algorithms covered in this handbook. Use it to quickly identify the most efficient algorithm for your specific constraints.
+        </p>
+        
+        <h2 class="section-title">Complexity Growth Rates</h2>
+        
+        <div class="definition-box">
+            <strong>From Best to Worst:</strong><br>
+            O(1) < O(log n) < O(n) < O(n log n) < O(n²) < O(n³) < O(2ⁿ) < O(n!)
+        </div>
+        
+        <h2 class="section-title">Part I: Searching Algorithms</h2>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Algorithm</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Time (Average)</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Time (Worst)</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Space</th>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Linear Search</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Binary Search</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Ternary Search</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log₃ n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log₃ n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Jump Search</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(√n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(√n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Interpolation Search</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Exponential Search</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Fibonacci Search</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+            </tr>
+        </table>
+        
+        <h2 class="section-title">Part II: Sorting Algorithms</h2>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Algorithm</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Time (Best)</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Time (Average)</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Time (Worst)</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Space</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Stable</th>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Bubble Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Yes</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Selection Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">No</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Insertion Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Yes</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Merge Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Yes</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Quick Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">No</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Heap Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">No</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Counting Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n + k)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n + k)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n + k)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(k)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Yes</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Radix Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(d(n + k))</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(d(n + k))</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(d(n + k))</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n + k)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Yes</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Bucket Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n + k)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n + k)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Yes</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Shell Sort</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n^1.25)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n²)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(1)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">No</td>
+            </tr>
+        </table>
+        
+        <h2 class="section-title">Part III: Tree Algorithms</h2>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Algorithm</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Search</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Insert</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Delete</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Space</th>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">BST (Average)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">BST (Worst)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">AVL Tree</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Red-Black Tree</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">B-Tree</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Segment Tree</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Fenwick Tree</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(log n)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(n)</td>
+            </tr>
+            <tr style="border: 1px solid #dee2e6;">
+                <td style="padding: 8px; border: 1px solid #dee2e6;">Trie</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(m)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(m)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(m)</td>
+                <td style="padding: 8px; border: 1px solid #dee2e6;">O(ALPHABET_SIZE * N * M)</td>
+            </tr>
+        </table>
+        
+        <p class="academic-text" style="font-size: 10pt; color: #666;">
+            <em>Note: m = length of string, N = number of strings, k = range of input, d = number of digits</em>
+        </p>
+        
+        <h2 class="section-title">Quick Selection Guide</h2>
+        
+        <div class="definition-box">
+            <strong>Need O(1) operations?</strong> Hash Table, Array Access<br>
+            <strong>Need O(log n) operations?</strong> Binary Search, Balanced Trees, Heaps<br>
+            <strong>Need O(n) is acceptable?</strong> Linear Search, Hash Table (worst case)<br>
+            <strong>Working with strings?</strong> Trie, KMP, Rabin-Karp<br>
+            <strong>Working with graphs?</strong> BFS/DFS O(V+E), Dijkstra O(E log V)<br>
+            <strong>Need sorting?</strong> Quick/Merge Sort O(n log n), Counting Sort O(n+k)
+        </div>
+        
+        <h2 class="section-title">Memory vs Time Trade-offs</h2>
+        
+        <p class="academic-text">
+            Common patterns in algorithm design:
+        </p>
+        
+        <ul>
+            <li><strong>More Memory → Faster Time:</strong> Hash tables, memoization, precomputed tables</li>
+            <li><strong>Less Memory → Slower Time:</strong> In-place algorithms, recursive solutions</li>
+            <li><strong>Preprocessing:</strong> Sort once, search many times (O(n log n) + O(log n) per query)</li>
+            <li><strong>Amortized Analysis:</strong> Dynamic arrays, Union-Find with path compression</li>
+        </ul>
+        
+        <p class="academic-text">
+            Use this cheat sheet as a quick reference, but always consider the specific constraints and requirements of your problem when choosing an algorithm.
+        </p>
+    </div>
+</body>
+</html>

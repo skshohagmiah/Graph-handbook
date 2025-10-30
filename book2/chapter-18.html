@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 18: Breadth-First Search (BFS) - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 18</div>
+        <h1 class="chapter-title">Breadth-First Search (BFS)</h1>
+        
+        <p class="academic-text">
+            Breadth-First Search (BFS) is a fundamental graph traversal algorithm that explores vertices in layers, visiting all vertices at distance k before visiting any vertex at distance k+1 from the source. BFS uses a queue data structure and guarantees finding the shortest path in unweighted graphs. It's essential for many graph problems including shortest path, connected components, and level-order traversals.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a graph G = (V, E) and a source vertex s, traverse all reachable vertices from s in breadth-first order. The algorithm should visit vertices level by level, exploring all neighbors of the current level before moving to the next level.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Graph G and source vertex s<br>
+            <strong>Output:</strong> BFS traversal order and distances from source<br>
+            <strong>Graph Type:</strong> Works on both directed and undirected graphs
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            BFS works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Initialize:</strong> Mark source as visited, add to queue</li>
+            <li><strong>Process Queue:</strong> While queue is not empty, dequeue vertex</li>
+            <li><strong>Explore Neighbors:</strong> For each unvisited neighbor, mark visited and enqueue</li>
+            <li><strong>Repeat:</strong> Continue until queue is empty</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: BFS(graph, source)
+1. visited[all vertices] = false
+2. distance[all vertices] = infinity
+3. parent[all vertices] = null
+4. 
+5. queue = empty queue
+6. visited[source] = true
+7. distance[source] = 0
+8. queue.enqueue(source)
+9. 
+10. while queue is not empty do
+11.     current = queue.dequeue()
+12.     print current  // Process current vertex
+13.     
+14.     for each neighbor of current do
+15.         if not visited[neighbor] then
+16.             visited[neighbor] = true
+17.             distance[neighbor] = distance[current] + 1
+18.             parent[neighbor] = current
+19.             queue.enqueue(neighbor)
+20.         end if
+21.     end for
+22. end while
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
+using namespace std;
+
+/**
+ * Graph representation using adjacency list
+ */
+class Graph {
+private:
+    unordered_map<int, vector<int>> adjList;
+    bool isDirected;
+    
+public:
+    Graph(bool directed = false) : isDirected(directed) {}
+    
+    void addEdge(int u, int v) {
+        adjList[u].push_back(v);
+        if (!isDirected) {
+            adjList[v].push_back(u);
+        }
+    }
+    
+    vector<int> getNeighbors(int vertex) {
+        return adjList[vertex];
+    }
+    
+    vector<int> getAllVertices() {
+        vector<int> vertices;
+        for (auto& pair : adjList) {
+            vertices.push_back(pair.first);
+        }
+        return vertices;
+    }
+    
+    void printGraph() {
+        for (auto& pair : adjList) {
+            cout << pair.first << " -> ";
+            for (int neighbor : pair.second) {
+                cout << neighbor << " ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+/**
+ * Basic BFS Implementation
+ * Returns BFS traversal order
+ */
+vector<int> bfs(Graph& graph, int source) {
+    vector<int> traversal;
+    unordered_set<int> visited;
+    queue<int> q;
+    
+    // Initialize
+    visited.insert(source);
+    q.push(source);
+    
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+        
+        traversal.push_back(current);
+        
+        // Explore neighbors
+        for (int neighbor : graph.getNeighbors(current)) {
+            if (visited.find(neighbor) == visited.end()) {
+                visited.insert(neighbor);
+                q.push(neighbor);
+            }
+        }
+    }
+    
+    return traversal;
+}
+
+/**
+ * BFS with Distance and Parent Tracking
+ * Returns distances and parent pointers for path reconstruction
+ */
+struct BFSResult {
+    unordered_map<int, int> distances;
+    unordered_map<int, int> parents;
+    vector<int> traversal;
+};
+
+BFSResult bfsWithDetails(Graph& graph, int source) {
+    BFSResult result;
+    unordered_set<int> visited;
+    queue<int> q;
+    
+    // Initialize source
+    visited.insert(source);
+    result.distances[source] = 0;
+    result.parents[source] = -1;  // Source has no parent
+    q.push(source);
+    
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+        
+        result.traversal.push_back(current);
+        
+        // Explore neighbors
+        for (int neighbor : graph.getNeighbors(current)) {
+            if (visited.find(neighbor) == visited.end()) {
+                visited.insert(neighbor);
+                result.distances[neighbor] = result.distances[current] + 1;
+                result.parents[neighbor] = current;
+                q.push(neighbor);
+            }
+        }
+    }
+    
+    return result;
+}
+
+/**
+ * BFS for Shortest Path
+ * Returns shortest path between source and target
+ */
+vector<int> bfsShortestPath(Graph& graph, int source, int target) {
+    if (source == target) return {source};
+    
+    unordered_set<int> visited;
+    unordered_map<int, int> parent;
+    queue<int> q;
+    
+    visited.insert(source);
+    parent[source] = -1;
+    q.push(source);
+    
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+        
+        if (current == target) {
+            // Reconstruct path
+            vector<int> path;
+            int node = target;
+            while (node != -1) {
+                path.push_back(node);
+                node = parent[node];
+            }
+            reverse(path.begin(), path.end());
+            return path;
+        }
+        
+        for (int neighbor : graph.getNeighbors(current)) {
+            if (visited.find(neighbor) == visited.end()) {
+                visited.insert(neighbor);
+                parent[neighbor] = current;
+                q.push(neighbor);
+            }
+        }
+    }
+    
+    return {};  // No path found
+}
+
+/**
+ * BFS for Connected Components
+ * Returns all connected components in undirected graph
+ */
+vector<vector<int>> bfsConnectedComponents(Graph& graph) {
+    vector<vector<int>> components;
+    unordered_set<int> globalVisited;
+    
+    for (int vertex : graph.getAllVertices()) {
+        if (globalVisited.find(vertex) == globalVisited.end()) {
+            // Start new component
+            vector<int> component;
+            queue<int> q;
+            
+            globalVisited.insert(vertex);
+            q.push(vertex);
+            
+            while (!q.empty()) {
+                int current = q.front();
+                q.pop();
+                component.push_back(current);
+                
+                for (int neighbor : graph.getNeighbors(current)) {
+                    if (globalVisited.find(neighbor) == globalVisited.end()) {
+                        globalVisited.insert(neighbor);
+                        q.push(neighbor);
+                    }
+                }
+            }
+            
+            components.push_back(component);
+        }
+    }
+    
+    return components;
+}
+
+/**
+ * BFS Level Order Traversal
+ * Returns vertices grouped by their distance from source
+ */
+vector<vector<int>> bfsLevelOrder(Graph& graph, int source) {
+    vector<vector<int>> levels;
+    unordered_set<int> visited;
+    queue<int> q;
+    
+    visited.insert(source);
+    q.push(source);
+    
+    while (!q.empty()) {
+        int levelSize = q.size();
+        vector<int> currentLevel;
+        
+        // Process all vertices at current level
+        for (int i = 0; i < levelSize; i++) {
+            int current = q.front();
+            q.pop();
+            currentLevel.push_back(current);
+            
+            // Add neighbors for next level
+            for (int neighbor : graph.getNeighbors(current)) {
+                if (visited.find(neighbor) == visited.end()) {
+                    visited.insert(neighbor);
+                    q.push(neighbor);
+                }
+            }
+        }
+        
+        levels.push_back(currentLevel);
+    }
+    
+    return levels;
+}
+
+/**
+ * BFS for Bipartite Graph Check
+ * Returns true if graph is bipartite, false otherwise
+ */
+bool isBipartiteBFS(Graph& graph, int source) {
+    unordered_map<int, int> color;  // 0 or 1
+    queue<int> q;
+    
+    color[source] = 0;
+    q.push(source);
+    
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+        
+        for (int neighbor : graph.getNeighbors(current)) {
+            if (color.find(neighbor) == color.end()) {
+                // Color with opposite color
+                color[neighbor] = 1 - color[current];
+                q.push(neighbor);
+            } else if (color[neighbor] == color[current]) {
+                // Same color as current - not bipartite
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * Multi-source BFS
+ * BFS from multiple sources simultaneously
+ */
+vector<int> multiSourceBFS(Graph& graph, vector<int> sources) {
+    vector<int> traversal;
+    unordered_set<int> visited;
+    unordered_map<int, int> distance;
+    queue<int> q;
+    
+    // Initialize all sources
+    for (int source : sources) {
+        visited.insert(source);
+        distance[source] = 0;
+        q.push(source);
+    }
+    
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+        traversal.push_back(current);
+        
+        for (int neighbor : graph.getNeighbors(current)) {
+            if (visited.find(neighbor) == visited.end()) {
+                visited.insert(neighbor);
+                distance[neighbor] = distance[current] + 1;
+                q.push(neighbor);
+            }
+        }
+    }
+    
+    return traversal;
+}
+
+/**
+ * BFS with Statistics
+ * Tracks various metrics during traversal
+ */
+struct BFSStats {
+    int verticesVisited;
+    int edgesExplored;
+    int maxQueueSize;
+    vector<int> queueSizeHistory;
+    unordered_map<int, int> visitOrder;
+};
+
+BFSStats bfsWithStats(Graph& graph, int source) {
+    BFSStats stats = {0, 0, 0, {}, {}};
+    unordered_set<int> visited;
+    queue<int> q;
+    
+    visited.insert(source);
+    q.push(source);
+    stats.verticesVisited = 1;
+    stats.visitOrder[source] = 0;
+    
+    while (!q.empty()) {
+        // Track queue size
+        stats.maxQueueSize = max(stats.maxQueueSize, (int)q.size());
+        stats.queueSizeHistory.push_back(q.size());
+        
+        int current = q.front();
+        q.pop();
+        
+        for (int neighbor : graph.getNeighbors(current)) {
+            stats.edgesExplored++;
+            
+            if (visited.find(neighbor) == visited.end()) {
+                visited.insert(neighbor);
+                stats.visitOrder[neighbor] = stats.verticesVisited;
+                stats.verticesVisited++;
+                q.push(neighbor);
+            }
+        }
+    }
+    
+    return stats;
+}
+
+// Utility functions
+void printPath(const vector<int>& path) {
+    if (path.empty()) {
+        cout << "No path found" << endl;
+        return;
+    }
+    
+    for (int i = 0; i < path.size(); i++) {
+        cout << path[i];
+        if (i < path.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+}
+
+void printTraversal(const vector<int>& traversal, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    for (int i = 0; i < traversal.size(); i++) {
+        cout << traversal[i];
+        if (i < traversal.size() - 1) cout << " ";
+    }
+    cout << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Create sample graph
+    Graph graph(false);  // Undirected graph
+    
+    // Add edges to create a connected graph
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(2, 5);
+    graph.addEdge(2, 6);
+    graph.addEdge(3, 7);
+    graph.addEdge(4, 7);
+    
+    cout << "=== Graph Structure ===" << endl;
+    graph.printGraph();
+    
+    // Test basic BFS
+    cout << "\n=== Basic BFS from vertex 0 ===" << endl;
+    vector<int> traversal = bfs(graph, 0);
+    printTraversal(traversal, "BFS Traversal");
+    
+    // Test BFS with details
+    cout << "\n=== BFS with Distance and Parent Tracking ===" << endl;
+    BFSResult result = bfsWithDetails(graph, 0);
+    printTraversal(result.traversal, "Traversal");
+    
+    cout << "Distances from source 0:" << endl;
+    for (auto& pair : result.distances) {
+        cout << "  Vertex " << pair.first << ": distance " << pair.second << endl;
+    }
+    
+    // Test shortest path
+    cout << "\n=== Shortest Path from 0 to 7 ===" << endl;
+    vector<int> path = bfsShortestPath(graph, 0, 7);
+    cout << "Path: ";
+    printPath(path);
+    cout << "Path length: " << (path.empty() ? 0 : path.size() - 1) << endl;
+    
+    // Test level order traversal
+    cout << "\n=== Level Order Traversal from vertex 0 ===" << endl;
+    vector<vector<int>> levels = bfsLevelOrder(graph, 0);
+    for (int i = 0; i < levels.size(); i++) {
+        cout << "Level " << i << ": ";
+        for (int vertex : levels[i]) {
+            cout << vertex << " ";
+        }
+        cout << endl;
+    }
+    
+    // Test connected components
+    cout << "\n=== Connected Components ===" << endl;
+    vector<vector<int>> components = bfsConnectedComponents(graph);
+    for (int i = 0; i < components.size(); i++) {
+        cout << "Component " << i + 1 << ": ";
+        for (int vertex : components[i]) {
+            cout << vertex << " ";
+        }
+        cout << endl;
+    }
+    
+    // Test bipartite check
+    cout << "\n=== Bipartite Check ===" << endl;
+    bool bipartite = isBipartiteBFS(graph, 0);
+    cout << "Graph is " << (bipartite ? "bipartite" : "not bipartite") << endl;
+    
+    // Test multi-source BFS
+    cout << "\n=== Multi-source BFS from vertices {0, 7} ===" << endl;
+    vector<int> multiTraversal = multiSourceBFS(graph, {0, 7});
+    printTraversal(multiTraversal, "Multi-source BFS");
+    
+    // Test BFS with statistics
+    cout << "\n=== BFS Statistics ===" << endl;
+    BFSStats stats = bfsWithStats(graph, 0);
+    cout << "Vertices visited: " << stats.verticesVisited << endl;
+    cout << "Edges explored: " << stats.edgesExplored << endl;
+    cout << "Max queue size: " << stats.maxQueueSize << endl;
+    cout << "Queue size history: ";
+    for (int size : stats.queueSizeHistory) {
+        cout << size << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Adjacency List:</strong> O(V + E) - Each vertex and edge visited once</li>
+                <li><strong>Adjacency Matrix:</strong> O(V²) - Must check all possible edges</li>
+                <li><strong>Dense Graphs:</strong> O(V²) when E ≈ V²</li>
+                <li><strong>Sparse Graphs:</strong> O(V) when E ≈ V</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Queue Storage:</strong> O(V) - Maximum vertices in queue</li>
+                <li><strong>Visited Array:</strong> O(V) - Track visited vertices</li>
+                <li><strong>Distance/Parent Arrays:</strong> O(V) - Additional information</li>
+                <li><strong>Total Space:</strong> O(V) auxiliary space</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Completeness:</strong> Always finds solution if one exists</li>
+                <li><strong>Optimality:</strong> Finds shortest path in unweighted graphs</li>
+                <li><strong>Memory Usage:</strong> Can use significant memory for wide graphs</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through BFS on a simple graph starting from vertex 0:
+        </p>
+        
+        <div class="code-block">
+Graph: 0 -- 1 -- 3
+       |    |    |
+       2 -- 4 -- 5
+
+BFS from vertex 0:
+
+Initial: Queue = [0], Visited = {0}, Distance[0] = 0
+
+Step 1: Dequeue 0
+- Neighbors of 0: [1, 2]
+- Add 1: Queue = [1], Visited = {0, 1}, Distance[1] = 1
+- Add 2: Queue = [1, 2], Visited = {0, 1, 2}, Distance[2] = 1
+- Traversal: [0]
+
+Step 2: Dequeue 1
+- Neighbors of 1: [0, 3, 4] (0 already visited)
+- Add 3: Queue = [2, 3], Visited = {0, 1, 2, 3}, Distance[3] = 2
+- Add 4: Queue = [2, 3, 4], Visited = {0, 1, 2, 3, 4}, Distance[4] = 2
+- Traversal: [0, 1]
+
+Step 3: Dequeue 2
+- Neighbors of 2: [0, 4] (0 already visited, 4 already visited)
+- No new vertices added
+- Traversal: [0, 1, 2]
+
+Step 4: Dequeue 3
+- Neighbors of 3: [1, 5] (1 already visited)
+- Add 5: Queue = [4, 5], Visited = {0, 1, 2, 3, 4, 5}, Distance[5] = 3
+- Traversal: [0, 1, 2, 3]
+
+Step 5: Dequeue 4
+- Neighbors of 4: [1, 2, 5] (all already visited)
+- No new vertices added
+- Traversal: [0, 1, 2, 3, 4]
+
+Step 6: Dequeue 5
+- Neighbors of 5: [3, 4] (all already visited)
+- Queue becomes empty
+- Traversal: [0, 1, 2, 3, 4, 5]
+
+Final BFS order: 0 → 1 → 2 → 3 → 4 → 5
+Distances: 0(0), 1(1), 2(1), 3(2), 4(2), 5(3)
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            BFS has numerous important applications:
+        </p>
+        
+        <ul>
+            <li><strong>Shortest Path:</strong> Finding shortest path in unweighted graphs</li>
+            <li><strong>Connected Components:</strong> Finding all connected components</li>
+            <li><strong>Bipartite Testing:</strong> Checking if graph is bipartite</li>
+            <li><strong>Level Order Traversal:</strong> Tree and graph level-wise processing</li>
+            <li><strong>Web Crawling:</strong> Crawling web pages level by level</li>
+            <li><strong>Social Networks:</strong> Finding friends at distance k</li>
+            <li><strong>GPS Navigation:</strong> Finding shortest routes</li>
+            <li><strong>Puzzle Solving:</strong> State space search problems</li>
+        </ul>
+        
+        <h2 class="section-title">BFS vs DFS Comparison</h2>
+        
+        <div class="definition-box">
+            <strong>BFS Advantages:</strong><br>
+            • Finds shortest path in unweighted graphs<br>
+            • Good for finding nodes close to source<br>
+            • Level-wise exploration<br>
+            • Optimal for minimum spanning tree problems<br><br>
+            
+            <strong>BFS Disadvantages:</strong><br>
+            • Higher memory usage (stores all nodes at current level)<br>
+            • Not suitable for decision tree problems<br>
+            • May be slower for deep, narrow graphs<br><br>
+            
+            <strong>When to Use BFS:</strong><br>
+            • Finding shortest path<br>
+            • Level order traversal<br>
+            • Finding all nodes within k distance<br>
+            • Bipartite graph testing
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Forgetting to Mark Visited:</strong> Can cause infinite loops</li>
+            <li><strong>Wrong Queue Operations:</strong> Using stack instead of queue gives DFS</li>
+            <li><strong>Not Handling Disconnected Graphs:</strong> May miss some vertices</li>
+            <li><strong>Memory Issues:</strong> BFS can use lots of memory for wide graphs</li>
+            <li><strong>Path Reconstruction:</strong> Forgetting to store parent pointers</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Queue Usage:</strong> Emphasize FIFO nature for level-wise exploration</li>
+            <li><strong>Shortest Path:</strong> Highlight optimality for unweighted graphs</li>
+            <li><strong>Time Complexity:</strong> Explain O(V + E) for adjacency list</li>
+            <li><strong>Applications:</strong> Mention real-world uses like GPS and social networks</li>
+            <li><strong>Variations:</strong> Know multi-source BFS and bidirectional BFS</li>
+            <li><strong>Implementation:</strong> Be able to code both basic and advanced versions</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>BFS explores vertices level by level using a queue data structure</li>
+                <li>Guarantees shortest path in unweighted graphs</li>
+                <li>Time complexity O(V + E) with adjacency list representation</li>
+                <li>Space complexity O(V) for queue and auxiliary arrays</li>
+                <li>Essential for connectivity, shortest path, and level-order problems</li>
+                <li>Foundation for many advanced graph algorithms</li>
+                <li>Can be extended for multi-source and bidirectional search</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

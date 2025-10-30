@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Exponential Search - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 6</div>
+        <h1 class="chapter-title">Exponential Search</h1>
+        
+        <p class="academic-text">
+            Exponential search (also known as doubling search or galloping search) is a searching algorithm that finds the range where the target element might exist by exponentially increasing the search bound, then performs binary search within that range. It's particularly useful when the size of the array is unknown or infinite.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a sorted array of unknown or infinite size and a target value, find the index of the target value. The algorithm first finds a suitable range and then performs binary search within that range.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Sorted array arr[] (possibly infinite), target value x<br>
+            <strong>Output:</strong> Index of x in arr[], or -1 if not found<br>
+            <strong>Use Case:</strong> Particularly effective when target is close to the beginning
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Exponential search works in two phases:
+        </p>
+        
+        <ol>
+            <li><strong>Range Finding:</strong> Start with index 1 and keep doubling until we find a value greater than target</li>
+            <li><strong>Binary Search:</strong> Perform binary search in the identified range [i/2, i]</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: ExponentialSearch(arr, n, x)
+1. if arr[0] == x then
+2.     return 0
+3. end if
+4. 
+5. // Find range for binary search by repeated doubling
+6. i = 1
+7. while i < n AND arr[i] <= x do
+8.     i = i * 2
+9. end while
+10.
+11. // Perform binary search in range [i/2, min(i, n-1)]
+12. return BinarySearch(arr, i/2, min(i, n-1), x)
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+using namespace std;
+
+/**
+ * Binary Search Helper Function
+ * Used in the second phase of exponential search
+ */
+int binarySearch(const vector<int>& arr, int left, int right, int target) {
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            return mid;
+        }
+        
+        if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return -1;
+}
+
+/**
+ * Exponential Search - Standard Implementation
+ * Finds range exponentially, then uses binary search
+ * 
+ * @param arr: sorted input array
+ * @param target: element to search for
+ * @return: index of target element, -1 if not found
+ */
+int exponentialSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Check if target is at first position
+    if (arr[0] == target) {
+        return 0;
+    }
+    
+    // Find range for binary search by repeated doubling
+    int i = 1;
+    while (i < n && arr[i] <= target) {
+        i *= 2;
+    }
+    
+    // Perform binary search in the identified range
+    return binarySearch(arr, i / 2, min(i, n - 1), target);
+}
+
+/**
+ * Exponential Search with Detailed Statistics
+ * Tracks the search process for analysis
+ */
+struct ExponentialSearchStats {
+    int index;
+    int exponentialSteps;
+    int binarySteps;
+    int rangeStart;
+    int rangeEnd;
+    vector<int> exponentialPositions;
+};
+
+ExponentialSearchStats exponentialSearchWithStats(const vector<int>& arr, int target) {
+    ExponentialSearchStats stats = {-1, 0, 0, -1, -1, {}};
+    int n = arr.size();
+    
+    if (n == 0) return stats;
+    
+    if (arr[0] == target) {
+        stats.index = 0;
+        return stats;
+    }
+    
+    // Exponential phase
+    int i = 1;
+    while (i < n && arr[i] <= target) {
+        stats.exponentialPositions.push_back(i);
+        stats.exponentialSteps++;
+        i *= 2;
+    }
+    
+    // Set range for binary search
+    stats.rangeStart = i / 2;
+    stats.rangeEnd = min(i, n - 1);
+    
+    // Binary search phase with step counting
+    int left = stats.rangeStart;
+    int right = stats.rangeEnd;
+    
+    while (left <= right) {
+        stats.binarySteps++;
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            stats.index = mid;
+            break;
+        }
+        
+        if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return stats;
+}
+
+/**
+ * Exponential Search for Infinite Array
+ * Simulates search in an infinite array using bounds checking
+ */
+int exponentialSearchInfinite(const vector<int>& arr, int target) {
+    // Check first element
+    if (arr[0] == target) {
+        return 0;
+    }
+    
+    // Find range for binary search by repeated doubling
+    int i = 1;
+    try {
+        while (arr.at(i) <= target) {  // Using at() for bounds checking
+            i *= 2;
+        }
+    } catch (const out_of_range&) {
+        // We've gone beyond array bounds
+        i = arr.size();
+    }
+    
+    // Perform binary search in the identified range
+    return binarySearch(arr, i / 2, min(i, (int)arr.size()) - 1, target);
+}
+
+/**
+ * Optimized Exponential Search
+ * Uses early termination and optimized doubling
+ */
+int optimizedExponentialSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    if (arr[0] == target) return 0;
+    if (n == 1) return -1;
+    
+    // Quick check for small arrays
+    if (n <= 4) {
+        for (int i = 1; i < n; i++) {
+            if (arr[i] == target) return i;
+        }
+        return -1;
+    }
+    
+    // Exponential search with early termination
+    int i = 1;
+    while (i < n) {
+        if (arr[i] == target) {
+            return i;  // Found during exponential phase
+        }
+        if (arr[i] > target) {
+            break;  // Target must be in previous range
+        }
+        i *= 2;
+    }
+    
+    // Binary search in the identified range
+    return binarySearch(arr, i / 2, min(i, n - 1), target);
+}
+
+/**
+ * Exponential Search with Custom Growth Factor
+ * Allows different growth rates instead of doubling
+ */
+int exponentialSearchCustomGrowth(const vector<int>& arr, int target, double growthFactor = 2.0) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    if (arr[0] == target) return 0;
+    
+    // Find range using custom growth factor
+    int i = 1;
+    while (i < n && arr[i] <= target) {
+        i = (int)(i * growthFactor);
+        if (i <= 0) i = n;  // Prevent infinite loop
+    }
+    
+    int start = (int)(i / growthFactor);
+    return binarySearch(arr, start, min(i, n - 1), target);
+}
+
+/**
+ * Bidirectional Exponential Search
+ * Searches from both ends when target position is unknown
+ */
+int bidirectionalExponentialSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    
+    // Check endpoints
+    if (arr[0] == target) return 0;
+    if (arr[n-1] == target) return n-1;
+    
+    // Decide direction based on target value relative to middle
+    int mid = n / 2;
+    if (target <= arr[mid]) {
+        // Search from beginning
+        return exponentialSearch(arr, target);
+    } else {
+        // Search from end (reverse exponential search)
+        int i = 1;
+        while (i < n && arr[n-1-i] >= target) {
+            i *= 2;
+        }
+        
+        int start = max(0, n - i);
+        int end = n - 1 - i/2;
+        return binarySearch(arr, start, end, target);
+    }
+}
+
+// Example usage and testing
+int main() {
+    vector<int> arr = {2, 3, 4, 10, 40, 50, 80, 100, 120, 140, 160, 180, 200, 220, 240};
+    int target = 120;
+    
+    cout << "Sorted Array: ";
+    for (int x : arr) {
+        cout << x << " ";
+    }
+    cout << endl;
+    cout << "Array size: " << arr.size() << endl;
+    
+    // Test standard exponential search
+    int result = exponentialSearch(arr, target);
+    if (result != -1) {
+        cout << "Standard: Element " << target << " found at index " << result << endl;
+    } else {
+        cout << "Standard: Element " << target << " not found" << endl;
+    }
+    
+    // Test with detailed statistics
+    ExponentialSearchStats stats = exponentialSearchWithStats(arr, target);
+    cout << "\nDetailed Analysis:" << endl;
+    cout << "Found at index: " << stats.index << endl;
+    cout << "Exponential steps: " << stats.exponentialSteps << endl;
+    cout << "Binary search steps: " << stats.binarySteps << endl;
+    cout << "Search range: [" << stats.rangeStart << ", " << stats.rangeEnd << "]" << endl;
+    cout << "Exponential positions checked: ";
+    for (int pos : stats.exponentialPositions) {
+        cout << pos << " ";
+    }
+    cout << endl;
+    cout << "Total operations: " << (stats.exponentialSteps + stats.binarySteps) << endl;
+    
+    // Compare with pure binary search
+    int binaryResult = binarySearch(arr, 0, arr.size() - 1, target);
+    cout << "Binary search result: " << binaryResult << endl;
+    
+    // Test different growth factors
+    cout << "\nTesting different growth factors:" << endl;
+    vector<double> growthFactors = {1.5, 2.0, 3.0, 4.0};
+    for (double factor : growthFactors) {
+        int result = exponentialSearchCustomGrowth(arr, target, factor);
+        cout << "Growth factor " << factor << ": " << (result != -1 ? "Found" : "Not found") << endl;
+    }
+    
+    // Test edge cases
+    cout << "\nEdge Cases:" << endl;
+    
+    // Search for first element
+    int firstResult = exponentialSearch(arr, arr[0]);
+    cout << "First element (" << arr[0] << "): " << (firstResult != -1 ? "Found at " + to_string(firstResult) : "Not found") << endl;
+    
+    // Search for last element
+    int lastResult = exponentialSearch(arr, arr.back());
+    cout << "Last element (" << arr.back() << "): " << (lastResult != -1 ? "Found at " + to_string(lastResult) : "Not found") << endl;
+    
+    // Search for non-existent element
+    int nonExistentResult = exponentialSearch(arr, 999);
+    cout << "Non-existent element (999): " << (nonExistentResult != -1 ? "Found at " + to_string(nonExistentResult) : "Not found") << endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(1) - Target is at the first position</li>
+                <li><strong>Average Case:</strong> O(log i) where i is the position of target</li>
+                <li><strong>Worst Case:</strong> O(log n) - Same as binary search</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(1) - Only uses constant extra space</li>
+            </ul>
+            
+            <h3>Key Insight</h3>
+            <ul>
+                <li><strong>Performance:</strong> Better than binary search when target is near the beginning</li>
+                <li><strong>Exponential Phase:</strong> Takes O(log i) time to find the range</li>
+                <li><strong>Binary Phase:</strong> Takes O(log i) time to search within range</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through exponential search on array [2, 3, 4, 10, 40, 50, 80, 100, 120, 140, 160, 180, 200, 220, 240] searching for target = 120:
+        </p>
+        
+        <div class="code-block">
+Array: [2, 3, 4, 10, 40, 50, 80, 100, 120, 140, 160, 180, 200, 220, 240]
+Indices:[0, 1, 2, 3,  4,  5,  6,  7,   8,   9,  10,  11,  12,  13,  14]
+Target: 120
+
+Exponential Phase:
+Step 1: i=1, arr[1]=3, 3 <= 120, continue
+Step 2: i=2, arr[2]=4, 4 <= 120, continue
+Step 3: i=4, arr[4]=40, 40 <= 120, continue
+Step 4: i=8, arr[8]=120, 120 <= 120, continue
+Step 5: i=16, i >= n(15), stop
+
+Range identified: [8, 14] (i/2 to min(i, n-1))
+
+Binary Search Phase in range [8, 14]:
+Step 1: left=8, right=14, mid=11, arr[11]=180, 180 > 120, search left
+Step 2: left=8, right=10, mid=9, arr[9]=140, 140 > 120, search left
+Step 3: left=8, right=8, mid=8, arr[8]=120, 120 == 120, FOUND!
+
+Result: Element found at index 8
+Total operations: 4 (exponential) + 3 (binary) = 7 operations
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Exponential search is particularly useful in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Infinite or Unknown-Size Arrays:</strong> When array size is not known beforehand</li>
+            <li><strong>Streaming Data:</strong> Searching in continuously growing datasets</li>
+            <li><strong>Memory-Mapped Files:</strong> When accessing later parts of file is expensive</li>
+            <li><strong>Network-Based Arrays:</strong> When accessing remote elements has high latency</li>
+            <li><strong>Cache-Optimized Search:</strong> When sequential access is faster than random access</li>
+            <li><strong>Real-time Systems:</strong> When target is likely to be near the beginning</li>
+        </ul>
+        
+        <h2 class="section-title">Advanced Variations</h2>
+        
+        <h3>1. Fibonacci Exponential Search</h3>
+        <div class="code-block">
+/**
+ * Uses Fibonacci numbers instead of powers of 2
+ * Can be more cache-friendly for certain data patterns
+ */
+int fibonacciExponentialSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    if (arr[0] == target) return 0;
+    
+    // Generate Fibonacci numbers
+    int fib1 = 1, fib2 = 1;
+    int i = fib2;
+    
+    while (i < n && arr[i] <= target) {
+        int nextFib = fib1 + fib2;
+        fib1 = fib2;
+        fib2 = nextFib;
+        i = fib2;
+    }
+    
+    return binarySearch(arr, fib1, min(i, n - 1), target);
+}
+        </div>
+        
+        <h3>2. Adaptive Exponential Search</h3>
+        <div class="code-block">
+/**
+ * Adapts growth rate based on data distribution
+ */
+int adaptiveExponentialSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    if (arr[0] == target) return 0;
+    
+    double growthRate = 2.0;
+    int i = 1;
+    int prevI = 0;
+    
+    while (i < n && arr[i] <= target) {
+        // Analyze local data distribution
+        if (i > 1) {
+            double expectedValue = arr[prevI] + (double)(arr[i] - arr[prevI]) * 0.5;
+            int midIndex = (prevI + i) / 2;
+            
+            if (midIndex < n) {
+                double actualValue = arr[midIndex];
+                double ratio = actualValue / expectedValue;
+                
+                // Adjust growth rate based on distribution
+                if (ratio > 1.5) {
+                    growthRate = min(growthRate * 1.2, 4.0);  // Increase growth rate
+                } else if (ratio < 0.7) {
+                    growthRate = max(growthRate * 0.8, 1.5);  // Decrease growth rate
+                }
+            }
+        }
+        
+        prevI = i;
+        i = (int)(i * growthRate);
+    }
+    
+    return binarySearch(arr, prevI, min(i, n - 1), target);
+}
+        </div>
+        
+        <h3>3. Parallel Exponential Search</h3>
+        <div class="code-block">
+/**
+ * Parallel version that can check multiple positions simultaneously
+ * Useful for systems with multiple cores or when array access is expensive
+ */
+int parallelExponentialSearch(const vector<int>& arr, int target) {
+    int n = arr.size();
+    if (n == 0) return -1;
+    if (arr[0] == target) return 0;
+    
+    // Find range using parallel checking
+    vector<int> positions = {1, 2, 4, 8, 16, 32, 64, 128};
+    int rangeStart = 0, rangeEnd = n - 1;
+    
+    for (int pos : positions) {
+        if (pos >= n) break;
+        
+        if (arr[pos] == target) {
+            return pos;
+        } else if (arr[pos] > target) {
+            rangeEnd = pos;
+            break;
+        } else {
+            rangeStart = pos;
+        }
+    }
+    
+    return binarySearch(arr, rangeStart, rangeEnd, target);
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Exponential Search</h2>
+        
+        <div class="definition-box">
+            <strong>Use Exponential Search When:</strong><br>
+            • Array size is unknown or infinite<br>
+            • Target is likely to be near the beginning<br>
+            • Sequential access is faster than random access<br>
+            • Working with streaming or growing data<br>
+            • Memory access patterns matter more than theoretical complexity<br><br>
+            
+            <strong>Don't Use Exponential Search When:</strong><br>
+            • Array size is known and small<br>
+            • Target is likely to be uniformly distributed<br>
+            • Random access is as fast as sequential access<br>
+            • You need guaranteed O(log n) performance
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Integer Overflow:</strong> Doubling can cause overflow for large arrays</li>
+            <li><strong>Boundary Conditions:</strong> Handle cases where doubling exceeds array size</li>
+            <li><strong>Empty Array:</strong> Check for empty input arrays</li>
+            <li><strong>Single Element:</strong> Handle edge case of single-element arrays</li>
+            <li><strong>Performance Assumptions:</strong> Verify that sequential access is actually faster</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Two-Phase Approach:</strong> Clearly explain the exponential and binary search phases</li>
+            <li><strong>Use Cases:</strong> Discuss scenarios where exponential search is optimal</li>
+            <li><strong>Complexity:</strong> Explain why it's O(log i) where i is the target position</li>
+            <li><strong>Comparison:</strong> Compare with binary search and explain trade-offs</li>
+            <li><strong>Infinite Arrays:</strong> Discuss how it handles unknown-size arrays</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Exponential search combines exponential range finding with binary search</li>
+                <li>Time complexity is O(log i) where i is the position of target element</li>
+                <li>Particularly effective when target is near the beginning of array</li>
+                <li>Excellent for infinite or unknown-size arrays</li>
+                <li>Cache-friendly due to sequential access in exponential phase</li>
+                <li>Can be adapted with different growth rates and strategies</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

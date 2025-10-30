@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 17: Shell Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 17</div>
+        <h1 class="chapter-title">Shell Sort</h1>
+        
+        <p class="academic-text">
+            Shell sort is an in-place comparison-based sorting algorithm that generalizes insertion sort by allowing the exchange of items that are far apart. It works by sorting elements at specific intervals (gaps) and gradually reducing the gap until it becomes 1. The choice of gap sequence significantly affects the algorithm's performance, with some sequences providing better time complexity than others.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n elements, sort the array in ascending order using shell sort. The algorithm should use a gap sequence to perform multiple passes of insertion sort with decreasing gaps, ending with a final pass where gap = 1.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with comparable elements<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Not stable (can change relative order of equal elements)
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Shell sort works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Gap Selection:</strong> Choose initial gap and gap sequence</li>
+            <li><strong>Gap-based Insertion Sort:</strong> Sort elements gap positions apart</li>
+            <li><strong>Gap Reduction:</strong> Reduce gap according to sequence</li>
+            <li><strong>Final Pass:</strong> Perform insertion sort with gap = 1</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: ShellSort(arr, n)
+1. // Start with a large gap and reduce it
+2. gap = n / 2
+3. 
+4. while gap > 0 do
+5.     // Perform insertion sort for elements gap apart
+6.     for i = gap to n-1 do
+7.         temp = arr[i]
+8.         j = i
+9.         
+10.        // Shift elements until correct position found
+11.        while j >= gap AND arr[j - gap] > temp do
+12.            arr[j] = arr[j - gap]
+13.            j = j - gap
+14.        end while
+15.        
+16.        arr[j] = temp
+17.    end for
+18.    
+19.    gap = gap / 2  // Reduce gap
+20. end while
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+/**
+ * Shell Sort - Basic implementation with simple gap sequence
+ * Uses gap sequence: n/2, n/4, n/8, ..., 1
+ */
+void shellSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    // Start with a large gap and reduce it
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        // Perform insertion sort for elements gap apart
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            
+            // Shift elements until correct position is found
+            while (j >= gap && arr[j - gap] > temp) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            
+            arr[j] = temp;
+        }
+    }
+}
+
+/**
+ * Shell Sort with Knuth's Gap Sequence
+ * Uses gap sequence: 1, 4, 13, 40, 121, ... (3^k - 1)/2
+ */
+void shellSortKnuth(vector<int>& arr) {
+    int n = arr.size();
+    
+    // Generate Knuth's gap sequence
+    int gap = 1;
+    while (gap < n / 3) {
+        gap = 3 * gap + 1;  // 1, 4, 13, 40, 121, ...
+    }
+    
+    // Sort with decreasing gaps
+    while (gap >= 1) {
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            
+            while (j >= gap && arr[j - gap] > temp) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            
+            arr[j] = temp;
+        }
+        
+        gap /= 3;  // Reduce gap according to Knuth's sequence
+    }
+}
+
+/**
+ * Shell Sort with Sedgewick's Gap Sequence
+ * Uses gap sequence: 1, 5, 19, 41, 109, ... (4^i + 3*2^(i-1) + 1)
+ */
+void shellSortSedgewick(vector<int>& arr) {
+    int n = arr.size();
+    vector<int> gaps;
+    
+    // Generate Sedgewick's gap sequence
+    for (int i = 0; ; i++) {
+        int gap;
+        if (i % 2 == 0) {
+            gap = 9 * (1 << i) - 9 * (1 << (i / 2)) + 1;
+        } else {
+            gap = 8 * (1 << i) - 6 * (1 << ((i + 1) / 2)) + 1;
+        }
+        
+        if (gap >= n) break;
+        gaps.push_back(gap);
+    }
+    
+    // Sort with gaps in reverse order
+    for (int k = gaps.size() - 1; k >= 0; k--) {
+        int gap = gaps[k];
+        
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            
+            while (j >= gap && arr[j - gap] > temp) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            
+            arr[j] = temp;
+        }
+    }
+    
+    // Final pass with gap = 1 (insertion sort)
+    for (int i = 1; i < n; i++) {
+        int temp = arr[i];
+        int j = i - 1;
+        
+        while (j >= 0 && arr[j] > temp) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        
+        arr[j + 1] = temp;
+    }
+}
+
+/**
+ * Shell Sort with Statistics
+ * Tracks gaps used, comparisons, and swaps
+ */
+struct ShellSortStats {
+    vector<int> gapsUsed;
+    int totalComparisons;
+    int totalSwaps;
+    vector<vector<int>> stateHistory;
+};
+
+ShellSortStats shellSortWithStats(vector<int>& arr) {
+    ShellSortStats stats = {{}, 0, 0, {}};
+    int n = arr.size();
+    
+    // Save initial state
+    stats.stateHistory.push_back(arr);
+    
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        stats.gapsUsed.push_back(gap);
+        
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            
+            while (j >= gap) {
+                stats.totalComparisons++;
+                if (arr[j - gap] > temp) {
+                    arr[j] = arr[j - gap];
+                    stats.totalSwaps++;
+                    j -= gap;
+                } else {
+                    break;
+                }
+            }
+            
+            if (j != i) {
+                arr[j] = temp;
+                stats.totalSwaps++;
+            }
+        }
+        
+        // Save state after each gap
+        stats.stateHistory.push_back(arr);
+    }
+    
+    return stats;
+}
+
+/**
+ * Shell Sort with Custom Gap Sequence
+ * Allows user to specify their own gap sequence
+ */
+void shellSortCustomGaps(vector<int>& arr, const vector<int>& gaps) {
+    int n = arr.size();
+    
+    for (int gap : gaps) {
+        if (gap >= n) continue;  // Skip gaps larger than array size
+        
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            
+            while (j >= gap && arr[j - gap] > temp) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            
+            arr[j] = temp;
+        }
+    }
+}
+
+/**
+ * Shell Sort with Hibbard's Gap Sequence
+ * Uses gap sequence: 1, 3, 7, 15, 31, ... (2^k - 1)
+ */
+void shellSortHibbard(vector<int>& arr) {
+    int n = arr.size();
+    vector<int> gaps;
+    
+    // Generate Hibbard's gap sequence
+    for (int k = 1; (1 << k) - 1 < n; k++) {
+        gaps.push_back((1 << k) - 1);
+    }
+    
+    // Sort with gaps in reverse order
+    for (int i = gaps.size() - 1; i >= 0; i--) {
+        int gap = gaps[i];
+        
+        for (int j = gap; j < n; j++) {
+            int temp = arr[j];
+            int k = j;
+            
+            while (k >= gap && arr[k - gap] > temp) {
+                arr[k] = arr[k - gap];
+                k -= gap;
+            }
+            
+            arr[k] = temp;
+        }
+    }
+}
+
+/**
+ * Shell Sort with Pratt's Gap Sequence
+ * Uses gaps of form 2^i * 3^j
+ */
+void shellSortPratt(vector<int>& arr) {
+    int n = arr.size();
+    vector<int> gaps;
+    
+    // Generate Pratt's sequence (2^i * 3^j)
+    for (int i = 0; (1 << i) < n; i++) {
+        for (int j = 0; (1 << i) * pow(3, j) < n; j++) {
+            gaps.push_back((1 << i) * pow(3, j));
+        }
+    }
+    
+    // Sort gaps in descending order
+    sort(gaps.rbegin(), gaps.rend());
+    
+    // Apply shell sort with Pratt's gaps
+    for (int gap : gaps) {
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j = i;
+            
+            while (j >= gap && arr[j - gap] > temp) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            
+            arr[j] = temp;
+        }
+    }
+}
+
+/**
+ * Generic Shell Sort Template
+ * Works with any comparable type
+ */
+template<typename T>
+void genericShellSort(vector<T>& arr) {
+    int n = arr.size();
+    
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; i++) {
+            T temp = arr[i];
+            int j = i;
+            
+            while (j >= gap && arr[j - gap] > temp) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            
+            arr[j] = temp;
+        }
+    }
+}
+
+/**
+ * Shell Sort Performance Comparison
+ * Tests different gap sequences on the same data
+ */
+void compareGapSequences(vector<int> originalArr) {
+    cout << "\n=== Gap Sequence Performance Comparison ===" << endl;
+    
+    // Test Shell's original sequence
+    vector<int> arr1 = originalArr;
+    auto start = chrono::high_resolution_clock::now();
+    shellSort(arr1);
+    auto end = chrono::high_resolution_clock::now();
+    auto duration1 = chrono::duration_cast<chrono::microseconds>(end - start);
+    
+    // Test Knuth's sequence
+    vector<int> arr2 = originalArr;
+    start = chrono::high_resolution_clock::now();
+    shellSortKnuth(arr2);
+    end = chrono::high_resolution_clock::now();
+    auto duration2 = chrono::duration_cast<chrono::microseconds>(end - start);
+    
+    // Test Hibbard's sequence
+    vector<int> arr3 = originalArr;
+    start = chrono::high_resolution_clock::now();
+    shellSortHibbard(arr3);
+    end = chrono::high_resolution_clock::now();
+    auto duration3 = chrono::duration_cast<chrono::microseconds>(end - start);
+    
+    cout << "Shell's sequence (n/2, n/4, ...): " << duration1.count() << " μs" << endl;
+    cout << "Knuth's sequence (3k+1): " << duration2.count() << " μs" << endl;
+    cout << "Hibbard's sequence (2^k-1): " << duration3.count() << " μs" << endl;
+}
+
+// Utility functions
+void printArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+void printGaps(const vector<int>& gaps, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < gaps.size(); i++) {
+        cout << gaps[i];
+        if (i < gaps.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Test basic shell sort
+    vector<int> arr1 = {64, 34, 25, 12, 22, 11, 90};
+    cout << "=== Basic Shell Sort ===" << endl;
+    printArray(arr1, "Original");
+    
+    shellSort(arr1);
+    printArray(arr1, "Sorted");
+    
+    // Test shell sort with statistics
+    vector<int> arr2 = {5, 2, 4, 6, 1, 3};
+    cout << "\n=== Shell Sort with Statistics ===" << endl;
+    printArray(arr2, "Original");
+    
+    ShellSortStats stats = shellSortWithStats(arr2);
+    printArray(arr2, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Total comparisons: " << stats.totalComparisons << endl;
+    cout << "  Total swaps: " << stats.totalSwaps << endl;
+    printGaps(stats.gapsUsed, "  Gaps used");
+    
+    cout << "  State history:" << endl;
+    for (int i = 0; i < stats.stateHistory.size(); i++) {
+        if (i == 0) {
+            cout << "    Initial: ";
+        } else {
+            cout << "    Gap " << stats.gapsUsed[i-1] << ": ";
+        }
+        printArray(stats.stateHistory[i], "");
+    }
+    
+    // Test Knuth's gap sequence
+    vector<int> arr3 = {23, 45, 16, 37, 3, 99, 22};
+    cout << "\n=== Shell Sort with Knuth's Sequence ===" << endl;
+    printArray(arr3, "Original");
+    
+    shellSortKnuth(arr3);
+    printArray(arr3, "Sorted");
+    
+    // Test Hibbard's gap sequence
+    vector<int> arr4 = {88, 12, 45, 67, 23, 91, 34};
+    cout << "\n=== Shell Sort with Hibbard's Sequence ===" << endl;
+    printArray(arr4, "Original");
+    
+    shellSortHibbard(arr4);
+    printArray(arr4, "Sorted");
+    
+    // Test custom gap sequence
+    vector<int> arr5 = {9, 8, 7, 6, 5, 4, 3, 2, 1};
+    vector<int> customGaps = {5, 3, 1};  // Custom gap sequence
+    cout << "\n=== Shell Sort with Custom Gaps ===" << endl;
+    printArray(arr5, "Original");
+    printGaps(customGaps, "Custom gaps");
+    
+    shellSortCustomGaps(arr5, customGaps);
+    printArray(arr5, "Sorted");
+    
+    // Test generic shell sort with strings
+    vector<string> words = {"banana", "apple", "cherry", "date"};
+    cout << "\n=== Generic Shell Sort (Strings) ===" << endl;
+    cout << "Original: [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << "\"" << words[i] << "\"";
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    genericShellSort(words);
+    
+    cout << "Sorted: [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << "\"" << words[i] << "\"";
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    // Performance comparison of gap sequences
+    vector<int> largeArray;
+    for (int i = 100; i > 0; i--) {
+        largeArray.push_back(i);
+    }
+    
+    compareGapSequences(largeArray);
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity (depends on gap sequence)</h3>
+            <ul>
+                <li><strong>Shell's Original (n/2^k):</strong> O(n²) - Same as insertion sort worst case</li>
+                <li><strong>Knuth's Sequence (3k+1):</strong> O(n^(3/2)) - Better performance</li>
+                <li><strong>Hibbard's Sequence (2^k-1):</strong> O(n^(3/2)) - Proven upper bound</li>
+                <li><strong>Sedgewick's Sequence:</strong> O(n^(4/3)) - Even better performance</li>
+                <li><strong>Best Known:</strong> O(n log² n) - With optimal gap sequences</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(1) - In-place sorting algorithm</li>
+                <li><strong>Gap Storage:</strong> O(log n) - For storing gap sequence</li>
+                <li><strong>Recursion:</strong> None - Iterative algorithm</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> No - Can change relative order of equal elements</li>
+                <li><strong>In-place:</strong> Yes - Sorts with constant extra space</li>
+                <li><strong>Adaptive:</strong> Partially - Better on nearly sorted data</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through shell sort on array [64, 34, 25, 12, 22, 11, 90] using Shell's original sequence:
+        </p>
+        
+        <div class="code-block">
+Initial: [64, 34, 25, 12, 22, 11, 90]
+Array size: n = 7
+
+Gap Sequence: 7/2=3, 3/2=1
+
+Pass 1: Gap = 3
+Compare elements 3 positions apart:
+- Compare arr[0]=64 with arr[3]=12: 64 > 12, swap
+  [12, 34, 25, 64, 22, 11, 90]
+- Compare arr[1]=34 with arr[4]=22: 34 > 22, swap
+  [12, 22, 25, 64, 34, 11, 90]
+- Compare arr[2]=25 with arr[5]=11: 25 > 11, swap
+  [12, 22, 11, 64, 34, 25, 90]
+- Continue insertion sort with gap=3:
+  [12, 22, 11, 64, 34, 25, 90]
+
+Pass 2: Gap = 1 (regular insertion sort)
+- Insert 22: [12, 22, 11, 64, 34, 25, 90]
+- Insert 11: [11, 12, 22, 64, 34, 25, 90]
+- Insert 64: [11, 12, 22, 64, 34, 25, 90]
+- Insert 34: [11, 12, 22, 34, 64, 25, 90]
+- Insert 25: [11, 12, 22, 25, 34, 64, 90]
+- Insert 90: [11, 12, 22, 25, 34, 64, 90]
+
+Final: [11, 12, 22, 25, 34, 64, 90]
+
+Key insight: The gap=3 pass pre-sorted the array, making the final 
+insertion sort pass much more efficient.
+        </div>
+        
+        <h2 class="section-title">Gap Sequences</h2>
+        
+        <p class="academic-text">
+            The choice of gap sequence is crucial for shell sort's performance:
+        </p>
+        
+        <div class="definition-box">
+            <strong>Shell's Original:</strong> n/2, n/4, n/8, ..., 1<br>
+            • Simple but not optimal<br>
+            • O(n²) worst-case complexity<br><br>
+            
+            <strong>Knuth's Sequence:</strong> 1, 4, 13, 40, 121, ... (3^k-1)/2<br>
+            • Better performance than Shell's<br>
+            • O(n^(3/2)) complexity<br><br>
+            
+            <strong>Hibbard's Sequence:</strong> 1, 3, 7, 15, 31, ... (2^k-1)<br>
+            • Proven O(n^(3/2)) upper bound<br>
+            • Good theoretical properties<br><br>
+            
+            <strong>Sedgewick's Sequence:</strong> 1, 5, 19, 41, 109, ...<br>
+            • Best practical performance<br>
+            • O(n^(4/3)) average case
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Shell sort is particularly useful in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Medium-sized Arrays:</strong> Better than insertion sort, simpler than quicksort</li>
+            <li><strong>Embedded Systems:</strong> Simple implementation with good performance</li>
+            <li><strong>Nearly Sorted Data:</strong> Performs well on partially sorted arrays</li>
+            <li><strong>Memory-Constrained Systems:</strong> In-place sorting with O(1) space</li>
+            <li><strong>Educational Purposes:</strong> Good introduction to advanced sorting concepts</li>
+            <li><strong>Hybrid Algorithms:</strong> Used as subroutine in other sorting methods</li>
+        </ul>
+        
+        <h2 class="section-title">When to Use Shell Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Shell Sort When:</strong><br>
+            • Array size is medium (hundreds to thousands of elements)<br>
+            • Memory usage must be minimal (O(1) space)<br>
+            • Implementation simplicity is important<br>
+            • Data is partially sorted<br>
+            • Consistent performance is needed<br><br>
+            
+            <strong>Don't Use Shell Sort When:</strong><br>
+            • Array is very large (quicksort/mergesort better)<br>
+            • Stability is required<br>
+            • Optimal worst-case performance is critical<br>
+            • Working with very small arrays (insertion sort better)
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Gap Sequence Choice:</strong> Poor gap sequence leads to O(n²) performance</li>
+            <li><strong>Gap Calculation:</strong> Ensure gaps are calculated correctly</li>
+            <li><strong>Final Gap:</strong> Always end with gap = 1 to ensure complete sorting</li>
+            <li><strong>Index Bounds:</strong> Check array bounds when accessing gap-separated elements</li>
+            <li><strong>Not Stable:</strong> Don't use when stability is required</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Gap Concept:</strong> Explain how gaps allow distant element exchanges</li>
+            <li><strong>Insertion Sort Extension:</strong> Show how it generalizes insertion sort</li>
+            <li><strong>Gap Sequences:</strong> Know different sequences and their complexities</li>
+            <li><strong>Performance:</strong> Discuss O(n^(3/2)) with good gap sequences</li>
+            <li><strong>Practical Use:</strong> Mention use in embedded systems and medium arrays</li>
+            <li><strong>Comparison:</strong> Contrast with other O(n log n) algorithms</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Shell sort generalizes insertion sort by using gap sequences</li>
+                <li>Performance heavily depends on the choice of gap sequence</li>
+                <li>Achieves O(n^(3/2)) complexity with good gap sequences</li>
+                <li>In-place sorting algorithm with O(1) auxiliary space</li>
+                <li>Not stable but performs well on partially sorted data</li>
+                <li>Good balance between simplicity and performance for medium arrays</li>
+                <li>Historical importance as first algorithm to break O(n²) barrier</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

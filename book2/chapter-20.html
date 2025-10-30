@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 20: Dijkstra's Algorithm - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 20</div>
+        <h1 class="chapter-title">Dijkstra's Algorithm</h1>
+        
+        <p class="academic-text">
+            Dijkstra's algorithm is a graph search algorithm that finds the shortest path from a source vertex to all other vertices in a weighted graph with non-negative edge weights. It uses a greedy approach, always selecting the vertex with the minimum distance that hasn't been processed yet. The algorithm is fundamental in network routing, GPS navigation, and many optimization problems.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a weighted graph G = (V, E) with non-negative edge weights and a source vertex s, find the shortest path from s to all other vertices. The algorithm should compute the minimum distance and provide a way to reconstruct the actual shortest paths.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Weighted graph G with non-negative weights and source vertex s<br>
+            <strong>Output:</strong> Shortest distances and paths from source to all vertices<br>
+            <strong>Constraint:</strong> All edge weights must be non-negative
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Dijkstra's algorithm works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Initialize:</strong> Set distance to source as 0, all others as infinity</li>
+            <li><strong>Select Minimum:</strong> Choose unvisited vertex with minimum distance</li>
+            <li><strong>Relax Edges:</strong> Update distances to neighbors if shorter path found</li>
+            <li><strong>Mark Visited:</strong> Mark current vertex as visited</li>
+            <li><strong>Repeat:</strong> Continue until all vertices are visited</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: Dijkstra(graph, source)
+1. distance[all vertices] = infinity
+2. distance[source] = 0
+3. parent[all vertices] = null
+4. visited[all vertices] = false
+5. priority_queue = all vertices ordered by distance
+6. 
+7. while priority_queue is not empty do
+8.     u = extract vertex with minimum distance
+9.     visited[u] = true
+10.    
+11.    for each neighbor v of u do
+12.        if not visited[v] then
+13.            alt = distance[u] + weight(u, v)
+14.            if alt < distance[v] then
+15.                distance[v] = alt
+16.                parent[v] = u
+17.                decrease_key(priority_queue, v, alt)
+18.            end if
+19.        end if
+20.    end for
+21. end while
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <climits>
+using namespace std;
+
+/**
+ * Edge representation for weighted graph
+ */
+struct Edge {
+    int to;
+    int weight;
+    
+    Edge(int t, int w) : to(t), weight(w) {}
+};
+
+/**
+ * Weighted Graph using adjacency list
+ */
+class WeightedGraph {
+private:
+    unordered_map<int, vector<Edge>> adjList;
+    bool isDirected;
+    
+public:
+    WeightedGraph(bool directed = false) : isDirected(directed) {}
+    
+    void addEdge(int from, int to, int weight) {
+        adjList[from].push_back(Edge(to, weight));
+        if (!isDirected) {
+            adjList[to].push_back(Edge(from, weight));
+        }
+    }
+    
+    vector<Edge> getNeighbors(int vertex) {
+        return adjList[vertex];
+    }
+    
+    vector<int> getAllVertices() {
+        vector<int> vertices;
+        for (auto& pair : adjList) {
+            vertices.push_back(pair.first);
+        }
+        return vertices;
+    }
+    
+    void printGraph() {
+        for (auto& pair : adjList) {
+            cout << pair.first << " -> ";
+            for (Edge& edge : pair.second) {
+                cout << "(" << edge.to << "," << edge.weight << ") ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+/**
+ * Priority queue element for Dijkstra's algorithm
+ */
+struct PQElement {
+    int vertex;
+    int distance;
+    
+    PQElement(int v, int d) : vertex(v), distance(d) {}
+    
+    // For min-heap (priority queue)
+    bool operator>(const PQElement& other) const {
+        return distance > other.distance;
+    }
+};
+
+/**
+ * Dijkstra's Algorithm Result
+ */
+struct DijkstraResult {
+    unordered_map<int, int> distances;
+    unordered_map<int, int> parents;
+    vector<int> visitOrder;
+};
+
+/**
+ * Basic Dijkstra's Algorithm Implementation
+ */
+DijkstraResult dijkstra(WeightedGraph& graph, int source) {
+    DijkstraResult result;
+    unordered_map<int, bool> visited;
+    priority_queue<PQElement, vector<PQElement>, greater<PQElement>> pq;
+    
+    // Initialize distances
+    for (int vertex : graph.getAllVertices()) {
+        result.distances[vertex] = INT_MAX;
+        result.parents[vertex] = -1;
+        visited[vertex] = false;
+    }
+    
+    result.distances[source] = 0;
+    pq.push(PQElement(source, 0));
+    
+    while (!pq.empty()) {
+        PQElement current = pq.top();
+        pq.pop();
+        
+        int u = current.vertex;
+        
+        if (visited[u]) continue;
+        
+        visited[u] = true;
+        result.visitOrder.push_back(u);
+        
+        // Relax all neighbors
+        for (Edge& edge : graph.getNeighbors(u)) {
+            int v = edge.to;
+            int weight = edge.weight;
+            
+            if (!visited[v]) {
+                int alt = result.distances[u] + weight;
+                if (alt < result.distances[v]) {
+                    result.distances[v] = alt;
+                    result.parents[v] = u;
+                    pq.push(PQElement(v, alt));
+                }
+            }
+        }
+    }
+    
+    return result;
+}
+
+/**
+ * Dijkstra's Algorithm with Path Reconstruction
+ */
+vector<int> dijkstraPath(WeightedGraph& graph, int source, int target) {
+    DijkstraResult result = dijkstra(graph, source);
+    
+    if (result.distances[target] == INT_MAX) {
+        return {};  // No path exists
+    }
+    
+    // Reconstruct path
+    vector<int> path;
+    int current = target;
+    
+    while (current != -1) {
+        path.push_back(current);
+        current = result.parents[current];
+    }
+    
+    reverse(path.begin(), path.end());
+    return path;
+}
+
+/**
+ * Dijkstra's Algorithm with Statistics
+ */
+struct DijkstraStats {
+    int verticesProcessed;
+    int edgesRelaxed;
+    int distanceUpdates;
+    vector<pair<int, int>> relaxationHistory;  // (vertex, new_distance)
+    unordered_map<int, int> finalDistances;
+};
+
+DijkstraStats dijkstraWithStats(WeightedGraph& graph, int source) {
+    DijkstraStats stats = {0, 0, 0, {}, {}};
+    unordered_map<int, int> distances;
+    unordered_map<int, bool> visited;
+    priority_queue<PQElement, vector<PQElement>, greater<PQElement>> pq;
+    
+    // Initialize
+    for (int vertex : graph.getAllVertices()) {
+        distances[vertex] = INT_MAX;
+        visited[vertex] = false;
+    }
+    
+    distances[source] = 0;
+    pq.push(PQElement(source, 0));
+    
+    while (!pq.empty()) {
+        PQElement current = pq.top();
+        pq.pop();
+        
+        int u = current.vertex;
+        
+        if (visited[u]) continue;
+        
+        visited[u] = true;
+        stats.verticesProcessed++;
+        
+        for (Edge& edge : graph.getNeighbors(u)) {
+            int v = edge.to;
+            int weight = edge.weight;
+            stats.edgesRelaxed++;
+            
+            if (!visited[v]) {
+                int alt = distances[u] + weight;
+                if (alt < distances[v]) {
+                    distances[v] = alt;
+                    stats.distanceUpdates++;
+                    stats.relaxationHistory.push_back({v, alt});
+                    pq.push(PQElement(v, alt));
+                }
+            }
+        }
+    }
+    
+    stats.finalDistances = distances;
+    return stats;
+}
+
+/**
+ * Modified Dijkstra for All Pairs Shortest Path
+ * Runs Dijkstra from each vertex
+ */
+unordered_map<int, unordered_map<int, int>> allPairsShortestPath(WeightedGraph& graph) {
+    unordered_map<int, unordered_map<int, int>> allDistances;
+    
+    for (int source : graph.getAllVertices()) {
+        DijkstraResult result = dijkstra(graph, source);
+        allDistances[source] = result.distances;
+    }
+    
+    return allDistances;
+}
+
+/**
+ * Dijkstra with Early Termination
+ * Stops when target is reached
+ */
+pair<int, vector<int>> dijkstraToTarget(WeightedGraph& graph, int source, int target) {
+    unordered_map<int, int> distances;
+    unordered_map<int, int> parents;
+    unordered_map<int, bool> visited;
+    priority_queue<PQElement, vector<PQElement>, greater<PQElement>> pq;
+    
+    // Initialize
+    for (int vertex : graph.getAllVertices()) {
+        distances[vertex] = INT_MAX;
+        parents[vertex] = -1;
+        visited[vertex] = false;
+    }
+    
+    distances[source] = 0;
+    pq.push(PQElement(source, 0));
+    
+    while (!pq.empty()) {
+        PQElement current = pq.top();
+        pq.pop();
+        
+        int u = current.vertex;
+        
+        if (visited[u]) continue;
+        if (u == target) break;  // Early termination
+        
+        visited[u] = true;
+        
+        for (Edge& edge : graph.getNeighbors(u)) {
+            int v = edge.to;
+            int weight = edge.weight;
+            
+            if (!visited[v]) {
+                int alt = distances[u] + weight;
+                if (alt < distances[v]) {
+                    distances[v] = alt;
+                    parents[v] = u;
+                    pq.push(PQElement(v, alt));
+                }
+            }
+        }
+    }
+    
+    // Reconstruct path
+    vector<int> path;
+    if (distances[target] != INT_MAX) {
+        int current = target;
+        while (current != -1) {
+            path.push_back(current);
+            current = parents[current];
+        }
+        reverse(path.begin(), path.end());
+    }
+    
+    return {distances[target], path};
+}
+
+/**
+ * Dijkstra with K Shortest Paths
+ * Finds k shortest paths to target
+ */
+vector<pair<int, vector<int>>> kShortestPaths(WeightedGraph& graph, int source, int target, int k) {
+    vector<pair<int, vector<int>>> paths;
+    priority_queue<pair<int, vector<int>>, vector<pair<int, vector<int>>>, 
+                   greater<pair<int, vector<int>>>> pq;
+    
+    // Start with shortest path
+    auto shortestPath = dijkstraToTarget(graph, source, target);
+    if (shortestPath.second.empty()) return paths;
+    
+    pq.push(shortestPath);
+    
+    while (!pq.empty() && paths.size() < k) {
+        auto current = pq.top();
+        pq.pop();
+        
+        paths.push_back(current);
+        
+        // Generate variations by removing edges (simplified version)
+        // In practice, this would use Yen's algorithm or similar
+    }
+    
+    return paths;
+}
+
+/**
+ * Bidirectional Dijkstra
+ * Searches from both source and target simultaneously
+ */
+pair<int, vector<int>> bidirectionalDijkstra(WeightedGraph& graph, int source, int target) {
+    // Forward search from source
+    unordered_map<int, int> distForward;
+    unordered_map<int, int> parentForward;
+    unordered_map<int, bool> visitedForward;
+    priority_queue<PQElement, vector<PQElement>, greater<PQElement>> pqForward;
+    
+    // Backward search from target
+    unordered_map<int, int> distBackward;
+    unordered_map<int, int> parentBackward;
+    unordered_map<int, bool> visitedBackward;
+    priority_queue<PQElement, vector<PQElement>, greater<PQElement>> pqBackward;
+    
+    // Initialize forward search
+    for (int vertex : graph.getAllVertices()) {
+        distForward[vertex] = INT_MAX;
+        parentForward[vertex] = -1;
+        visitedForward[vertex] = false;
+    }
+    distForward[source] = 0;
+    pqForward.push(PQElement(source, 0));
+    
+    // Initialize backward search
+    for (int vertex : graph.getAllVertices()) {
+        distBackward[vertex] = INT_MAX;
+        parentBackward[vertex] = -1;
+        visitedBackward[vertex] = false;
+    }
+    distBackward[target] = 0;
+    pqBackward.push(PQElement(target, 0));
+    
+    int meetingPoint = -1;
+    int shortestDistance = INT_MAX;
+    
+    while (!pqForward.empty() || !pqBackward.empty()) {
+        // Forward step
+        if (!pqForward.empty()) {
+            PQElement current = pqForward.top();
+            pqForward.pop();
+            
+            int u = current.vertex;
+            
+            if (!visitedForward[u]) {
+                visitedForward[u] = true;
+                
+                // Check if we've met the backward search
+                if (visitedBackward[u]) {
+                    int totalDist = distForward[u] + distBackward[u];
+                    if (totalDist < shortestDistance) {
+                        shortestDistance = totalDist;
+                        meetingPoint = u;
+                    }
+                }
+                
+                // Relax edges
+                for (Edge& edge : graph.getNeighbors(u)) {
+                    int v = edge.to;
+                    int weight = edge.weight;
+                    
+                    if (!visitedForward[v]) {
+                        int alt = distForward[u] + weight;
+                        if (alt < distForward[v]) {
+                            distForward[v] = alt;
+                            parentForward[v] = u;
+                            pqForward.push(PQElement(v, alt));
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Backward step (similar logic with reversed edges)
+        // Implementation would require reverse graph or undirected graph
+    }
+    
+    // Reconstruct path through meeting point
+    vector<int> path;
+    if (meetingPoint != -1) {
+        // Build path from source to meeting point
+        vector<int> forwardPath;
+        int current = meetingPoint;
+        while (current != -1) {
+            forwardPath.push_back(current);
+            current = parentForward[current];
+        }
+        reverse(forwardPath.begin(), forwardPath.end());
+        
+        // Build path from meeting point to target
+        vector<int> backwardPath;
+        current = meetingPoint;
+        while (current != -1) {
+            backwardPath.push_back(current);
+            current = parentBackward[current];
+        }
+        
+        // Combine paths
+        path = forwardPath;
+        for (int i = 1; i < backwardPath.size(); i++) {
+            path.push_back(backwardPath[i]);
+        }
+    }
+    
+    return {shortestDistance, path};
+}
+
+// Utility functions
+void printDistances(const unordered_map<int, int>& distances, int source) {
+    cout << "Shortest distances from vertex " << source << ":" << endl;
+    for (auto& pair : distances) {
+        if (pair.second == INT_MAX) {
+            cout << "  To " << pair.first << ": INF" << endl;
+        } else {
+            cout << "  To " << pair.first << ": " << pair.second << endl;
+        }
+    }
+}
+
+void printPath(const vector<int>& path, int distance) {
+    if (path.empty()) {
+        cout << "No path found" << endl;
+        return;
+    }
+    
+    cout << "Path (distance " << distance << "): ";
+    for (int i = 0; i < path.size(); i++) {
+        cout << path[i];
+        if (i < path.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Create sample weighted graph
+    WeightedGraph graph(false);  // Undirected graph
+    
+    // Add weighted edges
+    graph.addEdge(0, 1, 4);
+    graph.addEdge(0, 2, 2);
+    graph.addEdge(1, 2, 1);
+    graph.addEdge(1, 3, 5);
+    graph.addEdge(2, 3, 8);
+    graph.addEdge(2, 4, 10);
+    graph.addEdge(3, 4, 2);
+    graph.addEdge(3, 5, 6);
+    graph.addEdge(4, 5, 3);
+    
+    cout << "=== Weighted Graph Structure ===" << endl;
+    graph.printGraph();
+    
+    // Test basic Dijkstra's algorithm
+    cout << "\n=== Dijkstra's Algorithm from vertex 0 ===" << endl;
+    DijkstraResult result = dijkstra(graph, 0);
+    printDistances(result.distances, 0);
+    
+    cout << "Visit order: ";
+    for (int vertex : result.visitOrder) {
+        cout << vertex << " ";
+    }
+    cout << endl;
+    
+    // Test shortest path to specific target
+    cout << "\n=== Shortest Path from 0 to 5 ===" << endl;
+    vector<int> path = dijkstraPath(graph, 0, 5);
+    printPath(path, result.distances[5]);
+    
+    // Test Dijkstra with statistics
+    cout << "\n=== Dijkstra Statistics ===" << endl;
+    DijkstraStats stats = dijkstraWithStats(graph, 0);
+    cout << "Vertices processed: " << stats.verticesProcessed << endl;
+    cout << "Edges relaxed: " << stats.edgesRelaxed << endl;
+    cout << "Distance updates: " << stats.distanceUpdates << endl;
+    
+    cout << "Relaxation history:" << endl;
+    for (auto& update : stats.relaxationHistory) {
+        cout << "  Vertex " << update.first << " -> distance " << update.second << endl;
+    }
+    
+    // Test early termination
+    cout << "\n=== Dijkstra with Early Termination (0 to 5) ===" << endl;
+    auto targetResult = dijkstraToTarget(graph, 0, 5);
+    cout << "Distance to target: " << targetResult.first << endl;
+    cout << "Path: ";
+    for (int i = 0; i < targetResult.second.size(); i++) {
+        cout << targetResult.second[i];
+        if (i < targetResult.second.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+    
+    // Test all pairs shortest path
+    cout << "\n=== All Pairs Shortest Paths ===" << endl;
+    auto allPairs = allPairsShortestPath(graph);
+    for (auto& sourcePair : allPairs) {
+        int source = sourcePair.first;
+        cout << "From vertex " << source << ":" << endl;
+        for (auto& targetPair : sourcePair.second) {
+            int target = targetPair.first;
+            int distance = targetPair.second;
+            if (source != target) {
+                cout << "  To " << target << ": " << 
+                        (distance == INT_MAX ? "INF" : to_string(distance)) << endl;
+            }
+        }
+    }
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Binary Heap:</strong> O((V + E) log V) - Standard implementation</li>
+                <li><strong>Fibonacci Heap:</strong> O(E + V log V) - Theoretical optimum</li>
+                <li><strong>Array Implementation:</strong> O(V²) - For dense graphs</li>
+                <li><strong>Dense Graphs:</strong> O(V²) when E ≈ V²</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Distance Array:</strong> O(V) - Store distances to all vertices</li>
+                <li><strong>Parent Array:</strong> O(V) - For path reconstruction</li>
+                <li><strong>Priority Queue:</strong> O(V) - Maximum vertices in queue</li>
+                <li><strong>Total Space:</strong> O(V) auxiliary space</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Optimality:</strong> Finds shortest paths with non-negative weights</li>
+                <li><strong>Greedy Algorithm:</strong> Makes locally optimal choices</li>
+                <li><strong>Single Source:</strong> Computes shortest paths from one source</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through Dijkstra's algorithm on a weighted graph:
+        </p>
+        
+        <div class="code-block">
+Graph:     0 ----4---- 1
+           |           /|
+           2          1 5
+           |         /  |
+           2 ----8---- 3
+           |           |
+          10          2
+           |           |
+           4 ----3---- 5
+
+Dijkstra from vertex 0:
+
+Initial: dist[0]=0, dist[others]=∞, PQ=[(0,0)]
+
+Step 1: Process vertex 0 (distance 0)
+- Relax edge 0->1: dist[1] = min(∞, 0+4) = 4
+- Relax edge 0->2: dist[2] = min(∞, 0+2) = 2
+- PQ = [(2,2), (1,4)]
+
+Step 2: Process vertex 2 (distance 2)
+- Relax edge 2->1: dist[1] = min(4, 2+1) = 3
+- Relax edge 2->3: dist[3] = min(∞, 2+8) = 10
+- Relax edge 2->4: dist[4] = min(∞, 2+10) = 12
+- PQ = [(1,3), (1,4), (3,10), (4,12)]
+
+Step 3: Process vertex 1 (distance 3)
+- Relax edge 1->3: dist[3] = min(10, 3+5) = 8
+- PQ = [(1,4), (3,8), (3,10), (4,12)]
+
+Step 4: Process vertex 1 again (distance 4) - skip (already processed)
+
+Step 5: Process vertex 3 (distance 8)
+- Relax edge 3->5: dist[5] = min(∞, 8+2) = 10
+- PQ = [(3,10), (5,10), (4,12)]
+
+Step 6: Process vertex 3 again (distance 10) - skip
+
+Step 7: Process vertex 5 (distance 10)
+- Relax edge 5->4: dist[4] = min(12, 10+3) = 11
+- PQ = [(4,11), (4,12)]
+
+Step 8: Process vertex 4 (distance 11)
+- All neighbors already processed
+
+Final distances: 0->0:0, 0->1:3, 0->2:2, 0->3:8, 0->4:11, 0->5:10
+Shortest path 0->5: 0 -> 2 -> 1 -> 3 -> 5 (distance 10)
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Dijkstra's algorithm has numerous real-world applications:
+        </p>
+        
+        <ul>
+            <li><strong>GPS Navigation:</strong> Finding shortest routes in road networks</li>
+            <li><strong>Network Routing:</strong> Optimal packet routing in computer networks</li>
+            <li><strong>Social Networks:</strong> Finding shortest connection paths</li>
+            <li><strong>Game AI:</strong> Pathfinding for NPCs and game characters</li>
+            <li><strong>Flight Planning:</strong> Optimal flight routes considering fuel costs</li>
+            <li><strong>Robotics:</strong> Path planning for autonomous robots</li>
+            <li><strong>Telecommunications:</strong> Optimal signal routing</li>
+            <li><strong>Supply Chain:</strong> Minimizing transportation costs</li>
+        </ul>
+        
+        <h2 class="section-title">Algorithm Variants</h2>
+        
+        <div class="definition-box">
+            <strong>Standard Dijkstra:</strong><br>
+            • Single-source shortest paths<br>
+            • Works with non-negative weights only<br>
+            • Uses priority queue for efficiency<br><br>
+            
+            <strong>Bidirectional Dijkstra:</strong><br>
+            • Searches from both source and target<br>
+            • Often faster for single target queries<br>
+            • Meets in the middle approach<br><br>
+            
+            <strong>A* Algorithm:</strong><br>
+            • Dijkstra with heuristic function<br>
+            • Guides search toward target<br>
+            • Optimal with admissible heuristic
+        </div>
+        
+        <h2 class="section-title">When to Use Dijkstra's Algorithm</h2>
+        
+        <div class="definition-box">
+            <strong>Use Dijkstra When:</strong><br>
+            • Finding shortest paths in weighted graphs<br>
+            • All edge weights are non-negative<br>
+            • Need optimal solution guaranteed<br>
+            • Single-source multiple-target scenarios<br>
+            • Graph is not too dense<br><br>
+            
+            <strong>Don't Use Dijkstra When:</strong><br>
+            • Graph has negative edge weights (use Bellman-Ford)<br>
+            • Only need to check path existence (use BFS/DFS)<br>
+            • All edges have equal weight (use BFS)<br>
+            • Need all-pairs shortest paths (use Floyd-Warshall)
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Negative Weights:</strong> Algorithm fails with negative edge weights</li>
+            <li><strong>Priority Queue Issues:</strong> Not updating priorities correctly</li>
+            <li><strong>Visited Check:</strong> Processing same vertex multiple times</li>
+            <li><strong>Initialization:</strong> Forgetting to initialize distances to infinity</li>
+            <li><strong>Path Reconstruction:</strong> Not storing parent pointers correctly</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Greedy Nature:</strong> Explain why greedy approach works</li>
+            <li><strong>Priority Queue:</strong> Emphasize importance of min-heap</li>
+            <li><strong>Non-negative Weights:</strong> Highlight this crucial constraint</li>
+            <li><strong>Relaxation:</strong> Explain edge relaxation process clearly</li>
+            <li><strong>Applications:</strong> Mention GPS and network routing</li>
+            <li><strong>Complexity:</strong> Know different implementations and their complexities</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Dijkstra's algorithm finds shortest paths from single source to all vertices</li>
+                <li>Requires non-negative edge weights for correctness</li>
+                <li>Uses greedy approach with priority queue for efficiency</li>
+                <li>Time complexity O((V + E) log V) with binary heap</li>
+                <li>Space complexity O(V) for distance and parent arrays</li>
+                <li>Foundation for many pathfinding and routing algorithms</li>
+                <li>Can be optimized with better data structures or heuristics</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

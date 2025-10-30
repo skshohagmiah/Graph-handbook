@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 19: Depth-First Search (DFS) - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 19</div>
+        <h1 class="chapter-title">Depth-First Search (DFS)</h1>
+        
+        <p class="academic-text">
+            Depth-First Search (DFS) is a fundamental graph traversal algorithm that explores as far as possible along each branch before backtracking. DFS uses a stack data structure (either explicit or through recursion) and is essential for many graph problems including cycle detection, topological sorting, and finding strongly connected components. Unlike BFS, DFS goes deep into the graph before exploring breadth.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a graph G = (V, E) and a source vertex s, traverse all reachable vertices from s in depth-first order. The algorithm should explore each branch as deeply as possible before backtracking to explore other branches.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Graph G and source vertex s<br>
+            <strong>Output:</strong> DFS traversal order and discovery/finish times<br>
+            <strong>Graph Type:</strong> Works on both directed and undirected graphs
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            DFS works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Initialize:</strong> Mark all vertices as unvisited</li>
+            <li><strong>Visit Vertex:</strong> Mark current vertex as visited</li>
+            <li><strong>Explore Recursively:</strong> For each unvisited neighbor, recursively apply DFS</li>
+            <li><strong>Backtrack:</strong> Return when all neighbors are visited</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: DFS(graph, source)
+1. visited[all vertices] = false
+2. time = 0
+3. DFS-Visit(source)
+
+Algorithm: DFS-Visit(vertex)
+1. visited[vertex] = true
+2. discovery[vertex] = ++time
+3. print vertex  // Process vertex
+4. 
+5. for each neighbor of vertex do
+6.     if not visited[neighbor] then
+7.         parent[neighbor] = vertex
+8.         DFS-Visit(neighbor)
+9.     end if
+10. end for
+11. 
+12. finish[vertex] = ++time
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <unordered_map>
+#include <unordered_set>
+using namespace std;
+
+/**
+ * Graph representation using adjacency list
+ */
+class Graph {
+private:
+    unordered_map<int, vector<int>> adjList;
+    bool isDirected;
+    
+public:
+    Graph(bool directed = false) : isDirected(directed) {}
+    
+    void addEdge(int u, int v) {
+        adjList[u].push_back(v);
+        if (!isDirected) {
+            adjList[v].push_back(u);
+        }
+    }
+    
+    vector<int> getNeighbors(int vertex) {
+        return adjList[vertex];
+    }
+    
+    vector<int> getAllVertices() {
+        vector<int> vertices;
+        for (auto& pair : adjList) {
+            vertices.push_back(pair.first);
+        }
+        return vertices;
+    }
+    
+    void printGraph() {
+        for (auto& pair : adjList) {
+            cout << pair.first << " -> ";
+            for (int neighbor : pair.second) {
+                cout << neighbor << " ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+/**
+ * Basic Recursive DFS Implementation
+ */
+class DFSRecursive {
+private:
+    unordered_set<int> visited;
+    vector<int> traversal;
+    
+    void dfsVisit(Graph& graph, int vertex) {
+        visited.insert(vertex);
+        traversal.push_back(vertex);
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (visited.find(neighbor) == visited.end()) {
+                dfsVisit(graph, neighbor);
+            }
+        }
+    }
+    
+public:
+    vector<int> dfs(Graph& graph, int source) {
+        visited.clear();
+        traversal.clear();
+        dfsVisit(graph, source);
+        return traversal;
+    }
+};
+
+/**
+ * Iterative DFS Implementation using Stack
+ */
+vector<int> dfsIterative(Graph& graph, int source) {
+    vector<int> traversal;
+    unordered_set<int> visited;
+    stack<int> stk;
+    
+    stk.push(source);
+    
+    while (!stk.empty()) {
+        int current = stk.top();
+        stk.pop();
+        
+        if (visited.find(current) == visited.end()) {
+            visited.insert(current);
+            traversal.push_back(current);
+            
+            // Add neighbors in reverse order to maintain left-to-right traversal
+            vector<int> neighbors = graph.getNeighbors(current);
+            for (int i = neighbors.size() - 1; i >= 0; i--) {
+                if (visited.find(neighbors[i]) == visited.end()) {
+                    stk.push(neighbors[i]);
+                }
+            }
+        }
+    }
+    
+    return traversal;
+}
+
+/**
+ * DFS with Discovery and Finish Times
+ */
+struct DFSTimestamps {
+    unordered_map<int, int> discovery;
+    unordered_map<int, int> finish;
+    unordered_map<int, int> parent;
+    vector<int> traversal;
+    int time;
+};
+
+class DFSWithTimes {
+private:
+    unordered_set<int> visited;
+    DFSTimestamps result;
+    
+    void dfsVisit(Graph& graph, int vertex) {
+        visited.insert(vertex);
+        result.discovery[vertex] = ++result.time;
+        result.traversal.push_back(vertex);
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (visited.find(neighbor) == visited.end()) {
+                result.parent[neighbor] = vertex;
+                dfsVisit(graph, neighbor);
+            }
+        }
+        
+        result.finish[vertex] = ++result.time;
+    }
+    
+public:
+    DFSTimestamps dfs(Graph& graph, int source) {
+        visited.clear();
+        result = {{}, {}, {}, {}, 0};
+        result.parent[source] = -1;
+        dfsVisit(graph, source);
+        return result;
+    }
+};
+
+/**
+ * DFS for Cycle Detection in Undirected Graph
+ */
+bool hasCycleUndirected(Graph& graph, int source) {
+    unordered_set<int> visited;
+    unordered_map<int, int> parent;
+    
+    function<bool(int)> dfsVisit = [&](int vertex) -> bool {
+        visited.insert(vertex);
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (visited.find(neighbor) == visited.end()) {
+                parent[neighbor] = vertex;
+                if (dfsVisit(neighbor)) return true;
+            } else if (parent[vertex] != neighbor) {
+                // Back edge found (not to parent)
+                return true;
+            }
+        }
+        return false;
+    };
+    
+    parent[source] = -1;
+    return dfsVisit(source);
+}
+
+/**
+ * DFS for Cycle Detection in Directed Graph
+ */
+bool hasCycleDirected(Graph& graph) {
+    unordered_set<int> visited;
+    unordered_set<int> recStack;  // Recursion stack
+    
+    function<bool(int)> dfsVisit = [&](int vertex) -> bool {
+        visited.insert(vertex);
+        recStack.insert(vertex);
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (recStack.find(neighbor) != recStack.end()) {
+                // Back edge to vertex in current path
+                return true;
+            }
+            if (visited.find(neighbor) == visited.end() && dfsVisit(neighbor)) {
+                return true;
+            }
+        }
+        
+        recStack.erase(vertex);
+        return false;
+    };
+    
+    for (int vertex : graph.getAllVertices()) {
+        if (visited.find(vertex) == visited.end()) {
+            if (dfsVisit(vertex)) return true;
+        }
+    }
+    
+    return false;
+}
+
+/**
+ * DFS for Topological Sorting
+ */
+vector<int> topologicalSort(Graph& graph) {
+    unordered_set<int> visited;
+    stack<int> finishStack;
+    
+    function<void(int)> dfsVisit = [&](int vertex) {
+        visited.insert(vertex);
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (visited.find(neighbor) == visited.end()) {
+                dfsVisit(neighbor);
+            }
+        }
+        
+        finishStack.push(vertex);  // Add to stack when finished
+    };
+    
+    // Visit all vertices
+    for (int vertex : graph.getAllVertices()) {
+        if (visited.find(vertex) == visited.end()) {
+            dfsVisit(vertex);
+        }
+    }
+    
+    // Pop from stack to get topological order
+    vector<int> topoOrder;
+    while (!finishStack.empty()) {
+        topoOrder.push_back(finishStack.top());
+        finishStack.pop();
+    }
+    
+    return topoOrder;
+}
+
+/**
+ * DFS for Connected Components
+ */
+vector<vector<int>> dfsConnectedComponents(Graph& graph) {
+    vector<vector<int>> components;
+    unordered_set<int> globalVisited;
+    
+    function<void(int, vector<int>&)> dfsVisit = [&](int vertex, vector<int>& component) {
+        globalVisited.insert(vertex);
+        component.push_back(vertex);
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (globalVisited.find(neighbor) == globalVisited.end()) {
+                dfsVisit(neighbor, component);
+            }
+        }
+    };
+    
+    for (int vertex : graph.getAllVertices()) {
+        if (globalVisited.find(vertex) == globalVisited.end()) {
+            vector<int> component;
+            dfsVisit(vertex, component);
+            components.push_back(component);
+        }
+    }
+    
+    return components;
+}
+
+/**
+ * DFS for Path Finding
+ */
+vector<int> dfsPath(Graph& graph, int source, int target) {
+    unordered_set<int> visited;
+    vector<int> path;
+    bool found = false;
+    
+    function<void(int)> dfsVisit = [&](int vertex) {
+        if (found) return;
+        
+        visited.insert(vertex);
+        path.push_back(vertex);
+        
+        if (vertex == target) {
+            found = true;
+            return;
+        }
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (visited.find(neighbor) == visited.end()) {
+                dfsVisit(neighbor);
+                if (found) return;
+            }
+        }
+        
+        if (!found) {
+            path.pop_back();  // Backtrack
+        }
+    };
+    
+    dfsVisit(source);
+    return found ? path : vector<int>();
+}
+
+/**
+ * DFS for Bridge Detection
+ */
+vector<pair<int, int>> findBridges(Graph& graph) {
+    unordered_set<int> visited;
+    unordered_map<int, int> discovery;
+    unordered_map<int, int> low;
+    unordered_map<int, int> parent;
+    vector<pair<int, int>> bridges;
+    int time = 0;
+    
+    function<void(int)> dfsVisit = [&](int u) {
+        visited.insert(u);
+        discovery[u] = low[u] = ++time;
+        
+        for (int v : graph.getNeighbors(u)) {
+            if (visited.find(v) == visited.end()) {
+                parent[v] = u;
+                dfsVisit(v);
+                
+                low[u] = min(low[u], low[v]);
+                
+                // Bridge condition
+                if (low[v] > discovery[u]) {
+                    bridges.push_back({u, v});
+                }
+            } else if (v != parent[u]) {
+                low[u] = min(low[u], discovery[v]);
+            }
+        }
+    };
+    
+    for (int vertex : graph.getAllVertices()) {
+        if (visited.find(vertex) == visited.end()) {
+            parent[vertex] = -1;
+            dfsVisit(vertex);
+        }
+    }
+    
+    return bridges;
+}
+
+/**
+ * DFS with Statistics
+ */
+struct DFSStats {
+    int verticesVisited;
+    int edgesExplored;
+    int maxDepth;
+    int currentDepth;
+    vector<int> depthHistory;
+    unordered_map<int, int> visitOrder;
+};
+
+DFSStats dfsWithStats(Graph& graph, int source) {
+    DFSStats stats = {0, 0, 0, 0, {}, {}};
+    unordered_set<int> visited;
+    
+    function<void(int)> dfsVisit = [&](int vertex) {
+        visited.insert(vertex);
+        stats.visitOrder[vertex] = stats.verticesVisited++;
+        stats.currentDepth++;
+        stats.maxDepth = max(stats.maxDepth, stats.currentDepth);
+        stats.depthHistory.push_back(stats.currentDepth);
+        
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            stats.edgesExplored++;
+            if (visited.find(neighbor) == visited.end()) {
+                dfsVisit(neighbor);
+            }
+        }
+        
+        stats.currentDepth--;
+    };
+    
+    dfsVisit(source);
+    return stats;
+}
+
+// Utility functions
+void printPath(const vector<int>& path) {
+    if (path.empty()) {
+        cout << "No path found" << endl;
+        return;
+    }
+    
+    for (int i = 0; i < path.size(); i++) {
+        cout << path[i];
+        if (i < path.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+}
+
+void printTraversal(const vector<int>& traversal, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    for (int i = 0; i < traversal.size(); i++) {
+        cout << traversal[i];
+        if (i < traversal.size() - 1) cout << " ";
+    }
+    cout << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Create sample graph
+    Graph graph(false);  // Undirected graph
+    
+    // Add edges
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+    graph.addEdge(1, 3);
+    graph.addEdge(1, 4);
+    graph.addEdge(2, 5);
+    graph.addEdge(2, 6);
+    graph.addEdge(3, 7);
+    graph.addEdge(4, 7);
+    
+    cout << "=== Graph Structure ===" << endl;
+    graph.printGraph();
+    
+    // Test recursive DFS
+    cout << "\n=== Recursive DFS from vertex 0 ===" << endl;
+    DFSRecursive dfsRec;
+    vector<int> traversal = dfsRec.dfs(graph, 0);
+    printTraversal(traversal, "DFS Traversal");
+    
+    // Test iterative DFS
+    cout << "\n=== Iterative DFS from vertex 0 ===" << endl;
+    vector<int> iterTraversal = dfsIterative(graph, 0);
+    printTraversal(iterTraversal, "Iterative DFS");
+    
+    // Test DFS with timestamps
+    cout << "\n=== DFS with Discovery and Finish Times ===" << endl;
+    DFSWithTimes dfsTime;
+    DFSTimestamps timestamps = dfsTime.dfs(graph, 0);
+    printTraversal(timestamps.traversal, "Traversal");
+    
+    cout << "Discovery and Finish Times:" << endl;
+    for (int vertex : timestamps.traversal) {
+        cout << "  Vertex " << vertex << ": discovery=" << timestamps.discovery[vertex] 
+             << ", finish=" << timestamps.finish[vertex] << endl;
+    }
+    
+    // Test cycle detection
+    cout << "\n=== Cycle Detection ===" << endl;
+    bool hasCycle = hasCycleUndirected(graph, 0);
+    cout << "Graph has cycle: " << (hasCycle ? "Yes" : "No") << endl;
+    
+    // Test path finding
+    cout << "\n=== Path Finding from 0 to 7 ===" << endl;
+    vector<int> path = dfsPath(graph, 0, 7);
+    cout << "Path: ";
+    printPath(path);
+    
+    // Test connected components
+    cout << "\n=== Connected Components ===" << endl;
+    vector<vector<int>> components = dfsConnectedComponents(graph);
+    for (int i = 0; i < components.size(); i++) {
+        cout << "Component " << i + 1 << ": ";
+        for (int vertex : components[i]) {
+            cout << vertex << " ";
+        }
+        cout << endl;
+    }
+    
+    // Test topological sort on directed graph
+    cout << "\n=== Topological Sort (Directed Graph) ===" << endl;
+    Graph directedGraph(true);
+    directedGraph.addEdge(5, 2);
+    directedGraph.addEdge(5, 0);
+    directedGraph.addEdge(4, 0);
+    directedGraph.addEdge(4, 1);
+    directedGraph.addEdge(2, 3);
+    directedGraph.addEdge(3, 1);
+    
+    vector<int> topoOrder = topologicalSort(directedGraph);
+    printTraversal(topoOrder, "Topological Order");
+    
+    // Test bridge detection
+    cout << "\n=== Bridge Detection ===" << endl;
+    vector<pair<int, int>> bridges = findBridges(graph);
+    cout << "Bridges found: " << bridges.size() << endl;
+    for (auto& bridge : bridges) {
+        cout << "  " << bridge.first << " - " << bridge.second << endl;
+    }
+    
+    // Test DFS with statistics
+    cout << "\n=== DFS Statistics ===" << endl;
+    DFSStats stats = dfsWithStats(graph, 0);
+    cout << "Vertices visited: " << stats.verticesVisited << endl;
+    cout << "Edges explored: " << stats.edgesExplored << endl;
+    cout << "Maximum depth: " << stats.maxDepth << endl;
+    cout << "Depth history: ";
+    for (int depth : stats.depthHistory) {
+        cout << depth << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Adjacency List:</strong> O(V + E) - Each vertex and edge visited once</li>
+                <li><strong>Adjacency Matrix:</strong> O(V²) - Must check all possible edges</li>
+                <li><strong>Dense Graphs:</strong> O(V²) when E ≈ V²</li>
+                <li><strong>Sparse Graphs:</strong> O(V) when E ≈ V</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Recursive:</strong> O(V) - Recursion stack depth</li>
+                <li><strong>Iterative:</strong> O(V) - Explicit stack storage</li>
+                <li><strong>Visited Array:</strong> O(V) - Track visited vertices</li>
+                <li><strong>Worst Case:</strong> O(V) for linear graphs</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Completeness:</strong> Always finds solution if one exists</li>
+                <li><strong>Optimality:</strong> Does not guarantee shortest path</li>
+                <li><strong>Memory Usage:</strong> Generally uses less memory than BFS</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through DFS on a simple graph starting from vertex 0:
+        </p>
+        
+        <div class="code-block">
+Graph: 0 -- 1 -- 3
+       |    |    |
+       2 -- 4 -- 5
+
+DFS from vertex 0 (assuming neighbors processed in order):
+
+Initial: Stack = [0], Visited = {}
+
+Step 1: Visit 0
+- Mark 0 as visited
+- Neighbors of 0: [1, 2]
+- Recursively visit 1
+- Traversal: [0]
+
+Step 2: Visit 1 (from 0)
+- Mark 1 as visited  
+- Neighbors of 1: [0, 3, 4] (0 already visited)
+- Recursively visit 3
+- Traversal: [0, 1]
+
+Step 3: Visit 3 (from 1)
+- Mark 3 as visited
+- Neighbors of 3: [1, 5] (1 already visited)
+- Recursively visit 5
+- Traversal: [0, 1, 3]
+
+Step 4: Visit 5 (from 3)
+- Mark 5 as visited
+- Neighbors of 5: [3, 4] (3 already visited)
+- Recursively visit 4
+- Traversal: [0, 1, 3, 5]
+
+Step 5: Visit 4 (from 5)
+- Mark 4 as visited
+- Neighbors of 4: [1, 2, 5] (1 and 5 already visited)
+- Recursively visit 2
+- Traversal: [0, 1, 3, 5, 4]
+
+Step 6: Visit 2 (from 4)
+- Mark 2 as visited
+- Neighbors of 2: [0, 4] (both already visited)
+- Backtrack to 4, then 5, then 3, then 1, then 0
+- Traversal: [0, 1, 3, 5, 4, 2]
+
+Final DFS order: 0 → 1 → 3 → 5 → 4 → 2
+Note: Order may vary based on neighbor processing order
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            DFS has numerous important applications:
+        </p>
+        
+        <ul>
+            <li><strong>Cycle Detection:</strong> Finding cycles in directed and undirected graphs</li>
+            <li><strong>Topological Sorting:</strong> Ordering vertices in DAGs</li>
+            <li><strong>Connected Components:</strong> Finding strongly connected components</li>
+            <li><strong>Bridge and Articulation Points:</strong> Finding critical edges and vertices</li>
+            <li><strong>Maze Solving:</strong> Finding paths through mazes</li>
+            <li><strong>Puzzle Solving:</strong> Backtracking algorithms</li>
+            <li><strong>Compiler Design:</strong> Syntax analysis and optimization</li>
+            <li><strong>AI and Game Trees:</strong> Decision tree exploration</li>
+        </ul>
+        
+        <h2 class="section-title">DFS Variants</h2>
+        
+        <div class="definition-box">
+            <strong>Recursive DFS:</strong><br>
+            • Natural implementation using function calls<br>
+            • Cleaner code but limited by stack size<br>
+            • Risk of stack overflow for deep graphs<br><br>
+            
+            <strong>Iterative DFS:</strong><br>
+            • Uses explicit stack data structure<br>
+            • No recursion depth limitations<br>
+            • Slightly different traversal order<br><br>
+            
+            <strong>DFS with Timestamps:</strong><br>
+            • Records discovery and finish times<br>
+            • Useful for advanced algorithms<br>
+            • Enables classification of edges
+        </div>
+        
+        <h2 class="section-title">Edge Classification in DFS</h2>
+        
+        <p class="academic-text">
+            DFS can classify edges based on discovery and finish times:
+        </p>
+        
+        <ul>
+            <li><strong>Tree Edges:</strong> Edges in DFS tree (parent to child)</li>
+            <li><strong>Back Edges:</strong> Edges to ancestors (indicate cycles)</li>
+            <li><strong>Forward Edges:</strong> Edges to descendants (not in tree)</li>
+            <li><strong>Cross Edges:</strong> Edges between different subtrees</li>
+        </ul>
+        
+        <h2 class="section-title">When to Use DFS</h2>
+        
+        <div class="definition-box">
+            <strong>Use DFS When:</strong><br>
+            • Detecting cycles in graphs<br>
+            • Topological sorting of DAGs<br>
+            • Finding connected components<br>
+            • Solving maze and puzzle problems<br>
+            • Implementing backtracking algorithms<br>
+            • Memory usage should be minimized<br><br>
+            
+            <strong>Don't Use DFS When:</strong><br>
+            • Finding shortest paths (use BFS)<br>
+            • Level-order traversal needed<br>
+            • Graph is very deep (stack overflow risk)<br>
+            • Breadth-first exploration is required
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Stack Overflow:</strong> Deep recursion can cause stack overflow</li>
+            <li><strong>Infinite Loops:</strong> Forgetting to mark vertices as visited</li>
+            <li><strong>Wrong Data Structure:</strong> Using queue instead of stack gives BFS</li>
+            <li><strong>Cycle Detection Logic:</strong> Different logic for directed vs undirected graphs</li>
+            <li><strong>Backtracking Issues:</strong> Not properly undoing changes when backtracking</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Stack Usage:</strong> Emphasize LIFO nature for depth-first exploration</li>
+            <li><strong>Recursion vs Iteration:</strong> Know both implementations</li>
+            <li><strong>Applications:</strong> Mention cycle detection and topological sorting</li>
+            <li><strong>Edge Classification:</strong> Understand tree, back, forward, and cross edges</li>
+            <li><strong>Time Complexity:</strong> Explain O(V + E) analysis</li>
+            <li><strong>Comparison with BFS:</strong> Know when to use each algorithm</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>DFS explores as deeply as possible before backtracking</li>
+                <li>Uses stack data structure (recursive or iterative)</li>
+                <li>Time complexity O(V + E) with adjacency list representation</li>
+                <li>Space complexity O(V) for recursion stack or explicit stack</li>
+                <li>Essential for cycle detection, topological sorting, and connectivity</li>
+                <li>Can classify edges and detect various graph properties</li>
+                <li>Foundation for many advanced graph algorithms and backtracking</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

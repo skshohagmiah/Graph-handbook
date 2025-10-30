@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Standard Library Quick Reference - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <h1 class="chapter-title">C++ Standard Library Quick Reference</h1>
+        
+        <p class="academic-text">
+            This reference covers the most commonly used C++ Standard Template Library (STL) components that appear throughout this handbook. Mastering these will significantly improve your algorithm implementation speed.
+        </p>
+        
+        <h2 class="section-title">Essential Headers</h2>
+        
+        <div class="code-block">
+#include &lt;iostream&gt;     // Input/output operations
+#include &lt;vector&gt;       // Dynamic arrays
+#include &lt;algorithm&gt;    // Algorithms (sort, binary_search, etc.)
+#include &lt;string&gt;       // String operations
+#include &lt;queue&gt;        // Queue and priority_queue
+#include &lt;stack&gt;        // Stack operations
+#include &lt;map&gt;          // Ordered key-value pairs
+#include &lt;unordered_map&gt; // Hash table
+#include &lt;set&gt;          // Ordered unique elements
+#include &lt;unordered_set&gt; // Hash set
+#include &lt;climits&gt;      // INT_MAX, INT_MIN, etc.
+#include &lt;cmath&gt;        // Mathematical functions
+        </div>
+        
+        <h2 class="section-title">Containers</h2>
+        
+        <h3>Vector (Dynamic Array)</h3>
+        <div class="code-block">
+vector&lt;int&gt; v;              // Empty vector
+vector&lt;int&gt; v(n);          // Vector of size n
+vector&lt;int&gt; v(n, val);     // Vector of size n, all elements = val
+
+// Common operations
+v.push_back(x);            // Add element to end - O(1) amortized
+v.pop_back();              // Remove last element - O(1)
+v.size();                  // Number of elements - O(1)
+v.empty();                 // Check if empty - O(1)
+v[i];                      // Access element at index i - O(1)
+v.front(), v.back();       // First and last elements - O(1)
+v.clear();                 // Remove all elements - O(n)
+v.resize(n);               // Change size to n - O(n)
+        </div>
+        
+        <h3>String</h3>
+        <div class="code-block">
+string s = "hello";
+s.length(), s.size();      // Length of string - O(1)
+s.substr(pos, len);        // Substring starting at pos - O(len)
+s.find(substr);            // Find first occurrence - O(n*m)
+s.push_back(ch);           // Add character to end - O(1) amortized
+s.pop_back();              // Remove last character - O(1)
+s += "world";              // Concatenation - O(m)
+        </div>
+        
+        <h3>Queue and Stack</h3>
+        <div class="code-block">
+// Queue (FIFO)
+queue&lt;int&gt; q;
+q.push(x);                 // Add to back - O(1)
+q.pop();                   // Remove from front - O(1)
+q.front();                 // Access front element - O(1)
+q.empty(), q.size();       // Status checks - O(1)
+
+// Stack (LIFO)
+stack&lt;int&gt; st;
+st.push(x);                // Add to top - O(1)
+st.pop();                  // Remove from top - O(1)
+st.top();                  // Access top element - O(1)
+st.empty(), st.size();     // Status checks - O(1)
+        </div>
+        
+        <h3>Priority Queue (Heap)</h3>
+        <div class="code-block">
+// Max heap by default
+priority_queue&lt;int&gt; pq;
+pq.push(x);                // Insert element - O(log n)
+pq.pop();                  // Remove max element - O(log n)
+pq.top();                  // Access max element - O(1)
+
+// Min heap
+priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; min_pq;
+
+// Custom comparator
+auto cmp = [](const pair&lt;int,int&gt;&amp; a, const pair&lt;int,int&gt;&amp; b) {
+    return a.second > b.second; // Min heap based on second element
+};
+priority_queue&lt;pair&lt;int,int&gt;, vector&lt;pair&lt;int,int&gt;&gt;, decltype(cmp)&gt; pq(cmp);
+        </div>
+        
+        <h3>Map and Set</h3>
+        <div class="code-block">
+// Ordered map (Red-Black Tree)
+map&lt;int, string&gt; m;
+m[key] = value;            // Insert/update - O(log n)
+m.find(key);               // Find element - O(log n)
+m.count(key);              // Check existence - O(log n)
+m.erase(key);              // Remove element - O(log n)
+
+// Hash map (faster average case)
+unordered_map&lt;int, string&gt; um;
+um[key] = value;           // Insert/update - O(1) average, O(n) worst
+um.find(key);              // Find element - O(1) average, O(n) worst
+
+// Ordered set
+set&lt;int&gt; s;
+s.insert(x);               // Insert element - O(log n)
+s.erase(x);                // Remove element - O(log n)
+s.find(x);                 // Find element - O(log n)
+s.count(x);                // Check existence (0 or 1) - O(log n)
+
+// Hash set
+unordered_set&lt;int&gt; us;
+us.insert(x);              // Insert element - O(1) average
+        </div>
+        
+        <h2 class="section-title">Algorithms</h2>
+        
+        <h3>Sorting and Searching</h3>
+        <div class="code-block">
+vector&lt;int&gt; v = {3, 1, 4, 1, 5};
+
+// Sorting
+sort(v.begin(), v.end());                    // Ascending order - O(n log n)
+sort(v.begin(), v.end(), greater&lt;int&gt;());    // Descending order
+sort(v.begin(), v.end(), [](int a, int b) { // Custom comparator
+    return a > b;
+});
+
+// Searching (requires sorted array)
+binary_search(v.begin(), v.end(), x);       // Returns bool - O(log n)
+lower_bound(v.begin(), v.end(), x);         // First position >= x - O(log n)
+upper_bound(v.begin(), v.end(), x);         // First position > x - O(log n)
+
+// Finding min/max
+auto it = min_element(v.begin(), v.end());  // Iterator to min element - O(n)
+auto it = max_element(v.begin(), v.end());  // Iterator to max element - O(n)
+        </div>
+        
+        <h3>Useful Algorithms</h3>
+        <div class="code-block">
+// Reverse
+reverse(v.begin(), v.end());               // Reverse container - O(n)
+
+// Unique (requires sorted array)
+sort(v.begin(), v.end());
+v.erase(unique(v.begin(), v.end()), v.end()); // Remove duplicates - O(n)
+
+// Next/Previous permutation
+next_permutation(v.begin(), v.end());      // Generate next permutation - O(n)
+prev_permutation(v.begin(), v.end());      // Generate previous permutation - O(n)
+
+// Fill
+fill(v.begin(), v.end(), value);           // Fill with value - O(n)
+
+// Count
+count(v.begin(), v.end(), value);          // Count occurrences - O(n)
+        </div>
+        
+        <h2 class="section-title">Iterators</h2>
+        
+        <div class="code-block">
+vector&lt;int&gt; v = {1, 2, 3, 4, 5};
+
+// Iterator types
+vector&lt;int&gt;::iterator it;           // Mutable iterator
+vector&lt;int&gt;::const_iterator cit;   // Immutable iterator
+auto it = v.begin();               // Auto type deduction
+
+// Common operations
+it++;                              // Move to next element
+it--;                              // Move to previous element
+*it;                               // Dereference (get value)
+it + n;                            // Move n positions forward
+distance(it1, it2);                // Distance between iterators
+
+// Range-based for loop (C++11)
+for (int x : v) {                  // Copy each element
+    cout << x << " ";
+}
+for (int&amp; x : v) {                 // Reference to each element
+    x *= 2;
+}
+        </div>
+        
+        <h2 class="section-title">Pairs and Tuples</h2>
+        
+        <div class="code-block">
+// Pair
+pair&lt;int, string&gt; p = {1, "hello"};
+pair&lt;int, string&gt; p = make_pair(1, "hello");
+cout << p.first << " " << p.second;
+
+// Tuple (C++11)
+tuple&lt;int, string, double&gt; t = make_tuple(1, "hello", 3.14);
+cout << get&lt;0&gt;(t) << " " << get&lt;1&gt;(t) << " " << get&lt;2&gt;(t);
+
+// Structured bindings (C++17)
+auto [x, y, z] = t;
+        </div>
+        
+        <h2 class="section-title">Lambda Functions (C++11)</h2>
+        
+        <div class="code-block">
+// Basic lambda
+auto add = [](int a, int b) { return a + b; };
+
+// Capture by value
+int multiplier = 2;
+auto multiply = [multiplier](int x) { return x * multiplier; };
+
+// Capture by reference
+auto increment = [&multiplier]() { multiplier++; };
+
+// Capture all by value/reference
+auto lambda1 = [=](int x) { /* capture all by value */ };
+auto lambda2 = [&](int x) { /* capture all by reference */ };
+
+// Use with STL algorithms
+sort(v.begin(), v.end(), [](int a, int b) { return a > b; });
+        </div>
+        
+        <h2 class="section-title">Common Patterns</h2>
+        
+        <h3>Two Pointers</h3>
+        <div class="code-block">
+int left = 0, right = v.size() - 1;
+while (left < right) {
+    if (condition) {
+        left++;
+    } else {
+        right--;
+    }
+}
+        </div>
+        
+        <h3>Sliding Window</h3>
+        <div class="code-block">
+int left = 0;
+for (int right = 0; right < n; right++) {
+    // Add v[right] to window
+    while (window_invalid) {
+        // Remove v[left] from window
+        left++;
+    }
+    // Update answer with current window [left, right]
+}
+        </div>
+        
+        <h3>Frequency Counting</h3>
+        <div class="code-block">
+unordered_map&lt;int, int&gt; freq;
+for (int x : v) {
+    freq[x]++;
+}
+        </div>
+        
+        <h2 class="section-title">Input/Output Tips</h2>
+        
+        <div class="code-block">
+// Fast I/O
+ios_base::sync_with_stdio(false);
+cin.tie(NULL);
+
+// Reading until EOF
+int x;
+while (cin >> x) {
+    // Process x
+}
+
+// Reading a line
+string line;
+getline(cin, line);
+
+// Formatted output
+cout << fixed << setprecision(2) << 3.14159; // Output: 3.14
+        </div>
+        
+        <h2 class="section-title">Constants and Limits</h2>
+        
+        <div class="code-block">
+#include &lt;climits&gt;
+INT_MAX, INT_MIN           // 32-bit integer limits
+LLONG_MAX, LLONG_MIN       // 64-bit integer limits
+
+#include &lt;cmath&gt;
+INFINITY                   // Positive infinity
+M_PI                       // Pi (may not be available on all systems)
+
+// Safe infinity values
+const int INF = 1e9;
+const long long LLINF = 1e18;
+        </div>
+        
+        <div class="definition-box">
+            <strong>💡 Pro Tips:</strong><br>
+            • Use <code>auto</code> for complex iterator types<br>
+            • Prefer range-based for loops when possible<br>
+            • Use <code>emplace_back()</code> instead of <code>push_back()</code> for complex objects<br>
+            • Remember that <code>map</code> and <code>set</code> are ordered, <code>unordered_map</code> and <code>unordered_set</code> are not<br>
+            • Always check if iterators are valid before dereferencing
+        </div>
+        
+        <p class="academic-text">
+            This reference covers the most essential STL components. For complete documentation, refer to <a href="https://cppreference.com">cppreference.com</a>.
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 12: Quick Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 12</div>
+        <h1 class="chapter-title">Quick Sort</h1>
+        
+        <p class="academic-text">
+            Quick sort is a highly efficient divide-and-conquer sorting algorithm that works by selecting a 'pivot' element and partitioning the array around it. Elements smaller than the pivot go to the left, larger elements go to the right, and the process is recursively applied to the subarrays. Despite having O(n²) worst-case complexity, its average-case O(n log n) performance and in-place nature make it one of the most popular sorting algorithms.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n elements, sort the array in ascending order using the quick sort algorithm. The algorithm should partition the array around a pivot element and recursively sort the resulting subarrays.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with comparable elements<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Not stable (can change relative order of equal elements)
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Quick sort follows the divide-and-conquer paradigm:
+        </p>
+        
+        <ol>
+            <li><strong>Choose Pivot:</strong> Select an element as the pivot</li>
+            <li><strong>Partition:</strong> Rearrange array so elements smaller than pivot are on left, larger on right</li>
+            <li><strong>Recursively Sort:</strong> Apply quick sort to left and right subarrays</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: QuickSort(arr, low, high)
+1. if low < high then
+2.     pivotIndex = Partition(arr, low, high)
+3.     QuickSort(arr, low, pivotIndex - 1)
+4.     QuickSort(arr, pivotIndex + 1, high)
+5. end if
+
+Algorithm: Partition(arr, low, high)
+1. pivot = arr[high]  // Choose last element as pivot
+2. i = low - 1        // Index of smaller element
+3. for j = low to high-1 do
+4.     if arr[j] <= pivot then
+5.         i++
+6.         swap(arr[i], arr[j])
+7.     end if
+8. end for
+9. swap(arr[i+1], arr[high])
+10. return i + 1
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <random>
+using namespace std;
+
+/**
+ * Partition function - Lomuto partition scheme
+ * Places pivot in correct position and partitions array
+ */
+int partition(vector<int>& arr, int low, int high) {
+    // Choose the rightmost element as pivot
+    int pivot = arr[high];
+    
+    // Index of smaller element (indicates right position of pivot)
+    int i = low - 1;
+    
+    for (int j = low; j <= high - 1; j++) {
+        // If current element is smaller than or equal to pivot
+        if (arr[j] <= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    
+    // Place pivot in correct position
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+/**
+ * Quick Sort - Main recursive function
+ */
+void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        // Partition the array and get pivot index
+        int pivotIndex = partition(arr, low, high);
+        
+        // Recursively sort elements before and after partition
+        quickSort(arr, low, pivotIndex - 1);
+        quickSort(arr, pivotIndex + 1, high);
+    }
+}
+
+/**
+ * Hoare Partition Scheme
+ * Alternative partitioning method
+ */
+int hoarePartition(vector<int>& arr, int low, int high) {
+    int pivot = arr[low];  // Choose first element as pivot
+    int i = low - 1;
+    int j = high + 1;
+    
+    while (true) {
+        // Find element on left that should be on right
+        do {
+            i++;
+        } while (arr[i] < pivot);
+        
+        // Find element on right that should be on left
+        do {
+            j--;
+        } while (arr[j] > pivot);
+        
+        // If elements crossed, partitioning is done
+        if (i >= j) {
+            return j;
+        }
+        
+        swap(arr[i], arr[j]);
+    }
+}
+
+/**
+ * Quick Sort with Hoare Partition
+ */
+void quickSortHoare(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pivotIndex = hoarePartition(arr, low, high);
+        quickSortHoare(arr, low, pivotIndex);
+        quickSortHoare(arr, pivotIndex + 1, high);
+    }
+}
+
+/**
+ * Randomized Quick Sort
+ * Chooses random pivot to avoid worst-case scenarios
+ */
+int randomizedPartition(vector<int>& arr, int low, int high) {
+    // Generate random index between low and high
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(low, high);
+    int randomIndex = dis(gen);
+    
+    // Swap random element with last element
+    swap(arr[randomIndex], arr[high]);
+    
+    // Use standard partition
+    return partition(arr, low, high);
+}
+
+void randomizedQuickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pivotIndex = randomizedPartition(arr, low, high);
+        randomizedQuickSort(arr, low, pivotIndex - 1);
+        randomizedQuickSort(arr, pivotIndex + 1, high);
+    }
+}
+
+/**
+ * Three-Way Quick Sort (Dutch National Flag)
+ * Handles duplicate elements efficiently
+ */
+void threeWayQuickSort(vector<int>& arr, int low, int high) {
+    if (low >= high) return;
+    
+    int pivot = arr[low];
+    int lt = low;      // arr[low..lt-1] < pivot
+    int gt = high;     // arr[gt+1..high] > pivot
+    int i = low;       // arr[lt..i-1] == pivot
+    
+    while (i <= gt) {
+        if (arr[i] < pivot) {
+            swap(arr[lt++], arr[i++]);
+        } else if (arr[i] > pivot) {
+            swap(arr[i], arr[gt--]);
+        } else {
+            i++;
+        }
+    }
+    
+    // Recursively sort the parts
+    threeWayQuickSort(arr, low, lt - 1);
+    threeWayQuickSort(arr, gt + 1, high);
+}
+
+/**
+ * Iterative Quick Sort
+ * Uses explicit stack instead of recursion
+ */
+void iterativeQuickSort(vector<int>& arr, int low, int high) {
+    // Create auxiliary stack
+    vector<int> stack(high - low + 1);
+    int top = -1;
+    
+    // Push initial values
+    stack[++top] = low;
+    stack[++top] = high;
+    
+    while (top >= 0) {
+        // Pop high and low
+        high = stack[top--];
+        low = stack[top--];
+        
+        // Set pivot element at its correct position
+        int pivotIndex = partition(arr, low, high);
+        
+        // If there are elements on left side of pivot, push left side to stack
+        if (pivotIndex - 1 > low) {
+            stack[++top] = low;
+            stack[++top] = pivotIndex - 1;
+        }
+        
+        // If there are elements on right side of pivot, push right side to stack
+        if (pivotIndex + 1 < high) {
+            stack[++top] = pivotIndex + 1;
+            stack[++top] = high;
+        }
+    }
+}
+
+/**
+ * Quick Sort with Statistics
+ * Tracks recursive calls, comparisons, and swaps
+ */
+struct QuickSortStats {
+    int recursiveCalls;
+    int comparisons;
+    int swaps;
+    int partitionCalls;
+    vector<int> pivotChoices;
+};
+
+int partitionWithStats(vector<int>& arr, int low, int high, QuickSortStats& stats) {
+    stats.partitionCalls++;
+    int pivot = arr[high];
+    stats.pivotChoices.push_back(pivot);
+    
+    int i = low - 1;
+    
+    for (int j = low; j <= high - 1; j++) {
+        stats.comparisons++;
+        if (arr[j] <= pivot) {
+            i++;
+            if (i != j) {
+                swap(arr[i], arr[j]);
+                stats.swaps++;
+            }
+        }
+    }
+    
+    if (i + 1 != high) {
+        swap(arr[i + 1], arr[high]);
+        stats.swaps++;
+    }
+    
+    return i + 1;
+}
+
+void quickSortWithStats(vector<int>& arr, int low, int high, QuickSortStats& stats) {
+    stats.recursiveCalls++;
+    
+    if (low < high) {
+        int pivotIndex = partitionWithStats(arr, low, high, stats);
+        quickSortWithStats(arr, low, pivotIndex - 1, stats);
+        quickSortWithStats(arr, pivotIndex + 1, high, stats);
+    }
+}
+
+/**
+ * Hybrid Quick Sort
+ * Switches to insertion sort for small subarrays
+ */
+void insertionSort(vector<int>& arr, int low, int high) {
+    for (int i = low + 1; i <= high; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        while (j >= low && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void hybridQuickSort(vector<int>& arr, int low, int high, int threshold = 10) {
+    if (low < high) {
+        // Use insertion sort for small subarrays
+        if (high - low + 1 < threshold) {
+            insertionSort(arr, low, high);
+        } else {
+            int pivotIndex = partition(arr, low, high);
+            hybridQuickSort(arr, low, pivotIndex - 1, threshold);
+            hybridQuickSort(arr, pivotIndex + 1, high, threshold);
+        }
+    }
+}
+
+// Utility functions
+void printArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Test basic quick sort
+    vector<int> arr1 = {10, 7, 8, 9, 1, 5};
+    cout << "=== Basic Quick Sort ===" << endl;
+    printArray(arr1, "Original");
+    
+    quickSort(arr1, 0, arr1.size() - 1);
+    printArray(arr1, "Sorted");
+    
+    // Test quick sort with statistics
+    vector<int> arr2 = {64, 34, 25, 12, 22, 11, 90};
+    cout << "\n=== Quick Sort with Statistics ===" << endl;
+    printArray(arr2, "Original");
+    
+    QuickSortStats stats = {0, 0, 0, 0, {}};
+    quickSortWithStats(arr2, 0, arr2.size() - 1, stats);
+    printArray(arr2, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Recursive calls: " << stats.recursiveCalls << endl;
+    cout << "  Partition calls: " << stats.partitionCalls << endl;
+    cout << "  Comparisons: " << stats.comparisons << endl;
+    cout << "  Swaps: " << stats.swaps << endl;
+    cout << "  Pivot choices: ";
+    for (int pivot : stats.pivotChoices) {
+        cout << pivot << " ";
+    }
+    cout << endl;
+    
+    // Test randomized quick sort
+    vector<int> arr3 = {3, 6, 8, 10, 1, 2, 1};
+    cout << "\n=== Randomized Quick Sort ===" << endl;
+    printArray(arr3, "Original");
+    
+    randomizedQuickSort(arr3, 0, arr3.size() - 1);
+    printArray(arr3, "Sorted");
+    
+    // Test three-way quick sort
+    vector<int> arr4 = {4, 9, 4, 4, 1, 9, 4, 4, 9, 4, 4, 1, 4};
+    cout << "\n=== Three-Way Quick Sort (with duplicates) ===" << endl;
+    printArray(arr4, "Original");
+    
+    threeWayQuickSort(arr4, 0, arr4.size() - 1);
+    printArray(arr4, "Sorted");
+    
+    // Test iterative quick sort
+    vector<int> arr5 = {4, 3, 2, 1, 5, 6, 7, 8};
+    cout << "\n=== Iterative Quick Sort ===" << endl;
+    printArray(arr5, "Original");
+    
+    iterativeQuickSort(arr5, 0, arr5.size() - 1);
+    printArray(arr5, "Sorted");
+    
+    // Test hybrid quick sort
+    vector<int> arr6 = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    cout << "\n=== Hybrid Quick Sort ===" << endl;
+    printArray(arr6, "Original");
+    
+    hybridQuickSort(arr6, 0, arr6.size() - 1);
+    printArray(arr6, "Sorted");
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(n log n) - Pivot divides array into equal halves</li>
+                <li><strong>Average Case:</strong> O(n log n) - Random pivot selection</li>
+                <li><strong>Worst Case:</strong> O(n²) - Pivot is always smallest or largest element</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(log n) - Balanced recursion tree</li>
+                <li><strong>Average Case:</strong> O(log n) - Expected recursion depth</li>
+                <li><strong>Worst Case:</strong> O(n) - Unbalanced recursion (degenerates to linear)</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> No - Can change relative order of equal elements</li>
+                <li><strong>In-place:</strong> Yes - Sorts with O(log n) extra space</li>
+                <li><strong>Adaptive:</strong> No - Performance doesn't improve on partially sorted data</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through quick sort on array [10, 7, 8, 9, 1, 5]:
+        </p>
+        
+        <div class="code-block">
+Initial: [10, 7, 8, 9, 1, 5]
+
+Step 1: Partition with pivot = 5 (last element)
+Compare: 10 > 5, 7 > 5, 8 > 5, 9 > 5, 1 ≤ 5
+Move 1 to left: [1, 7, 8, 9, 10, 5]
+Place pivot: [1, 5, 8, 9, 10, 7]
+Pivot index: 1
+
+Step 2: Recursively sort left subarray [1]
+Single element, already sorted
+
+Step 3: Recursively sort right subarray [8, 9, 10, 7]
+Partition with pivot = 7:
+Compare: 8 > 7, 9 > 7, 10 > 7
+No elements ≤ 7, place pivot: [7, 9, 10, 8]
+Pivot index: 0 (relative to subarray)
+
+Step 4: Sort subarray [9, 10, 8]
+Partition with pivot = 8:
+Compare: 9 > 8, 10 > 8
+Place pivot: [8, 10, 9]
+Pivot index: 0
+
+Step 5: Sort subarray [10, 9]
+Partition with pivot = 9:
+Compare: 10 > 9
+Place pivot: [9, 10]
+
+Final result: [1, 5, 7, 8, 9, 10]
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Quick sort is widely used in various scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>General Purpose Sorting:</strong> Default sorting algorithm in many libraries</li>
+            <li><strong>System Programming:</strong> Used in operating systems and compilers</li>
+            <li><strong>Database Systems:</strong> Internal sorting in database engines</li>
+            <li><strong>Selection Algorithms:</strong> Finding kth smallest/largest element</li>
+            <li><strong>Hybrid Algorithms:</strong> Combined with other sorts (Introsort)</li>
+            <li><strong>Parallel Processing:</strong> Can be easily parallelized</li>
+        </ul>
+        
+        <h2 class="section-title">Optimizations and Variations</h2>
+        
+        <h3>1. Median-of-Three Pivot Selection</h3>
+        <div class="code-block">
+int medianOfThree(vector<int>& arr, int low, int high) {
+    int mid = low + (high - low) / 2;
+    
+    if (arr[mid] < arr[low]) swap(arr[low], arr[mid]);
+    if (arr[high] < arr[low]) swap(arr[low], arr[high]);
+    if (arr[high] < arr[mid]) swap(arr[mid], arr[high]);
+    
+    // Place median at end for standard partition
+    swap(arr[mid], arr[high]);
+    return partition(arr, low, high);
+}
+        </div>
+        
+        <h3>2. Tail Recursion Optimization</h3>
+        <div class="code-block">
+void tailRecursiveQuickSort(vector<int>& arr, int low, int high) {
+    while (low < high) {
+        int pivotIndex = partition(arr, low, high);
+        
+        // Recur for smaller partition to limit stack depth
+        if (pivotIndex - low < high - pivotIndex) {
+            tailRecursiveQuickSort(arr, low, pivotIndex - 1);
+            low = pivotIndex + 1;
+        } else {
+            tailRecursiveQuickSort(arr, pivotIndex + 1, high);
+            high = pivotIndex - 1;
+        }
+    }
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Quick Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Quick Sort When:</strong><br>
+            • Average-case performance is more important than worst-case<br>
+            • Memory usage should be minimal (in-place sorting)<br>
+            • You can use randomization to avoid worst-case scenarios<br>
+            • Working with general-purpose sorting requirements<br>
+            • Cache performance is important<br><br>
+            
+            <strong>Don't Use Quick Sort When:</strong><br>
+            • Worst-case performance guarantees are required<br>
+            • Stability is needed (use merge sort instead)<br>
+            • Working with already sorted or reverse sorted data frequently<br>
+            • Stack overflow is a concern (use iterative version)
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Worst-Case Input:</strong> Already sorted arrays can cause O(n²) performance</li>
+            <li><strong>Stack Overflow:</strong> Deep recursion on unbalanced partitions</li>
+            <li><strong>Duplicate Elements:</strong> Standard quick sort performs poorly with many duplicates</li>
+            <li><strong>Pivot Selection:</strong> Poor pivot choice leads to unbalanced partitions</li>
+            <li><strong>Base Case:</strong> Ensure proper termination condition (low < high)</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Average vs Worst Case:</strong> Explain O(n log n) average and O(n²) worst case</li>
+            <li><strong>Pivot Selection:</strong> Discuss different strategies (random, median-of-three)</li>
+            <li><strong>In-place Sorting:</strong> Highlight space efficiency compared to merge sort</li>
+            <li><strong>Partitioning:</strong> Be able to implement both Lomuto and Hoare schemes</li>
+            <li><strong>Optimizations:</strong> Mention hybrid approaches and three-way partitioning</li>
+            <li><strong>Practical Usage:</strong> Discuss why it's popular despite worst-case complexity</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Quick sort averages O(n log n) but can degrade to O(n²) in worst case</li>
+                <li>In-place sorting algorithm with O(log n) average space complexity</li>
+                <li>Not stable but can be made stable with modifications</li>
+                <li>Randomization helps avoid worst-case scenarios</li>
+                <li>Three-way partitioning handles duplicate elements efficiently</li>
+                <li>Forms the basis for many hybrid sorting algorithms</li>
+                <li>Excellent cache performance due to in-place nature</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

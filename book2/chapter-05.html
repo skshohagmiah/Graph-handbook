@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Interpolation Search - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 5</div>
+        <h1 class="chapter-title">Interpolation Search</h1>
+        
+        <p class="academic-text">
+            Interpolation search is an improved variant of binary search that works on uniformly distributed sorted arrays. Instead of always checking the middle element, it estimates the position of the target based on the values at the endpoints, similar to how we search in a phone book or dictionary.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given a sorted array of n uniformly distributed elements and a target value, find the index of the target value using interpolation to estimate the likely position of the target.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Sorted array arr[] of size n with uniformly distributed values, target value x<br>
+            <strong>Output:</strong> Index of x in arr[], or -1 if not found<br>
+            <strong>Prerequisite:</strong> Array must be sorted and preferably uniformly distributed
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Interpolation search uses the formula for linear interpolation to estimate where the target might be located:
+        </p>
+        
+        <div class="code-block">
+pos = low + [(target - arr[low]) / (arr[high] - arr[low])] * (high - low)
+        </div>
+        
+        <p class="academic-text">
+            This formula assumes that the data is uniformly distributed and estimates the position proportionally based on the target value.
+        </p>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: InterpolationSearch(arr, low, high, x)
+1. if low <= high AND x >= arr[low] AND x <= arr[high] then
+2.     if low == high then
+3.         if arr[low] == x then return low
+4.         else return -1
+5.     end if
+6.     
+7.     // Calculate position using interpolation formula
+8.     pos = low + [(x - arr[low]) / (arr[high] - arr[low])] * (high - low)
+9.     
+10.    if arr[pos] == x then
+11.        return pos
+12.    else if arr[pos] < x then
+13.        return InterpolationSearch(arr, pos+1, high, x)
+14.    else
+15.        return InterpolationSearch(arr, low, pos-1, x)
+16.    end if
+17. end if
+18. return -1
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+/**
+ * Interpolation Search - Recursive Implementation
+ * Searches for target using interpolation to estimate position
+ * 
+ * @param arr: sorted array with uniform distribution
+ * @param low: starting index
+ * @param high: ending index
+ * @param target: element to search for
+ * @return: index of target element, -1 if not found
+ */
+int interpolationSearch(const vector<int>& arr, int low, int high, int target) {
+    // Base cases
+    if (low <= high && target >= arr[low] && target <= arr[high]) {
+        // If the range has only one element
+        if (low == high) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        // Avoid division by zero
+        if (arr[high] == arr[low]) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        // Calculate position using interpolation formula
+        int pos = low + (double)(target - arr[low]) / (arr[high] - arr[low]) * (high - low);
+        
+        // Ensure pos is within bounds
+        pos = max(low, min(pos, high));
+        
+        // Check if target is found
+        if (arr[pos] == target) {
+            return pos;
+        }
+        
+        // If target is larger, search right subarray
+        if (arr[pos] < target) {
+            return interpolationSearch(arr, pos + 1, high, target);
+        }
+        
+        // If target is smaller, search left subarray
+        return interpolationSearch(arr, low, pos - 1, target);
+    }
+    
+    return -1;  // Target not found
+}
+
+/**
+ * Interpolation Search - Iterative Implementation
+ * Iterative version for better space complexity
+ */
+int interpolationSearchIterative(const vector<int>& arr, int target) {
+    int low = 0;
+    int high = arr.size() - 1;
+    
+    while (low <= high && target >= arr[low] && target <= arr[high]) {
+        // If the range has only one element
+        if (low == high) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        // Avoid division by zero
+        if (arr[high] == arr[low]) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        // Calculate position using interpolation formula
+        int pos = low + (double)(target - arr[low]) / (arr[high] - arr[low]) * (high - low);
+        
+        // Ensure pos is within bounds
+        pos = max(low, min(pos, high));
+        
+        // Check if target is found
+        if (arr[pos] == target) {
+            return pos;
+        }
+        
+        // Update search range
+        if (arr[pos] < target) {
+            low = pos + 1;
+        } else {
+            high = pos - 1;
+        }
+    }
+    
+    return -1;  // Target not found
+}
+
+/**
+ * Robust Interpolation Search
+ * Handles edge cases and falls back to binary search when needed
+ */
+int robustInterpolationSearch(const vector<int>& arr, int target) {
+    if (arr.empty()) return -1;
+    
+    int low = 0;
+    int high = arr.size() - 1;
+    int iterations = 0;
+    const int MAX_ITERATIONS = log2(arr.size()) + 1;  // Fallback threshold
+    
+    while (low <= high && target >= arr[low] && target <= arr[high]) {
+        iterations++;
+        
+        // Fallback to binary search if too many iterations
+        if (iterations > MAX_ITERATIONS) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] == target) return mid;
+            if (arr[mid] < target) low = mid + 1;
+            else high = mid - 1;
+            continue;
+        }
+        
+        if (low == high) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        if (arr[high] == arr[low]) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        // Interpolation formula with bounds checking
+        double ratio = (double)(target - arr[low]) / (arr[high] - arr[low]);
+        int pos = low + (int)(ratio * (high - low));
+        
+        // Ensure pos is within bounds
+        pos = max(low, min(pos, high));
+        
+        if (arr[pos] == target) {
+            return pos;
+        }
+        
+        if (arr[pos] < target) {
+            low = pos + 1;
+        } else {
+            high = pos - 1;
+        }
+    }
+    
+    return -1;
+}
+
+/**
+ * Interpolation Search with Statistics
+ * Tracks performance metrics during search
+ */
+struct InterpolationStats {
+    int index;
+    int comparisons;
+    int iterations;
+    vector<int> positions;
+};
+
+InterpolationStats interpolationSearchWithStats(const vector<int>& arr, int target) {
+    InterpolationStats stats = {-1, 0, 0, {}};
+    
+    if (arr.empty()) return stats;
+    
+    int low = 0;
+    int high = arr.size() - 1;
+    
+    while (low <= high && target >= arr[low] && target <= arr[high]) {
+        stats.iterations++;
+        
+        if (low == high) {
+            stats.comparisons++;
+            if (arr[low] == target) {
+                stats.index = low;
+            }
+            break;
+        }
+        
+        if (arr[high] == arr[low]) {
+            stats.comparisons++;
+            if (arr[low] == target) {
+                stats.index = low;
+            }
+            break;
+        }
+        
+        // Calculate interpolated position
+        double ratio = (double)(target - arr[low]) / (arr[high] - arr[low]);
+        int pos = low + (int)(ratio * (high - low));
+        pos = max(low, min(pos, high));
+        
+        stats.positions.push_back(pos);
+        stats.comparisons++;
+        
+        if (arr[pos] == target) {
+            stats.index = pos;
+            break;
+        }
+        
+        stats.comparisons++;
+        if (arr[pos] < target) {
+            low = pos + 1;
+        } else {
+            high = pos - 1;
+        }
+    }
+    
+    return stats;
+}
+
+/**
+ * Adaptive Interpolation Search
+ * Adapts based on data distribution characteristics
+ */
+int adaptiveInterpolationSearch(const vector<int>& arr, int target) {
+    if (arr.empty()) return -1;
+    
+    int low = 0;
+    int high = arr.size() - 1;
+    int consecutiveBadGuesses = 0;
+    
+    while (low <= high && target >= arr[low] && target <= arr[high]) {
+        if (low == high) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        if (arr[high] == arr[low]) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        int pos;
+        
+        // Switch to binary search if interpolation is performing poorly
+        if (consecutiveBadGuesses >= 2) {
+            pos = low + (high - low) / 2;  // Binary search
+        } else {
+            // Interpolation search
+            double ratio = (double)(target - arr[low]) / (arr[high] - arr[low]);
+            pos = low + (int)(ratio * (high - low));
+            pos = max(low, min(pos, high));
+        }
+        
+        if (arr[pos] == target) {
+            return pos;
+        }
+        
+        // Check if the guess was reasonable
+        int expectedRange = (high - low) / 4;  // Within 25% is considered good
+        bool goodGuess = false;
+        
+        if (arr[pos] < target) {
+            int optimalPos = low + (high - low) * 3 / 4;  // Should be in upper part
+            goodGuess = abs(pos - optimalPos) <= expectedRange;
+            low = pos + 1;
+        } else {
+            int optimalPos = low + (high - low) / 4;  // Should be in lower part
+            goodGuess = abs(pos - optimalPos) <= expectedRange;
+            high = pos - 1;
+        }
+        
+        if (!goodGuess) {
+            consecutiveBadGuesses++;
+        } else {
+            consecutiveBadGuesses = 0;
+        }
+    }
+    
+    return -1;
+}
+
+// Example usage and testing
+int main() {
+    // Test with uniformly distributed array
+    vector<int> uniformArray = {10, 12, 13, 16, 18, 19, 20, 21, 22, 23, 24, 33, 35, 42, 47};
+    int target = 18;
+    
+    cout << "Uniformly distributed array: ";
+    for (int x : uniformArray) {
+        cout << x << " ";
+    }
+    cout << endl;
+    
+    // Test recursive implementation
+    int result = interpolationSearch(uniformArray, 0, uniformArray.size() - 1, target);
+    if (result != -1) {
+        cout << "Recursive: Element " << target << " found at index " << result << endl;
+    } else {
+        cout << "Recursive: Element " << target << " not found" << endl;
+    }
+    
+    // Test iterative implementation
+    result = interpolationSearchIterative(uniformArray, target);
+    if (result != -1) {
+        cout << "Iterative: Element " << target << " found at index " << result << endl;
+    } else {
+        cout << "Iterative: Element " << target << " not found" << endl;
+    }
+    
+    // Test with statistics
+    InterpolationStats stats = interpolationSearchWithStats(uniformArray, target);
+    cout << "\nDetailed Statistics:" << endl;
+    cout << "Found at index: " << stats.index << endl;
+    cout << "Iterations: " << stats.iterations << endl;
+    cout << "Comparisons: " << stats.comparisons << endl;
+    cout << "Positions checked: ";
+    for (int pos : stats.positions) {
+        cout << pos << " ";
+    }
+    cout << endl;
+    
+    // Test with non-uniform distribution
+    vector<int> nonUniformArray = {1, 2, 3, 4, 100, 200, 300, 400, 500, 1000};
+    cout << "\nNon-uniform array: ";
+    for (int x : nonUniformArray) {
+        cout << x << " ";
+    }
+    cout << endl;
+    
+    int nonUniformTarget = 300;
+    result = robustInterpolationSearch(nonUniformArray, nonUniformTarget);
+    cout << "Robust search result: " << (result != -1 ? "Found at " + to_string(result) : "Not found") << endl;
+    
+    result = adaptiveInterpolationSearch(nonUniformArray, nonUniformTarget);
+    cout << "Adaptive search result: " << (result != -1 ? "Found at " + to_string(result) : "Not found") << endl;
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(1) - Target is found at the interpolated position</li>
+                <li><strong>Average Case:</strong> O(log log n) - For uniformly distributed data</li>
+                <li><strong>Worst Case:</strong> O(n) - When data is not uniformly distributed</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Recursive:</strong> O(log log n) - Due to recursion stack in average case</li>
+                <li><strong>Iterative:</strong> O(1) - Constant extra space</li>
+            </ul>
+            
+            <h3>Performance Comparison</h3>
+            <ul>
+                <li><strong>Uniform Distribution:</strong> Significantly faster than binary search</li>
+                <li><strong>Non-uniform Distribution:</strong> Can be slower than binary search</li>
+                <li><strong>Worst Case:</strong> Degrades to linear search performance</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Mathematical Foundation</h2>
+        
+        <p class="academic-text">
+            The interpolation formula is based on linear interpolation:
+        </p>
+        
+        <div class="code-block">
+Given two points (low, arr[low]) and (high, arr[high]),
+the linear interpolation formula for finding x-coordinate
+given y-coordinate (target) is:
+
+x = low + (target - arr[low]) * (high - low) / (arr[high] - arr[low])
+
+This assumes a linear relationship between indices and values,
+which holds true for uniformly distributed data.
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through interpolation search on array [10, 12, 13, 16, 18, 19, 20, 21, 22, 23, 24, 33, 35, 42, 47] searching for target = 18:
+        </p>
+        
+        <div class="code-block">
+Array: [10, 12, 13, 16, 18, 19, 20, 21, 22, 23, 24, 33, 35, 42, 47]
+Indices:[0, 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14]
+Target: 18
+
+Iteration 1:
+  low=0, high=14, arr[low]=10, arr[high]=47
+  pos = 0 + (18-10)/(47-10) * (14-0) = 0 + 8/37 * 14 ≈ 3.03 → 3
+  arr[3]=16, 16 < 18, search right
+  low=4, high=14
+
+Iteration 2:
+  low=4, high=14, arr[low]=18, arr[high]=47
+  arr[4]=18, 18 == 18, FOUND!
+
+Result: Element found at index 4 in just 2 iterations
+(Binary search would need 4 iterations: 7→3→5→4)
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Interpolation search is particularly effective in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Phone Books/Dictionaries:</strong> Names and words are roughly uniformly distributed</li>
+            <li><strong>Numerical Databases:</strong> When numeric data is uniformly distributed</li>
+            <li><strong>Time Series Data:</strong> Timestamps are naturally uniform</li>
+            <li><strong>Scientific Data:</strong> Measurement data with uniform sampling</li>
+            <li><strong>Financial Data:</strong> Stock prices, trading volumes over time</li>
+            <li><strong>Geographic Data:</strong> Coordinates, postal codes in sorted order</li>
+        </ul>
+        
+        <h2 class="section-title">Advanced Variations</h2>
+        
+        <h3>1. Quadratic Interpolation Search</h3>
+        <div class="code-block">
+/**
+ * Quadratic Interpolation Search
+ * Uses three points for quadratic interpolation
+ */
+int quadraticInterpolationSearch(const vector<int>& arr, int target) {
+    int low = 0;
+    int high = arr.size() - 1;
+    
+    while (low <= high && target >= arr[low] && target <= arr[high]) {
+        if (low == high) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        // Use three points for quadratic interpolation
+        int mid = (low + high) / 2;
+        
+        if (arr[mid] == target) return mid;
+        
+        // Calculate position using quadratic interpolation
+        // This is a simplified version - full implementation requires
+        // solving quadratic equation
+        double ratio = (double)(target - arr[low]) / (arr[high] - arr[low]);
+        int pos = low + (int)(ratio * (high - low));
+        
+        // Adjust based on middle point
+        if (arr[mid] != arr[low] && arr[mid] != arr[high]) {
+            double midRatio = (double)(mid - low) / (high - low);
+            double expectedMidValue = arr[low] + midRatio * (arr[high] - arr[low]);
+            double deviation = arr[mid] - expectedMidValue;
+            
+            // Adjust position based on deviation
+            pos += (int)(deviation * 0.1);  // Simple adjustment factor
+        }
+        
+        pos = max(low, min(pos, high));
+        
+        if (arr[pos] == target) return pos;
+        
+        if (arr[pos] < target) {
+            low = pos + 1;
+        } else {
+            high = pos - 1;
+        }
+    }
+    
+    return -1;
+}
+        </div>
+        
+        <h3>2. Hybrid Interpolation-Binary Search</h3>
+        <div class="code-block">
+/**
+ * Hybrid search that switches between interpolation and binary search
+ * based on data distribution characteristics
+ */
+int hybridSearch(const vector<int>& arr, int target) {
+    int low = 0;
+    int high = arr.size() - 1;
+    int interpolationAttempts = 0;
+    const int MAX_INTERPOLATION_ATTEMPTS = 3;
+    
+    while (low <= high) {
+        if (low == high) {
+            return (arr[low] == target) ? low : -1;
+        }
+        
+        int pos;
+        bool useInterpolation = false;
+        
+        // Use interpolation if data seems uniform and within attempt limit
+        if (interpolationAttempts < MAX_INTERPOLATION_ATTEMPTS && 
+            target >= arr[low] && target <= arr[high] && 
+            arr[high] != arr[low]) {
+            
+            // Check if data in current range seems uniform
+            int range = high - low;
+            if (range >= 4) {
+                int quarter = low + range / 4;
+                int threeQuarter = low + 3 * range / 4;
+                
+                double expectedQuarter = arr[low] + 0.25 * (arr[high] - arr[low]);
+                double expectedThreeQuarter = arr[low] + 0.75 * (arr[high] - arr[low]);
+                
+                double quarterError = abs(arr[quarter] - expectedQuarter) / (arr[high] - arr[low]);
+                double threeQuarterError = abs(arr[threeQuarter] - expectedThreeQuarter) / (arr[high] - arr[low]);
+                
+                if (quarterError < 0.2 && threeQuarterError < 0.2) {
+                    useInterpolation = true;
+                }
+            } else {
+                useInterpolation = true;  // Small range, try interpolation
+            }
+        }
+        
+        if (useInterpolation) {
+            double ratio = (double)(target - arr[low]) / (arr[high] - arr[low]);
+            pos = low + (int)(ratio * (high - low));
+            pos = max(low, min(pos, high));
+            interpolationAttempts++;
+        } else {
+            pos = low + (high - low) / 2;  // Binary search
+        }
+        
+        if (arr[pos] == target) {
+            return pos;
+        }
+        
+        if (arr[pos] < target) {
+            low = pos + 1;
+        } else {
+            high = pos - 1;
+        }
+    }
+    
+    return -1;
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Interpolation Search</h2>
+        
+        <div class="definition-box">
+            <strong>Use Interpolation Search When:</strong><br>
+            • Data is sorted and uniformly distributed<br>
+            • Array size is large (benefits are more pronounced)<br>
+            • You're searching in numerical data with known distribution<br>
+            • Performance improvement over binary search is critical<br><br>
+            
+            <strong>Don't Use Interpolation Search When:</strong><br>
+            • Data distribution is unknown or highly non-uniform<br>
+            • Array is small (overhead not worth it)<br>
+            • Data has many duplicate values<br>
+            • Worst-case performance guarantees are required
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Division by Zero:</strong> Handle case when arr[high] == arr[low]</li>
+            <li><strong>Integer Overflow:</strong> Use appropriate data types for calculations</li>
+            <li><strong>Bounds Checking:</strong> Ensure interpolated position is within array bounds</li>
+            <li><strong>Non-uniform Data:</strong> Performance degrades significantly with skewed data</li>
+            <li><strong>Floating Point Precision:</strong> Be careful with floating-point arithmetic in position calculation</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Key Insight:</strong> Explain the interpolation formula and its assumptions</li>
+            <li><strong>Complexity:</strong> Discuss O(log log n) average case and O(n) worst case</li>
+            <li><strong>Use Cases:</strong> Give examples of when interpolation search is beneficial</li>
+            <li><strong>Comparison:</strong> Compare with binary search in different scenarios</li>
+            <li><strong>Robustness:</strong> Mention hybrid approaches for handling non-uniform data</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Interpolation search achieves O(log log n) average time for uniform data</li>
+                <li>Uses linear interpolation to estimate target position</li>
+                <li>Performs excellently on uniformly distributed data</li>
+                <li>Can degrade to O(n) on non-uniform data</li>
+                <li>Requires careful implementation to handle edge cases</li>
+                <li>Hybrid approaches can combine benefits of both interpolation and binary search</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

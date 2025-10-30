@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 16: Bucket Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 16</div>
+        <h1 class="chapter-title">Bucket Sort</h1>
+        
+        <p class="academic-text">
+            Bucket sort is a distribution-based sorting algorithm that works by distributing elements into a number of buckets, sorting individual buckets, and then concatenating the sorted buckets. It's particularly effective when the input is uniformly distributed over a range. By using an appropriate number of buckets and a good distribution function, bucket sort can achieve linear average-case time complexity.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n elements that are uniformly distributed over a range [0, 1) or can be normalized to this range, sort the array in ascending order using bucket sort. The algorithm should distribute elements into buckets, sort each bucket individually, and combine the results.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with elements in range [0, 1) or normalizable<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Can be stable depending on the sorting method used for buckets
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Bucket sort works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Create Buckets:</strong> Initialize empty buckets (usually n buckets)</li>
+            <li><strong>Distribute:</strong> Place each element in appropriate bucket</li>
+            <li><strong>Sort Buckets:</strong> Sort individual buckets using any sorting algorithm</li>
+            <li><strong>Concatenate:</strong> Combine sorted buckets to get final result</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: BucketSort(arr, n)
+1. // Create n empty buckets
+2. buckets[0..n-1] = empty lists
+3. 
+4. // Distribute elements into buckets
+5. for i = 0 to n-1 do
+6.     bucketIndex = floor(n * arr[i])
+7.     buckets[bucketIndex].add(arr[i])
+8. end for
+9. 
+10. // Sort individual buckets
+11. for i = 0 to n-1 do
+12.     sort(buckets[i])  // Use any sorting algorithm
+13. end for
+14. 
+15. // Concatenate sorted buckets
+16. index = 0
+17. for i = 0 to n-1 do
+18.     for each element in buckets[i] do
+19.         arr[index++] = element
+20.     end for
+21. end for
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+/**
+ * Bucket Sort for floating-point numbers in range [0, 1)
+ * Classic implementation for uniformly distributed data
+ */
+void bucketSort(vector<float>& arr) {
+    int n = arr.size();
+    if (n <= 1) return;
+    
+    // Create n empty buckets
+    vector<vector<float>> buckets(n);
+    
+    // Distribute elements into buckets
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = (int)(n * arr[i]);
+        
+        // Handle edge case where arr[i] = 1.0
+        if (bucketIndex == n) bucketIndex = n - 1;
+        
+        buckets[bucketIndex].push_back(arr[i]);
+    }
+    
+    // Sort individual buckets using insertion sort
+    for (int i = 0; i < n; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+    
+    // Concatenate sorted buckets
+    int index = 0;
+    for (int i = 0; i < n; i++) {
+        for (float element : buckets[i]) {
+            arr[index++] = element;
+        }
+    }
+}
+
+/**
+ * Bucket Sort for integers in a given range
+ * Normalizes integers to [0, 1) range internally
+ */
+void bucketSortIntegers(vector<int>& arr, int minVal, int maxVal) {
+    int n = arr.size();
+    if (n <= 1 || minVal >= maxVal) return;
+    
+    int range = maxVal - minVal + 1;
+    vector<vector<int>> buckets(n);
+    
+    // Distribute elements into buckets
+    for (int i = 0; i < n; i++) {
+        // Normalize to [0, n) range
+        int bucketIndex = ((arr[i] - minVal) * n) / range;
+        
+        // Handle edge case
+        if (bucketIndex == n) bucketIndex = n - 1;
+        
+        buckets[bucketIndex].push_back(arr[i]);
+    }
+    
+    // Sort individual buckets
+    for (int i = 0; i < n; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+    
+    // Concatenate results
+    int index = 0;
+    for (int i = 0; i < n; i++) {
+        for (int element : buckets[i]) {
+            arr[index++] = element;
+        }
+    }
+}
+
+/**
+ * Bucket Sort with Statistics
+ * Tracks bucket distribution and operations
+ */
+struct BucketSortStats {
+    int numBuckets;
+    vector<int> bucketSizes;
+    vector<vector<float>> bucketContents;
+    int totalComparisons;
+    int distributionOperations;
+};
+
+BucketSortStats bucketSortWithStats(vector<float>& arr) {
+    BucketSortStats stats;
+    int n = arr.size();
+    stats.numBuckets = n;
+    stats.totalComparisons = 0;
+    stats.distributionOperations = 0;
+    
+    if (n <= 1) return stats;
+    
+    vector<vector<float>> buckets(n);
+    
+    // Distribution phase
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = (int)(n * arr[i]);
+        if (bucketIndex == n) bucketIndex = n - 1;
+        
+        buckets[bucketIndex].push_back(arr[i]);
+        stats.distributionOperations++;
+    }
+    
+    // Record bucket sizes and contents
+    for (int i = 0; i < n; i++) {
+        stats.bucketSizes.push_back(buckets[i].size());
+        stats.bucketContents.push_back(buckets[i]);
+    }
+    
+    // Sort individual buckets and count comparisons
+    for (int i = 0; i < n; i++) {
+        if (buckets[i].size() > 1) {
+            // Estimate comparisons for sorting (using insertion sort complexity)
+            stats.totalComparisons += buckets[i].size() * buckets[i].size();
+        }
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+    
+    // Concatenate
+    int index = 0;
+    for (int i = 0; i < n; i++) {
+        for (float element : buckets[i]) {
+            arr[index++] = element;
+        }
+    }
+    
+    return stats;
+}
+
+/**
+ * Adaptive Bucket Sort
+ * Automatically determines optimal number of buckets
+ */
+void adaptiveBucketSort(vector<float>& arr) {
+    int n = arr.size();
+    if (n <= 1) return;
+    
+    // Find min and max for better distribution
+    float minVal = *min_element(arr.begin(), arr.end());
+    float maxVal = *max_element(arr.begin(), arr.end());
+    
+    if (minVal == maxVal) return;  // All elements are equal
+    
+    // Use sqrt(n) buckets for better performance
+    int numBuckets = max(1, (int)sqrt(n));
+    vector<vector<float>> buckets(numBuckets);
+    
+    float range = maxVal - minVal;
+    
+    // Distribute elements
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = (int)((arr[i] - minVal) / range * numBuckets);
+        
+        // Handle edge case
+        if (bucketIndex == numBuckets) bucketIndex = numBuckets - 1;
+        
+        buckets[bucketIndex].push_back(arr[i]);
+    }
+    
+    // Sort buckets
+    for (int i = 0; i < numBuckets; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+    
+    // Concatenate
+    int index = 0;
+    for (int i = 0; i < numBuckets; i++) {
+        for (float element : buckets[i]) {
+            arr[index++] = element;
+        }
+    }
+}
+
+/**
+ * Bucket Sort with Custom Bucket Function
+ * Allows custom distribution strategy
+ */
+template<typename T, typename BucketFunc>
+void customBucketSort(vector<T>& arr, int numBuckets, BucketFunc getBucket) {
+    if (arr.empty() || numBuckets <= 0) return;
+    
+    vector<vector<T>> buckets(numBuckets);
+    
+    // Distribute using custom function
+    for (const T& element : arr) {
+        int bucketIndex = getBucket(element, numBuckets);
+        bucketIndex = max(0, min(numBuckets - 1, bucketIndex));  // Clamp to valid range
+        buckets[bucketIndex].push_back(element);
+    }
+    
+    // Sort buckets
+    for (int i = 0; i < numBuckets; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+    
+    // Concatenate
+    arr.clear();
+    for (int i = 0; i < numBuckets; i++) {
+        for (const T& element : buckets[i]) {
+            arr.push_back(element);
+        }
+    }
+}
+
+/**
+ * Bucket Sort for Strings by Length
+ * Sorts strings first by length, then lexicographically
+ */
+void bucketSortStringsByLength(vector<string>& arr) {
+    if (arr.empty()) return;
+    
+    // Find maximum string length
+    int maxLen = 0;
+    for (const string& str : arr) {
+        maxLen = max(maxLen, (int)str.length());
+    }
+    
+    // Create buckets for each possible length
+    vector<vector<string>> buckets(maxLen + 1);
+    
+    // Distribute by length
+    for (const string& str : arr) {
+        buckets[str.length()].push_back(str);
+    }
+    
+    // Sort each bucket lexicographically
+    for (int i = 0; i <= maxLen; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+    
+    // Concatenate
+    arr.clear();
+    for (int i = 0; i <= maxLen; i++) {
+        for (const string& str : buckets[i]) {
+            arr.push_back(str);
+        }
+    }
+}
+
+/**
+ * Parallel Bucket Sort (Conceptual)
+ * Shows how bucket sort can be parallelized
+ */
+void parallelBucketSort(vector<float>& arr) {
+    int n = arr.size();
+    if (n <= 1) return;
+    
+    vector<vector<float>> buckets(n);
+    
+    // Distribution phase (can be parallelized)
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = (int)(n * arr[i]);
+        if (bucketIndex == n) bucketIndex = n - 1;
+        buckets[bucketIndex].push_back(arr[i]);
+    }
+    
+    // Sorting phase (each bucket can be sorted in parallel)
+    // In actual parallel implementation, use threads/OpenMP here
+    for (int i = 0; i < n; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+    
+    // Concatenation phase
+    int index = 0;
+    for (int i = 0; i < n; i++) {
+        for (float element : buckets[i]) {
+            arr[index++] = element;
+        }
+    }
+}
+
+/**
+ * In-place Bucket Sort (Limited cases)
+ * Attempts to minimize extra space usage
+ */
+void inPlaceBucketSort(vector<int>& arr, int maxVal) {
+    int n = arr.size();
+    if (n <= 1) return;
+    
+    // This works only when maxVal is small
+    // Use array positions as implicit buckets
+    
+    // Count occurrences (similar to counting sort)
+    vector<int> count(maxVal + 1, 0);
+    for (int num : arr) {
+        count[num]++;
+    }
+    
+    // Reconstruct array
+    int index = 0;
+    for (int i = 0; i <= maxVal; i++) {
+        while (count[i]-- > 0) {
+            arr[index++] = i;
+        }
+    }
+}
+
+// Utility functions
+void printFloatArray(const vector<float>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << fixed << setprecision(3) << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+void printIntArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+void printStringArray(const vector<string>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << "\"" << arr[i] << "\"";
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Test basic bucket sort with floats
+    vector<float> arr1 = {0.897, 0.565, 0.656, 0.1234, 0.665, 0.3434};
+    cout << "=== Basic Bucket Sort (Floats) ===" << endl;
+    printFloatArray(arr1, "Original");
+    
+    bucketSort(arr1);
+    printFloatArray(arr1, "Sorted");
+    
+    // Test bucket sort with integers
+    vector<int> arr2 = {29, 25, 3, 49, 9, 37, 21, 43};
+    cout << "\n=== Bucket Sort for Integers ===" << endl;
+    printIntArray(arr2, "Original");
+    
+    bucketSortIntegers(arr2, 0, 50);  // Range 0-50
+    printIntArray(arr2, "Sorted");
+    
+    // Test bucket sort with statistics
+    vector<float> arr3 = {0.78, 0.17, 0.39, 0.26, 0.72, 0.94, 0.21, 0.12, 0.23, 0.68};
+    cout << "\n=== Bucket Sort with Statistics ===" << endl;
+    printFloatArray(arr3, "Original");
+    
+    BucketSortStats stats = bucketSortWithStats(arr3);
+    printFloatArray(arr3, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Number of buckets: " << stats.numBuckets << endl;
+    cout << "  Distribution operations: " << stats.distributionOperations << endl;
+    cout << "  Estimated comparisons: " << stats.totalComparisons << endl;
+    
+    cout << "  Bucket sizes: [";
+    for (int i = 0; i < stats.bucketSizes.size(); i++) {
+        cout << stats.bucketSizes[i];
+        if (i < stats.bucketSizes.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    cout << "  Non-empty buckets:" << endl;
+    for (int i = 0; i < stats.bucketContents.size(); i++) {
+        if (!stats.bucketContents[i].empty()) {
+            cout << "    Bucket " << i << ": ";
+            printFloatArray(stats.bucketContents[i], "");
+        }
+    }
+    
+    // Test adaptive bucket sort
+    vector<float> arr4 = {2.5, 1.2, 4.8, 3.1, 0.9, 5.7, 2.3, 4.1, 1.8, 3.9};
+    cout << "\n=== Adaptive Bucket Sort ===" << endl;
+    printFloatArray(arr4, "Original");
+    
+    adaptiveBucketSort(arr4);
+    printFloatArray(arr4, "Sorted");
+    
+    // Test custom bucket sort with strings by first character
+    vector<string> words = {"apple", "banana", "cherry", "date", "elderberry", "fig", "grape"};
+    cout << "\n=== Custom Bucket Sort (Strings by First Character) ===" << endl;
+    printStringArray(words, "Original");
+    
+    customBucketSort(words, 26, [](const string& str, int numBuckets) {
+        return str.empty() ? 0 : (str[0] - 'a');
+    });
+    printStringArray(words, "Sorted");
+    
+    // Test bucket sort for strings by length
+    vector<string> words2 = {"cat", "elephant", "dog", "butterfly", "ant", "hippopotamus", "bee"};
+    cout << "\n=== Bucket Sort by String Length ===" << endl;
+    printStringArray(words2, "Original");
+    
+    bucketSortStringsByLength(words2);
+    printStringArray(words2, "Sorted by length then lexicographically");
+    
+    // Test with uniformly distributed random data
+    vector<float> arr5;
+    srand(42);  // For reproducible results
+    for (int i = 0; i < 15; i++) {
+        arr5.push_back((float)rand() / RAND_MAX);
+    }
+    
+    cout << "\n=== Bucket Sort with Random Uniform Data ===" << endl;
+    printFloatArray(arr5, "Original (random uniform)");
+    
+    bucketSort(arr5);
+    printFloatArray(arr5, "Sorted");
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(n + k) - When elements are uniformly distributed</li>
+                <li><strong>Average Case:</strong> O(n + k) - With uniform distribution assumption</li>
+                <li><strong>Worst Case:</strong> O(n²) - When all elements fall into one bucket</li>
+                <li><strong>Bucket Sorting:</strong> O(k × (n/k)²) = O(n²/k + k) on average</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(n + k) - For buckets and temporary storage</li>
+                <li><strong>Bucket Storage:</strong> O(n) - All elements stored in buckets</li>
+                <li><strong>Additional Arrays:</strong> O(k) - For bucket headers/pointers</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> Yes - If bucket sorting algorithm is stable</li>
+                <li><strong>Distribution-based:</strong> Performance depends on input distribution</li>
+                <li><strong>Parallelizable:</strong> Buckets can be sorted independently</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through bucket sort on array [0.78, 0.17, 0.39, 0.26, 0.72, 0.94]:
+        </p>
+        
+        <div class="code-block">
+Initial: [0.78, 0.17, 0.39, 0.26, 0.72, 0.94]
+Number of buckets: n = 6
+
+Step 1: Create 6 empty buckets
+Buckets: [[], [], [], [], [], []]
+
+Step 2: Distribute elements into buckets
+For each element, bucket_index = floor(n * element)
+
+- 0.78: bucket_index = floor(6 * 0.78) = floor(4.68) = 4
+  Buckets: [[], [], [], [], [0.78], []]
+
+- 0.17: bucket_index = floor(6 * 0.17) = floor(1.02) = 1  
+  Buckets: [[], [0.17], [], [], [0.78], []]
+
+- 0.39: bucket_index = floor(6 * 0.39) = floor(2.34) = 2
+  Buckets: [[], [0.17], [0.39], [], [0.78], []]
+
+- 0.26: bucket_index = floor(6 * 0.26) = floor(1.56) = 1
+  Buckets: [[], [0.17, 0.26], [0.39], [], [0.78], []]
+
+- 0.72: bucket_index = floor(6 * 0.72) = floor(4.32) = 4
+  Buckets: [[], [0.17, 0.26], [0.39], [], [0.78, 0.72], []]
+
+- 0.94: bucket_index = floor(6 * 0.94) = floor(5.64) = 5
+  Buckets: [[], [0.17, 0.26], [0.39], [], [0.78, 0.72], [0.94]]
+
+Step 3: Sort individual buckets
+- Bucket 0: [] (empty)
+- Bucket 1: [0.17, 0.26] → [0.17, 0.26] (already sorted)
+- Bucket 2: [0.39] → [0.39] (single element)
+- Bucket 3: [] (empty)
+- Bucket 4: [0.78, 0.72] → [0.72, 0.78] (sorted)
+- Bucket 5: [0.94] → [0.94] (single element)
+
+Step 4: Concatenate sorted buckets
+Result: [0.17, 0.26, 0.39, 0.72, 0.78, 0.94]
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Bucket sort is particularly useful in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Uniform Distribution:</strong> When input data is uniformly distributed</li>
+            <li><strong>Floating-Point Numbers:</strong> Sorting decimal numbers in known ranges</li>
+            <li><strong>External Sorting:</strong> Large datasets that don't fit in memory</li>
+            <li><strong>Parallel Processing:</strong> Can distribute buckets across processors</li>
+            <li><strong>Database Systems:</strong> Sorting records by numeric ranges</li>
+            <li><strong>Graphics Processing:</strong> Sorting pixels by color intensity</li>
+        </ul>
+        
+        <h2 class="section-title">Distribution Strategies</h2>
+        
+        <div class="definition-box">
+            <strong>Uniform Distribution:</strong><br>
+            • bucket_index = floor(n × (element - min) / (max - min))<br>
+            • Works best when elements are uniformly distributed<br><br>
+            
+            <strong>Square Root Buckets:</strong><br>
+            • Use √n buckets instead of n buckets<br>
+            • Better space-time trade-off<br><br>
+            
+            <strong>Logarithmic Distribution:</strong><br>
+            • bucket_index = floor(log(element) × scale_factor)<br>
+            • Useful for exponentially distributed data<br><br>
+            
+            <strong>Custom Hash Function:</strong><br>
+            • Use domain-specific distribution function<br>
+            • Tailored to specific data characteristics
+        </div>
+        
+        <h2 class="section-title">When to Use Bucket Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Bucket Sort When:</strong><br>
+            • Input is uniformly distributed over a known range<br>
+            • Working with floating-point numbers<br>
+            • Parallel processing is available<br>
+            • Stable sorting is required<br>
+            • External sorting is needed<br><br>
+            
+            <strong>Don't Use Bucket Sort When:</strong><br>
+            • Input distribution is highly skewed<br>
+            • Range of input values is unknown<br>
+            • Memory usage is critical<br>
+            • Input size is very small (overhead not worth it)
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Skewed Distribution:</strong> Poor performance when elements cluster in few buckets</li>
+            <li><strong>Bucket Count:</strong> Too few buckets reduce efficiency, too many waste space</li>
+            <li><strong>Range Estimation:</strong> Incorrect min/max estimation affects distribution</li>
+            <li><strong>Edge Cases:</strong> Handle elements at boundary values (min, max) carefully</li>
+            <li><strong>Empty Buckets:</strong> Many empty buckets indicate poor distribution function</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Distribution Assumption:</strong> Emphasize uniform distribution requirement</li>
+            <li><strong>Linear Average Case:</strong> Explain O(n) average-case complexity</li>
+            <li><strong>Parallelization:</strong> Highlight parallel processing advantages</li>
+            <li><strong>Bucket Strategy:</strong> Discuss different bucket distribution methods</li>
+            <li><strong>Applications:</strong> Mention external sorting and floating-point sorting</li>
+            <li><strong>Comparison:</strong> Contrast with radix sort and counting sort</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Bucket sort achieves O(n) average-case complexity with uniform distribution</li>
+                <li>Distribution-based algorithm that divides elements into buckets</li>
+                <li>Stable sorting algorithm when using stable bucket sorting method</li>
+                <li>Excellent for parallel processing due to independent bucket sorting</li>
+                <li>Performance heavily depends on input distribution quality</li>
+                <li>Effective for floating-point numbers and external sorting</li>
+                <li>Can degrade to O(n²) with poor distribution (all elements in one bucket)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

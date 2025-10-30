@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 10: Insertion Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 10</div>
+        <h1 class="chapter-title">Insertion Sort</h1>
+        
+        <p class="academic-text">
+            Insertion sort is a simple and efficient sorting algorithm that builds the final sorted array one element at a time. It works by taking elements from the unsorted portion and inserting them into their correct position in the sorted portion. Like sorting playing cards in your hand, insertion sort is intuitive, adaptive, and performs exceptionally well on small or nearly sorted datasets.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n elements, sort the array in ascending order using the insertion sort algorithm. The algorithm should build a sorted sequence by repeatedly taking the next element and inserting it into the correct position among the previously sorted elements.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with comparable elements<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Stable sorting algorithm (maintains relative order of equal elements)
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Insertion sort works through the following process:
+        </p>
+        
+        <ol>
+            <li>Start with the second element (index 1) as the first element is trivially sorted</li>
+            <li>Compare the current element with the elements in the sorted portion (to its left)</li>
+            <li>Shift all larger elements one position to the right</li>
+            <li>Insert the current element in its correct position</li>
+            <li>Repeat for all remaining elements</li>
+            <li>After each iteration, the sorted portion grows by one element</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: InsertionSort(arr, n)
+1. for i = 1 to n-1 do
+2.     key = arr[i]
+3.     j = i - 1
+4.     
+5.     // Move elements greater than key one position ahead
+6.     while j >= 0 AND arr[j] > key do
+7.         arr[j + 1] = arr[j]
+8.         j = j - 1
+9.     end while
+10.    
+11.    // Place key in its correct position
+12.    arr[j + 1] = key
+13. end for
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <chrono>
+using namespace std;
+
+/**
+ * Insertion Sort - Basic Implementation
+ * Sorts array in ascending order using insertion sort algorithm
+ * 
+ * @param arr: input array to be sorted
+ */
+void insertionSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    // Start from the second element (index 1)
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];  // Current element to be inserted
+        int j = i - 1;     // Index of the last element in sorted portion
+        
+        // Move elements greater than key one position ahead
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        
+        // Insert key in its correct position
+        arr[j + 1] = key;
+    }
+}
+
+/**
+ * Insertion Sort with Statistics
+ * Tracks comparisons, shifts, and iterations for analysis
+ */
+struct InsertionSortStats {
+    int comparisons;
+    int shifts;
+    int iterations;
+    vector<vector<int>> stateHistory;
+    vector<int> insertionPositions;
+};
+
+InsertionSortStats insertionSortWithStats(vector<int>& arr) {
+    InsertionSortStats stats = {0, 0, 0, {}, {}};
+    int n = arr.size();
+    
+    // Save initial state
+    stats.stateHistory.push_back(arr);
+    
+    for (int i = 1; i < n; i++) {
+        stats.iterations++;
+        int key = arr[i];
+        int j = i - 1;
+        
+        // Count comparisons and shifts
+        while (j >= 0) {
+            stats.comparisons++;
+            if (arr[j] > key) {
+                arr[j + 1] = arr[j];
+                stats.shifts++;
+                j--;
+            } else {
+                break;
+            }
+        }
+        
+        // Insert key in correct position
+        arr[j + 1] = key;
+        stats.insertionPositions.push_back(j + 1);
+        
+        // Save state after each iteration
+        stats.stateHistory.push_back(arr);
+    }
+    
+    return stats;
+}
+
+/**
+ * Binary Insertion Sort
+ * Uses binary search to find insertion position
+ */
+void binaryInsertionSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        
+        // Find location to insert using binary search
+        int left = 0, right = i;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] > key) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        
+        // Shift elements to make space for key
+        for (int j = i - 1; j >= left; j--) {
+            arr[j + 1] = arr[j];
+        }
+        
+        // Insert key at found position
+        arr[left] = key;
+    }
+}
+
+/**
+ * Recursive Insertion Sort
+ * Recursive implementation of insertion sort
+ */
+void recursiveInsertionSort(vector<int>& arr, int n) {
+    // Base case
+    if (n <= 1) return;
+    
+    // Sort first n-1 elements
+    recursiveInsertionSort(arr, n - 1);
+    
+    // Insert the nth element in its correct position
+    int last = arr[n - 1];
+    int j = n - 2;
+    
+    // Move elements greater than last one position ahead
+    while (j >= 0 && arr[j] > last) {
+        arr[j + 1] = arr[j];
+        j--;
+    }
+    
+    arr[j + 1] = last;
+}
+
+/**
+ * Insertion Sort with Sentinel
+ * Uses a sentinel to eliminate boundary checking
+ */
+void insertionSortWithSentinel(vector<int>& arr) {
+    int n = arr.size();
+    if (n <= 1) return;
+    
+    // Find minimum element and place it at the beginning as sentinel
+    int minIndex = 0;
+    for (int i = 1; i < n; i++) {
+        if (arr[i] < arr[minIndex]) {
+            minIndex = i;
+        }
+    }
+    swap(arr[0], arr[minIndex]);
+    
+    // Now perform insertion sort without boundary checking
+    for (int i = 2; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        // No need to check j >= 0 because sentinel guarantees termination
+        while (arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        
+        arr[j + 1] = key;
+    }
+}
+
+/**
+ * Generic Insertion Sort with Custom Comparator
+ * Works with any comparable type and custom comparison function
+ */
+template<typename T, typename Compare>
+void insertionSortGeneric(vector<T>& arr, Compare comp) {
+    int n = arr.size();
+    
+    for (int i = 1; i < n; i++) {
+        T key = arr[i];
+        int j = i - 1;
+        
+        // Move elements that should come after key
+        while (j >= 0 && comp(key, arr[j])) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        
+        arr[j + 1] = key;
+    }
+}
+
+/**
+ * Insertion Sort for Linked List
+ * Demonstrates insertion sort on linked list structure
+ */
+struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
+
+ListNode* insertionSortLinkedList(ListNode* head) {
+    if (!head || !head->next) return head;
+    
+    ListNode* sorted = nullptr;  // Head of sorted portion
+    ListNode* current = head;    // Current node to be inserted
+    
+    while (current) {
+        ListNode* next = current->next;  // Save next node
+        
+        // Insert current node into sorted list
+        if (!sorted || current->val < sorted->val) {
+            // Insert at beginning
+            current->next = sorted;
+            sorted = current;
+        } else {
+            // Find correct position to insert
+            ListNode* temp = sorted;
+            while (temp->next && temp->next->val < current->val) {
+                temp = temp->next;
+            }
+            current->next = temp->next;
+            temp->next = current;
+        }
+        
+        current = next;
+    }
+    
+    return sorted;
+}
+
+/**
+ * Insertion Sort with Early Termination
+ * Optimized for nearly sorted arrays
+ */
+void optimizedInsertionSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    for (int i = 1; i < n; i++) {
+        // If current element is already in correct position, skip
+        if (arr[i] >= arr[i - 1]) {
+            continue;
+        }
+        
+        int key = arr[i];
+        int j = i - 1;
+        
+        // Move elements greater than key
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        
+        arr[j + 1] = key;
+    }
+}
+
+/**
+ * Shell Sort (Advanced Insertion Sort)
+ * Uses insertion sort with gap sequences
+ */
+void shellSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    // Start with a big gap, then reduce the gap
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        // Perform insertion sort for elements at gap distance
+        for (int i = gap; i < n; i++) {
+            int key = arr[i];
+            int j = i;
+            
+            // Shift elements until correct position is found
+            while (j >= gap && arr[j - gap] > key) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            
+            arr[j] = key;
+        }
+    }
+}
+
+// Utility functions for demonstration
+void printArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+void printLinkedList(ListNode* head, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    while (head) {
+        cout << head->val;
+        if (head->next) cout << ", ";
+        head = head->next;
+    }
+    cout << "]" << endl;
+}
+
+// Performance testing function
+void performanceTest() {
+    vector<int> sizes = {100, 500, 1000, 2000};
+    
+    cout << "\n=== Performance Analysis ===" << endl;
+    cout << "Size\tRandom\tSorted\tReverse\tNearly Sorted" << endl;
+    
+    for (int size : sizes) {
+        // Test on different data patterns
+        vector<int> random(size), sorted(size), reverse(size), nearlySorted(size);
+        
+        // Generate test data
+        for (int i = 0; i < size; i++) {
+            random[i] = rand() % 1000;
+            sorted[i] = i;
+            reverse[i] = size - i;
+            nearlySorted[i] = i;
+        }
+        
+        // Make nearly sorted (90% sorted)
+        for (int i = 0; i < size / 10; i++) {
+            swap(nearlySorted[rand() % size], nearlySorted[rand() % size]);
+        }
+        
+        // Time each pattern
+        auto timeSort = [](vector<int> arr) {
+            auto start = chrono::high_resolution_clock::now();
+            insertionSort(arr);
+            auto end = chrono::high_resolution_clock::now();
+            return chrono::duration_cast<chrono::microseconds>(end - start).count();
+        };
+        
+        cout << size << "\t" 
+             << timeSort(random) << "\t"
+             << timeSort(sorted) << "\t"
+             << timeSort(reverse) << "\t"
+             << timeSort(nearlySorted) << endl;
+    }
+}
+
+// Example usage and testing
+int main() {
+    // Test basic insertion sort
+    vector<int> arr1 = {5, 2, 4, 6, 1, 3};
+    cout << "=== Basic Insertion Sort ===" << endl;
+    printArray(arr1, "Original");
+    
+    insertionSort(arr1);
+    printArray(arr1, "Sorted");
+    
+    // Test insertion sort with statistics
+    vector<int> arr2 = {5, 2, 8, 1, 9};
+    cout << "\n=== Insertion Sort with Statistics ===" << endl;
+    printArray(arr2, "Original");
+    
+    InsertionSortStats stats = insertionSortWithStats(arr2);
+    printArray(arr2, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Comparisons: " << stats.comparisons << endl;
+    cout << "  Shifts: " << stats.shifts << endl;
+    cout << "  Iterations: " << stats.iterations << endl;
+    
+    cout << "  State history:" << endl;
+    for (int i = 0; i < stats.stateHistory.size(); i++) {
+        cout << "    Step " << i << ": ";
+        printArray(stats.stateHistory[i], "");
+        if (i > 0 && i <= stats.insertionPositions.size()) {
+            cout << "      (Inserted at position " << stats.insertionPositions[i-1] << ")" << endl;
+        }
+    }
+    
+    // Test binary insertion sort
+    vector<int> arr3 = {4, 3, 2, 10, 12, 1, 5, 6};
+    cout << "\n=== Binary Insertion Sort ===" << endl;
+    printArray(arr3, "Original");
+    
+    binaryInsertionSort(arr3);
+    printArray(arr3, "Sorted");
+    
+    // Test recursive insertion sort
+    vector<int> arr4 = {9, 5, 1, 4, 3};
+    cout << "\n=== Recursive Insertion Sort ===" << endl;
+    printArray(arr4, "Original");
+    
+    recursiveInsertionSort(arr4, arr4.size());
+    printArray(arr4, "Sorted");
+    
+    // Test insertion sort with sentinel
+    vector<int> arr5 = {7, 2, 9, 1, 5, 6};
+    cout << "\n=== Insertion Sort with Sentinel ===" << endl;
+    printArray(arr5, "Original");
+    
+    insertionSortWithSentinel(arr5);
+    printArray(arr5, "Sorted");
+    
+    // Test generic insertion sort
+    vector<string> words = {"banana", "apple", "cherry", "date"};
+    cout << "\n=== Generic Insertion Sort (Strings) ===" << endl;
+    cout << "Original: [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << words[i];
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    insertionSortGeneric(words, [](const string& a, const string& b) {
+        return a < b;  // Ascending order
+    });
+    
+    cout << "Sorted: [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << words[i];
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    // Test linked list insertion sort
+    cout << "\n=== Linked List Insertion Sort ===" << endl;
+    ListNode* head = new ListNode(4);
+    head->next = new ListNode(2);
+    head->next->next = new ListNode(1);
+    head->next->next->next = new ListNode(3);
+    
+    printLinkedList(head, "Original");
+    
+    head = insertionSortLinkedList(head);
+    printLinkedList(head, "Sorted");
+    
+    // Test Shell sort
+    vector<int> arr6 = {9, 5, 1, 4, 3, 8, 2, 7, 6};
+    cout << "\n=== Shell Sort ===" << endl;
+    printArray(arr6, "Original");
+    
+    shellSort(arr6);
+    printArray(arr6, "Sorted");
+    
+    // Performance analysis
+    performanceTest();
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(n) - When array is already sorted</li>
+                <li><strong>Average Case:</strong> O(n²) - Random order of elements</li>
+                <li><strong>Worst Case:</strong> O(n²) - When array is sorted in reverse order</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(1) - Only uses constant extra space</li>
+                <li><strong>In-place:</strong> Yes - Sorts the array without using extra space</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> Yes - Equal elements maintain their relative order</li>
+                <li><strong>Adaptive:</strong> Yes - Performs better on partially sorted arrays</li>
+                <li><strong>Online:</strong> Yes - Can sort elements as they arrive</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through insertion sort on array [5, 2, 4, 6, 1, 3]:
+        </p>
+        
+        <div class="code-block">
+Initial: [5, 2, 4, 6, 1, 3]
+
+Iteration 1 (i=1, key=2):
+  Compare 2 with 5: 2 < 5, shift 5 right
+  Insert 2 at position 0: [2, 5, 4, 6, 1, 3]
+  Sorted portion: [2, 5]
+
+Iteration 2 (i=2, key=4):
+  Compare 4 with 5: 4 < 5, shift 5 right
+  Compare 4 with 2: 4 > 2, insert after 2
+  Insert 4 at position 1: [2, 4, 5, 6, 1, 3]
+  Sorted portion: [2, 4, 5]
+
+Iteration 3 (i=3, key=6):
+  Compare 6 with 5: 6 > 5, no shift needed
+  Insert 6 at position 3: [2, 4, 5, 6, 1, 3]
+  Sorted portion: [2, 4, 5, 6]
+
+Iteration 4 (i=4, key=1):
+  Compare 1 with 6: 1 < 6, shift 6 right
+  Compare 1 with 5: 1 < 5, shift 5 right
+  Compare 1 with 4: 1 < 4, shift 4 right
+  Compare 1 with 2: 1 < 2, shift 2 right
+  Insert 1 at position 0: [1, 2, 4, 5, 6, 3]
+  Sorted portion: [1, 2, 4, 5, 6]
+
+Iteration 5 (i=5, key=3):
+  Compare 3 with 6: 3 < 6, shift 6 right
+  Compare 3 with 5: 3 < 5, shift 5 right
+  Compare 3 with 4: 3 < 4, shift 4 right
+  Compare 3 with 2: 3 > 2, insert after 2
+  Insert 3 at position 2: [1, 2, 3, 4, 5, 6]
+
+Final: [1, 2, 3, 4, 5, 6]
+Total comparisons: 15, Total shifts: 8
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Insertion sort is particularly effective in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Small Datasets:</strong> Excellent performance for arrays with < 50 elements</li>
+            <li><strong>Nearly Sorted Data:</strong> Linear time performance on mostly sorted arrays</li>
+            <li><strong>Online Algorithms:</strong> Can sort data as it arrives (streaming)</li>
+            <li><strong>Hybrid Sorting:</strong> Used as subroutine in advanced algorithms (Timsort, Introsort)</li>
+            <li><strong>Linked Lists:</strong> Natural fit for linked list data structures</li>
+            <li><strong>Stable Sorting:</strong> When maintaining relative order is important</li>
+            <li><strong>Memory-Constrained Systems:</strong> Minimal memory overhead</li>
+        </ul>
+        
+        <h2 class="section-title">Optimizations and Variations</h2>
+        
+        <h3>1. Binary Insertion Sort</h3>
+        <div class="code-block">
+// Use binary search to find insertion position
+void binaryInsertionSort(vector<int>& arr) {
+    for (int i = 1; i < arr.size(); i++) {
+        int key = arr[i];
+        
+        // Binary search for insertion position
+        int left = 0, right = i;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] > key) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        
+        // Shift and insert
+        for (int j = i - 1; j >= left; j--) {
+            arr[j + 1] = arr[j];
+        }
+        arr[left] = key;
+    }
+}
+        </div>
+        
+        <h3>2. Insertion Sort with Sentinel</h3>
+        <div class="code-block">
+// Eliminate boundary checking using sentinel
+void insertionSortWithSentinel(vector<int>& arr) {
+    // Place minimum element at beginning as sentinel
+    int minIndex = min_element(arr.begin(), arr.end()) - arr.begin();
+    swap(arr[0], arr[minIndex]);
+    
+    // Sort without boundary checking
+    for (int i = 2; i < arr.size(); i++) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        while (arr[j] > key) {  // No need to check j >= 0
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+        </div>
+        
+        <h3>3. Shell Sort (Gap-based Insertion Sort)</h3>
+        <div class="code-block">
+// Insertion sort with decreasing gap sizes
+void shellSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    // Start with large gap, reduce by half each time
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; i++) {
+            int key = arr[i];
+            int j = i;
+            
+            while (j >= gap && arr[j - gap] > key) {
+                arr[j] = arr[j - gap];
+                j -= gap;
+            }
+            arr[j] = key;
+        }
+    }
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Insertion Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Insertion Sort When:</strong><br>
+            • Dataset is small (< 50 elements)<br>
+            • Data is already nearly sorted<br>
+            • You need a stable sorting algorithm<br>
+            • Sorting data as it arrives (online algorithm)<br>
+            • Memory usage must be minimal<br>
+            • Simplicity and readability are important<br>
+            • As part of hybrid sorting algorithms<br><br>
+            
+            <strong>Don't Use Insertion Sort When:</strong><br>
+            • Dataset is large (> 100 elements)<br>
+            • Data is in random or reverse order<br>
+            • Performance is critical for large inputs<br>
+            • You need guaranteed O(n log n) performance
+        </div>
+        
+        <h2 class="section-title">Comparison with Other Algorithms</h2>
+        
+        <div class="code-block">
+Performance Comparison on Different Data Patterns:
+
+Random Data (n=1000):
+- Insertion Sort: ~125,000 comparisons
+- Selection Sort: ~500,000 comparisons  
+- Bubble Sort: ~250,000 comparisons
+
+Nearly Sorted Data (n=1000, 90% sorted):
+- Insertion Sort: ~5,000 comparisons (excellent!)
+- Selection Sort: ~500,000 comparisons (no improvement)
+- Bubble Sort: ~50,000 comparisons (some improvement)
+
+Reverse Sorted Data (n=1000):
+- Insertion Sort: ~500,000 comparisons (worst case)
+- Selection Sort: ~500,000 comparisons (same as always)
+- Bubble Sort: ~500,000 comparisons (worst case)
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Starting from Wrong Index:</strong> Remember to start from index 1, not 0</li>
+            <li><strong>Boundary Conditions:</strong> Check j >= 0 in the while loop</li>
+            <li><strong>Key Assignment:</strong> Don't forget to assign arr[j+1] = key after the loop</li>
+            <li><strong>Using on Large Data:</strong> Avoid for datasets larger than 100 elements</li>
+            <li><strong>Not Leveraging Adaptivity:</strong> Use for nearly sorted data where it excels</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Adaptive Nature:</strong> Emphasize O(n) performance on nearly sorted data</li>
+            <li><strong>Stability:</strong> Highlight that it maintains relative order of equal elements</li>
+            <li><strong>Online Algorithm:</strong> Can process elements as they arrive</li>
+            <li><strong>Practical Usage:</strong> Mention its use in hybrid algorithms like Timsort</li>
+            <li><strong>Binary Optimization:</strong> Discuss binary insertion sort for reducing comparisons</li>
+            <li><strong>Real-world Analogy:</strong> Compare to sorting playing cards in hand</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Insertion sort is adaptive with O(n) best case and O(n²) worst case</li>
+                <li>Excellent performance on small and nearly sorted datasets</li>
+                <li>Stable, in-place, and online sorting algorithm</li>
+                <li>Used as building block in advanced hybrid sorting algorithms</li>
+                <li>Binary insertion sort reduces comparisons but not shifts</li>
+                <li>Shell sort extends insertion sort with gap sequences for better performance</li>
+                <li>Natural choice for sorting linked lists and streaming data</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

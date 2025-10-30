@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 15: Radix Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 15</div>
+        <h1 class="chapter-title">Radix Sort</h1>
+        
+        <p class="academic-text">
+            Radix sort is a non-comparison based sorting algorithm that sorts integers by processing individual digits. It works by sorting the elements digit by digit, starting from the least significant digit (LSD) to the most significant digit (MSD), or vice versa. By using a stable sorting algorithm (like counting sort) as a subroutine for each digit, radix sort achieves linear time complexity when the number of digits is constant.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n non-negative integers, sort the array in ascending order using radix sort. The algorithm should process digits from least significant to most significant, using a stable sorting method for each digit position.
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with non-negative integers<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Stable sorting algorithm (maintains relative order of equal elements)
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Radix sort works through these phases:
+        </p>
+        
+        <ol>
+            <li><strong>Find Maximum:</strong> Determine the number with maximum digits</li>
+            <li><strong>Digit Processing:</strong> Sort by each digit position (LSD to MSD)</li>
+            <li><strong>Stable Subroutine:</strong> Use counting sort for each digit</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: RadixSort(arr, n)
+1. // Find maximum number to know number of digits
+2. max = findMax(arr, n)
+3. 
+4. // Do counting sort for every digit
+5. // exp is 10^i where i is current digit number
+6. for exp = 1; max/exp > 0; exp *= 10 do
+7.     CountingSortByDigit(arr, n, exp)
+8. end for
+
+Algorithm: CountingSortByDigit(arr, n, exp)
+1. count[0..9] = {0}
+2. 
+3. // Count occurrences of each digit
+4. for i = 0 to n-1 do
+5.     digit = (arr[i] / exp) % 10
+6.     count[digit]++
+7. end for
+8. 
+9. // Transform count to positions
+10. for i = 1 to 9 do
+11.     count[i] += count[i-1]
+12. end for
+13. 
+14. // Build output array
+15. for i = n-1 down to 0 do
+16.     digit = (arr[i] / exp) % 10
+17.     output[count[digit] - 1] = arr[i]
+18.     count[digit]--
+19. end for
+20. 
+21. // Copy output to original array
+22. for i = 0 to n-1 do
+23.     arr[i] = output[i]
+24. end for
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+/**
+ * Counting Sort for a specific digit position
+ * Used as subroutine in radix sort
+ * 
+ * @param arr: array to be sorted
+ * @param n: size of array
+ * @param exp: exponent representing current digit position (1, 10, 100, ...)
+ */
+void countingSortByDigit(vector<int>& arr, int n, int exp) {
+    vector<int> output(n);
+    vector<int> count(10, 0);  // Count array for digits 0-9
+    
+    // Count occurrences of each digit at current position
+    for (int i = 0; i < n; i++) {
+        int digit = (arr[i] / exp) % 10;
+        count[digit]++;
+    }
+    
+    // Transform count[i] to actual position of digit i in output array
+    for (int i = 1; i < 10; i++) {
+        count[i] += count[i - 1];
+    }
+    
+    // Build output array (process from right to maintain stability)
+    for (int i = n - 1; i >= 0; i--) {
+        int digit = (arr[i] / exp) % 10;
+        output[count[digit] - 1] = arr[i];
+        count[digit]--;
+    }
+    
+    // Copy output array back to original array
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+
+/**
+ * Radix Sort - Main function (LSD approach)
+ * Sorts from least significant digit to most significant digit
+ */
+void radixSort(vector<int>& arr) {
+    int n = arr.size();
+    if (n <= 1) return;
+    
+    // Find maximum number to determine number of digits
+    int maxNum = *max_element(arr.begin(), arr.end());
+    
+    // Do counting sort for every digit
+    // exp is 10^i where i is current digit number
+    for (int exp = 1; maxNum / exp > 0; exp *= 10) {
+        countingSortByDigit(arr, n, exp);
+    }
+}
+
+/**
+ * Radix Sort with Statistics
+ * Tracks operations and intermediate states
+ */
+struct RadixSortStats {
+    int digitPasses;
+    int totalComparisons;
+    int totalSwaps;
+    vector<vector<int>> stateHistory;
+    vector<int> digitProcessed;
+};
+
+RadixSortStats radixSortWithStats(vector<int>& arr) {
+    RadixSortStats stats = {0, 0, 0, {}, {}};
+    int n = arr.size();
+    
+    if (n <= 1) return stats;
+    
+    // Save initial state
+    stats.stateHistory.push_back(arr);
+    
+    int maxNum = *max_element(arr.begin(), arr.end());
+    
+    for (int exp = 1; maxNum / exp > 0; exp *= 10) {
+        stats.digitPasses++;
+        stats.digitProcessed.push_back(exp);
+        
+        // Modified counting sort with statistics
+        vector<int> output(n);
+        vector<int> count(10, 0);
+        
+        // Count phase
+        for (int i = 0; i < n; i++) {
+            int digit = (arr[i] / exp) % 10;
+            count[digit]++;
+            stats.totalComparisons++;
+        }
+        
+        // Accumulate phase
+        for (int i = 1; i < 10; i++) {
+            count[i] += count[i - 1];
+        }
+        
+        // Place phase
+        for (int i = n - 1; i >= 0; i--) {
+            int digit = (arr[i] / exp) % 10;
+            output[count[digit] - 1] = arr[i];
+            count[digit]--;
+            stats.totalSwaps++;
+        }
+        
+        // Copy back
+        for (int i = 0; i < n; i++) {
+            arr[i] = output[i];
+        }
+        
+        // Save state after each digit pass
+        stats.stateHistory.push_back(arr);
+    }
+    
+    return stats;
+}
+
+/**
+ * MSD Radix Sort (Most Significant Digit first)
+ * Recursive approach starting from most significant digit
+ */
+void msdRadixSort(vector<int>& arr, int low, int high, int exp) {
+    if (low >= high || exp <= 0) return;
+    
+    // Count array for digits 0-9
+    vector<int> count(11, 0);  // Extra space for easier indexing
+    
+    // Count occurrences of each digit
+    for (int i = low; i <= high; i++) {
+        int digit = (arr[i] / exp) % 10;
+        count[digit + 1]++;
+    }
+    
+    // Transform counts to indices
+    for (int i = 0; i < 10; i++) {
+        count[i + 1] += count[i];
+    }
+    
+    // Distribute elements
+    vector<int> temp(high - low + 1);
+    for (int i = low; i <= high; i++) {
+        int digit = (arr[i] / exp) % 10;
+        temp[count[digit]++] = arr[i];
+    }
+    
+    // Copy back
+    for (int i = 0; i < temp.size(); i++) {
+        arr[low + i] = temp[i];
+    }
+    
+    // Recursively sort each bucket
+    for (int digit = 0; digit < 10; digit++) {
+        int bucketStart = low + count[digit];
+        int bucketEnd = low + count[digit + 1] - 1;
+        if (bucketStart < bucketEnd) {
+            msdRadixSort(arr, bucketStart, bucketEnd, exp / 10);
+        }
+    }
+}
+
+void msdRadixSortWrapper(vector<int>& arr) {
+    if (arr.empty()) return;
+    
+    int maxNum = *max_element(arr.begin(), arr.end());
+    
+    // Find the most significant digit position
+    int exp = 1;
+    while (maxNum / exp >= 10) {
+        exp *= 10;
+    }
+    
+    msdRadixSort(arr, 0, arr.size() - 1, exp);
+}
+
+/**
+ * Radix Sort for Negative Numbers
+ * Handles arrays containing negative integers
+ */
+void radixSortWithNegatives(vector<int>& arr) {
+    if (arr.empty()) return;
+    
+    vector<int> positive, negative;
+    
+    // Separate positive and negative numbers
+    for (int num : arr) {
+        if (num >= 0) {
+            positive.push_back(num);
+        } else {
+            negative.push_back(-num);  // Store absolute value
+        }
+    }
+    
+    // Sort positive numbers normally
+    if (!positive.empty()) {
+        radixSort(positive);
+    }
+    
+    // Sort negative numbers (as positive) then reverse
+    if (!negative.empty()) {
+        radixSort(negative);
+        reverse(negative.begin(), negative.end());
+        
+        // Convert back to negative
+        for (int& num : negative) {
+            num = -num;
+        }
+    }
+    
+    // Combine results: negatives first, then positives
+    arr.clear();
+    arr.insert(arr.end(), negative.begin(), negative.end());
+    arr.insert(arr.end(), positive.begin(), positive.end());
+}
+
+/**
+ * Radix Sort for Strings
+ * Sorts strings using radix sort principle
+ */
+void radixSortStrings(vector<string>& arr) {
+    if (arr.empty()) return;
+    
+    // Find maximum length
+    int maxLen = 0;
+    for (const string& str : arr) {
+        maxLen = max(maxLen, (int)str.length());
+    }
+    
+    // Sort by each character position from right to left
+    for (int pos = maxLen - 1; pos >= 0; pos--) {
+        vector<vector<string>> buckets(256);  // ASCII buckets
+        
+        // Distribute strings into buckets based on character at position pos
+        for (const string& str : arr) {
+            char ch = (pos < str.length()) ? str[pos] : 0;  // Use null for shorter strings
+            buckets[ch].push_back(str);
+        }
+        
+        // Collect strings from buckets
+        arr.clear();
+        for (int i = 0; i < 256; i++) {
+            for (const string& str : buckets[i]) {
+                arr.push_back(str);
+            }
+        }
+    }
+}
+
+/**
+ * Binary Radix Sort
+ * Sorts using binary representation (base 2)
+ */
+void binaryRadixSort(vector<int>& arr) {
+    if (arr.empty()) return;
+    
+    int maxNum = *max_element(arr.begin(), arr.end());
+    int maxBits = 0;
+    
+    // Find number of bits needed
+    while ((1 << maxBits) <= maxNum) {
+        maxBits++;
+    }
+    
+    // Sort by each bit position
+    for (int bit = 0; bit < maxBits; bit++) {
+        vector<int> zeros, ones;
+        
+        // Partition based on current bit
+        for (int num : arr) {
+            if ((num >> bit) & 1) {
+                ones.push_back(num);
+            } else {
+                zeros.push_back(num);
+            }
+        }
+        
+        // Combine: zeros first, then ones
+        arr.clear();
+        arr.insert(arr.end(), zeros.begin(), zeros.end());
+        arr.insert(arr.end(), ones.begin(), ones.end());
+    }
+}
+
+/**
+ * Radix Sort with Custom Base
+ * Allows sorting with different radix bases
+ */
+void radixSortCustomBase(vector<int>& arr, int base) {
+    if (arr.empty() || base < 2) return;
+    
+    int maxNum = *max_element(arr.begin(), arr.end());
+    int n = arr.size();
+    
+    for (int exp = 1; maxNum / exp > 0; exp *= base) {
+        vector<int> output(n);
+        vector<int> count(base, 0);
+        
+        // Count occurrences
+        for (int i = 0; i < n; i++) {
+            int digit = (arr[i] / exp) % base;
+            count[digit]++;
+        }
+        
+        // Accumulate counts
+        for (int i = 1; i < base; i++) {
+            count[i] += count[i - 1];
+        }
+        
+        // Build output
+        for (int i = n - 1; i >= 0; i--) {
+            int digit = (arr[i] / exp) % base;
+            output[count[digit] - 1] = arr[i];
+            count[digit]--;
+        }
+        
+        // Copy back
+        for (int i = 0; i < n; i++) {
+            arr[i] = output[i];
+        }
+    }
+}
+
+// Utility functions
+void printArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+void printStringArray(const vector<string>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << "\"" << arr[i] << "\"";
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Test basic radix sort
+    vector<int> arr1 = {170, 45, 75, 90, 2, 802, 24, 66};
+    cout << "=== Basic Radix Sort ===" << endl;
+    printArray(arr1, "Original");
+    
+    radixSort(arr1);
+    printArray(arr1, "Sorted");
+    
+    // Test radix sort with statistics
+    vector<int> arr2 = {329, 457, 657, 839, 436, 720, 355};
+    cout << "\n=== Radix Sort with Statistics ===" << endl;
+    printArray(arr2, "Original");
+    
+    RadixSortStats stats = radixSortWithStats(arr2);
+    printArray(arr2, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Digit passes: " << stats.digitPasses << endl;
+    cout << "  Total comparisons: " << stats.totalComparisons << endl;
+    cout << "  Total operations: " << stats.totalSwaps << endl;
+    
+    cout << "  Digit processing order: ";
+    for (int digit : stats.digitProcessed) {
+        cout << digit << " ";
+    }
+    cout << endl;
+    
+    cout << "  State history:" << endl;
+    for (int i = 0; i < stats.stateHistory.size(); i++) {
+        cout << "    Step " << i << ": ";
+        printArray(stats.stateHistory[i], "");
+    }
+    
+    // Test MSD radix sort
+    vector<int> arr3 = {54, 26, 93, 17, 77, 31, 44, 55, 20};
+    cout << "\n=== MSD Radix Sort ===" << endl;
+    printArray(arr3, "Original");
+    
+    msdRadixSortWrapper(arr3);
+    printArray(arr3, "Sorted");
+    
+    // Test radix sort with negative numbers
+    vector<int> arr4 = {-170, 45, -75, 90, -2, 802, -24, 66};
+    cout << "\n=== Radix Sort with Negative Numbers ===" << endl;
+    printArray(arr4, "Original");
+    
+    radixSortWithNegatives(arr4);
+    printArray(arr4, "Sorted");
+    
+    // Test radix sort for strings
+    vector<string> words = {"banana", "apple", "cherry", "date", "elderberry"};
+    cout << "\n=== Radix Sort for Strings ===" << endl;
+    printStringArray(words, "Original");
+    
+    radixSortStrings(words);
+    printStringArray(words, "Sorted");
+    
+    // Test binary radix sort
+    vector<int> arr5 = {64, 34, 25, 12, 22, 11, 90};
+    cout << "\n=== Binary Radix Sort ===" << endl;
+    printArray(arr5, "Original");
+    
+    binaryRadixSort(arr5);
+    printArray(arr5, "Sorted");
+    
+    // Test custom base radix sort
+    vector<int> arr6 = {125, 383, 274, 96, 458, 712, 639};
+    cout << "\n=== Radix Sort with Base 8 ===" << endl;
+    printArray(arr6, "Original");
+    
+    radixSortCustomBase(arr6, 8);
+    printArray(arr6, "Sorted");
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(d × (n + k)) where d = digits, k = base</li>
+                <li><strong>Average Case:</strong> O(d × (n + k)) - Consistent performance</li>
+                <li><strong>Worst Case:</strong> O(d × (n + k)) - Same as best case</li>
+                <li><strong>When d is constant:</strong> O(n) - Linear time sorting!</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(n + k) - For output and count arrays</li>
+                <li><strong>LSD Approach:</strong> O(n) - Uses iterative approach</li>
+                <li><strong>MSD Approach:</strong> O(d × n) - Due to recursion stack</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> Yes - Maintains relative order of equal elements</li>
+                <li><strong>Non-comparison:</strong> Doesn't compare elements directly</li>
+                <li><strong>Integer Sorting:</strong> Works with integers and strings</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through radix sort on array [170, 45, 75, 90, 2, 802, 24, 66]:
+        </p>
+        
+        <div class="code-block">
+Initial: [170, 45, 75, 90, 2, 802, 24, 66]
+Maximum: 802 (3 digits)
+
+Pass 1: Sort by units digit (exp = 1)
+Digits: [0, 5, 5, 0, 2, 2, 4, 6]
+After sorting by units: [170, 90, 2, 802, 24, 45, 75, 66]
+
+Pass 2: Sort by tens digit (exp = 10)  
+Digits: [7, 9, 0, 0, 2, 4, 7, 6]
+After sorting by tens: [2, 802, 24, 45, 66, 170, 75, 90]
+
+Pass 3: Sort by hundreds digit (exp = 100)
+Digits: [1, 8, 0, 0, 0, 1, 0, 0]
+After sorting by hundreds: [2, 24, 45, 66, 75, 90, 170, 802]
+
+Final: [2, 24, 45, 66, 75, 90, 170, 802]
+
+Detailed Pass 1 (units digit):
+Count array after counting: [2, 0, 2, 0, 1, 2, 1, 0, 0, 0]
+                           0  1  2  3  4  5  6  7  8  9
+
+Cumulative count: [2, 2, 4, 4, 5, 7, 8, 8, 8, 8]
+
+Placing elements (right to left):
+- 66 (digit 6): position 7, place at index 7
+- 24 (digit 4): position 4, place at index 4  
+- 802 (digit 2): position 3, place at index 3
+- 2 (digit 2): position 2, place at index 2
+- 90 (digit 0): position 1, place at index 1
+- 75 (digit 5): position 6, place at index 6
+- 45 (digit 5): position 5, place at index 5
+- 170 (digit 0): position 0, place at index 0
+
+Result: [170, 90, 2, 802, 24, 45, 75, 66]
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Radix sort is particularly useful in these scenarios:
+        </p>
+        
+        <ul>
+            <li><strong>Integer Sorting:</strong> When integers have limited number of digits</li>
+            <li><strong>String Sorting:</strong> Lexicographic sorting of fixed-length strings</li>
+            <li><strong>Database Systems:</strong> Sorting records by numeric keys</li>
+            <li><strong>Parallel Processing:</strong> Can be easily parallelized by digits</li>
+            <li><strong>External Sorting:</strong> Efficient for large datasets on disk</li>
+            <li><strong>Suffix Arrays:</strong> Used in string processing algorithms</li>
+        </ul>
+        
+        <h2 class="section-title">LSD vs MSD Radix Sort</h2>
+        
+        <div class="definition-box">
+            <strong>LSD (Least Significant Digit):</strong><br>
+            • Processes digits from right to left (units → tens → hundreds)<br>
+            • Simpler implementation, iterative approach<br>
+            • Stable sorting, maintains original order<br>
+            • Better for fixed-length keys<br><br>
+            
+            <strong>MSD (Most Significant Digit):</strong><br>
+            • Processes digits from left to right (hundreds → tens → units)<br>
+            • Recursive implementation, more complex<br>
+            • Can terminate early for some buckets<br>
+            • Better for variable-length keys
+        </div>
+        
+        <h2 class="section-title">When to Use Radix Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Radix Sort When:</strong><br>
+            • Sorting integers with limited number of digits<br>
+            • Number of digits (d) is small compared to input size (n)<br>
+            • Stability is required<br>
+            • Working with fixed-length strings<br>
+            • Linear time sorting is needed<br><br>
+            
+            <strong>Don't Use Radix Sort When:</strong><br>
+            • Number of digits is very large (d >> log n)<br>
+            • Sorting floating-point numbers or complex objects<br>
+            • Memory usage is critical (uses O(n) extra space)<br>
+            • Working with comparison-based requirements
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Digit Count:</strong> Ensure correct calculation of maximum digits</li>
+            <li><strong>Negative Numbers:</strong> Handle separately or use offset technique</li>
+            <li><strong>Stability:</strong> Process elements from right to left in counting sort</li>
+            <li><strong>Base Selection:</strong> Choose appropriate base for efficiency</li>
+            <li><strong>Memory Usage:</strong> Consider space complexity for large inputs</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Linear Time:</strong> Emphasize O(d × n) complexity when d is constant</li>
+            <li><strong>Non-comparison:</strong> Explain digit-by-digit processing approach</li>
+            <li><strong>Stability:</strong> Highlight stable sorting property</li>
+            <li><strong>Applications:</strong> Mention string sorting and database applications</li>
+            <li><strong>Limitations:</strong> Discuss when it's not suitable (large d, floating-point)</li>
+            <li><strong>Variants:</strong> Know both LSD and MSD approaches</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Radix sort achieves O(d × n) time complexity for d-digit numbers</li>
+                <li>Non-comparison based algorithm that processes digits individually</li>
+                <li>Stable sorting algorithm using counting sort as subroutine</li>
+                <li>Efficient when number of digits is small compared to input size</li>
+                <li>Works for integers, strings, and other digit-based representations</li>
+                <li>Can be implemented as LSD (iterative) or MSD (recursive)</li>
+                <li>Linear time sorting when digit count is constant</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

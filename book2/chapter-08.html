@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Bubble Sort - Essential Algorithms Handbook</title>
+</head>
+<body>
+    <div class="academic-content">
+        <div class="chapter-number">CHAPTER 8</div>
+        <h1 class="chapter-title">Bubble Sort</h1>
+        
+        <p class="academic-text">
+            Bubble sort is one of the simplest sorting algorithms to understand and implement. It works by repeatedly stepping through the list, comparing adjacent elements and swapping them if they are in the wrong order. The pass through the list is repeated until the list is sorted. The algorithm gets its name because smaller elements "bubble" to the top of the list.
+        </p>
+        
+        <h2 class="section-title">Problem Statement</h2>
+        
+        <p class="academic-text">
+            Given an array of n elements, sort the array in ascending order using the bubble sort algorithm. The algorithm should arrange elements such that arr[0] ≤ arr[1] ≤ arr[2] ≤ ... ≤ arr[n-1].
+        </p>
+        
+        <div class="definition-box">
+            <strong>Input:</strong> Array arr[] of size n with comparable elements<br>
+            <strong>Output:</strong> Same array sorted in ascending order<br>
+            <strong>Stability:</strong> Stable sorting algorithm (maintains relative order of equal elements)
+        </div>
+        
+        <h2 class="section-title">Approach</h2>
+        
+        <p class="academic-text">
+            Bubble sort works through the following process:
+        </p>
+        
+        <ol>
+            <li>Compare adjacent elements in the array</li>
+            <li>If they are in the wrong order (left > right for ascending), swap them</li>
+            <li>Continue this process for the entire array</li>
+            <li>After each complete pass, the largest element "bubbles up" to its correct position</li>
+            <li>Repeat the process for the remaining unsorted portion</li>
+            <li>Continue until no swaps are needed (array is sorted)</li>
+        </ol>
+        
+        <h2 class="section-title">Algorithm Steps</h2>
+        
+        <div class="code-block">
+Algorithm: BubbleSort(arr, n)
+1. for i = 0 to n-2 do
+2.     swapped = false
+3.     for j = 0 to n-2-i do
+4.         if arr[j] > arr[j+1] then
+5.             swap(arr[j], arr[j+1])
+6.             swapped = true
+7.         end if
+8.     end for
+9.     if swapped == false then
+10.        break  // Array is already sorted
+11.    end if
+12. end for
+        </div>
+        
+        <h2 class="section-title">Implementation</h2>
+        
+        <div class="code-block">
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+/**
+ * Bubble Sort - Basic Implementation
+ * Sorts array in ascending order using bubble sort algorithm
+ * 
+ * @param arr: input array to be sorted
+ */
+void bubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    
+    // Traverse through all array elements
+    for (int i = 0; i < n - 1; i++) {
+        // Last i elements are already in place
+        for (int j = 0; j < n - i - 1; j++) {
+            // Traverse the array from 0 to n-i-1
+            // Swap if the element found is greater than the next element
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
+}
+
+/**
+ * Optimized Bubble Sort
+ * Includes early termination when array becomes sorted
+ */
+void optimizedBubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    bool swapped;
+    
+    for (int i = 0; i < n - 1; i++) {
+        swapped = false;
+        
+        // Last i elements are already sorted
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        
+        // If no swapping occurred, array is sorted
+        if (!swapped) {
+            break;
+        }
+    }
+}
+
+/**
+ * Bubble Sort with Statistics
+ * Tracks comparisons and swaps for analysis
+ */
+struct BubbleSortStats {
+    int comparisons;
+    int swaps;
+    int passes;
+    vector<vector<int>> stateHistory;
+};
+
+BubbleSortStats bubbleSortWithStats(vector<int>& arr) {
+    BubbleSortStats stats = {0, 0, 0, {}};
+    int n = arr.size();
+    
+    // Save initial state
+    stats.stateHistory.push_back(arr);
+    
+    for (int i = 0; i < n - 1; i++) {
+        stats.passes++;
+        bool swapped = false;
+        
+        for (int j = 0; j < n - i - 1; j++) {
+            stats.comparisons++;
+            
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                stats.swaps++;
+                swapped = true;
+            }
+        }
+        
+        // Save state after each pass
+        stats.stateHistory.push_back(arr);
+        
+        if (!swapped) {
+            break;
+        }
+    }
+    
+    return stats;
+}
+
+/**
+ * Cocktail Shaker Sort (Bidirectional Bubble Sort)
+ * Optimized version that sorts in both directions
+ */
+void cocktailShakerSort(vector<int>& arr) {
+    int n = arr.size();
+    bool swapped = true;
+    int start = 0;
+    int end = n - 1;
+    
+    while (swapped) {
+        swapped = false;
+        
+        // Forward pass (left to right)
+        for (int i = start; i < end; i++) {
+            if (arr[i] > arr[i + 1]) {
+                swap(arr[i], arr[i + 1]);
+                swapped = true;
+            }
+        }
+        
+        if (!swapped) break;
+        
+        // Move the end point back by one
+        end--;
+        swapped = false;
+        
+        // Backward pass (right to left)
+        for (int i = end - 1; i >= start; i--) {
+            if (arr[i] > arr[i + 1]) {
+                swap(arr[i], arr[i + 1]);
+                swapped = true;
+            }
+        }
+        
+        // Move the start point forward by one
+        start++;
+    }
+}
+
+/**
+ * Recursive Bubble Sort
+ * Recursive implementation of bubble sort
+ */
+void recursiveBubbleSort(vector<int>& arr, int n) {
+    // Base case
+    if (n == 1) return;
+    
+    // One pass of bubble sort
+    // After this pass, the largest element is moved to end
+    for (int i = 0; i < n - 1; i++) {
+        if (arr[i] > arr[i + 1]) {
+            swap(arr[i], arr[i + 1]);
+        }
+    }
+    
+    // Largest element is fixed, recur for remaining array
+    recursiveBubbleSort(arr, n - 1);
+}
+
+/**
+ * Generic Bubble Sort with Custom Comparator
+ * Works with any comparable type and custom comparison function
+ */
+template<typename T, typename Compare>
+void bubbleSortGeneric(vector<T>& arr, Compare comp) {
+    int n = arr.size();
+    
+    for (int i = 0; i < n - 1; i++) {
+        bool swapped = false;
+        
+        for (int j = 0; j < n - i - 1; j++) {
+            if (comp(arr[j + 1], arr[j])) {  // If arr[j+1] should come before arr[j]
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        
+        if (!swapped) break;
+    }
+}
+
+/**
+ * Bubble Sort for Linked List
+ * Demonstrates bubble sort on linked list structure
+ */
+struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
+
+ListNode* bubbleSortLinkedList(ListNode* head) {
+    if (!head || !head->next) return head;
+    
+    bool swapped = true;
+    
+    while (swapped) {
+        swapped = false;
+        ListNode* current = head;
+        
+        while (current->next) {
+            if (current->val > current->next->val) {
+                // Swap values
+                swap(current->val, current->next->val);
+                swapped = true;
+            }
+            current = current->next;
+        }
+    }
+    
+    return head;
+}
+
+// Utility functions for demonstration
+void printArray(const vector<int>& arr, const string& label = "") {
+    if (!label.empty()) cout << label << ": ";
+    cout << "[";
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i];
+        if (i < arr.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+}
+
+void printLinkedList(ListNode* head) {
+    cout << "[";
+    while (head) {
+        cout << head->val;
+        if (head->next) cout << ", ";
+        head = head->next;
+    }
+    cout << "]" << endl;
+}
+
+// Example usage and testing
+int main() {
+    // Test basic bubble sort
+    vector<int> arr1 = {64, 34, 25, 12, 22, 11, 90};
+    cout << "=== Basic Bubble Sort ===" << endl;
+    printArray(arr1, "Original");
+    
+    bubbleSort(arr1);
+    printArray(arr1, "Sorted");
+    
+    // Test optimized bubble sort with statistics
+    vector<int> arr2 = {5, 2, 8, 1, 9};
+    cout << "\n=== Optimized Bubble Sort with Statistics ===" << endl;
+    printArray(arr2, "Original");
+    
+    BubbleSortStats stats = bubbleSortWithStats(arr2);
+    printArray(arr2, "Sorted");
+    
+    cout << "Statistics:" << endl;
+    cout << "  Comparisons: " << stats.comparisons << endl;
+    cout << "  Swaps: " << stats.swaps << endl;
+    cout << "  Passes: " << stats.passes << endl;
+    
+    cout << "  State history:" << endl;
+    for (int i = 0; i < stats.stateHistory.size(); i++) {
+        cout << "    Pass " << i << ": ";
+        printArray(stats.stateHistory[i], "");
+    }
+    
+    // Test cocktail shaker sort
+    vector<int> arr3 = {2, 3, 1, 4, 5};
+    cout << "\n=== Cocktail Shaker Sort ===" << endl;
+    printArray(arr3, "Original");
+    
+    cocktailShakerSort(arr3);
+    printArray(arr3, "Sorted");
+    
+    // Test recursive bubble sort
+    vector<int> arr4 = {3, 1, 4, 1, 5, 9, 2, 6};
+    cout << "\n=== Recursive Bubble Sort ===" << endl;
+    printArray(arr4, "Original");
+    
+    recursiveBubbleSort(arr4, arr4.size());
+    printArray(arr4, "Sorted");
+    
+    // Test generic bubble sort with custom comparator
+    vector<string> words = {"banana", "apple", "cherry", "date"};
+    cout << "\n=== Generic Bubble Sort (Strings) ===" << endl;
+    cout << "Original: [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << words[i];
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    bubbleSortGeneric(words, [](const string& a, const string& b) {
+        return a < b;  // Ascending order
+    });
+    
+    cout << "Sorted: [";
+    for (int i = 0; i < words.size(); i++) {
+        cout << words[i];
+        if (i < words.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+    
+    // Test linked list bubble sort
+    cout << "\n=== Linked List Bubble Sort ===" << endl;
+    ListNode* head = new ListNode(4);
+    head->next = new ListNode(2);
+    head->next->next = new ListNode(1);
+    head->next->next->next = new ListNode(3);
+    
+    cout << "Original: ";
+    printLinkedList(head);
+    
+    head = bubbleSortLinkedList(head);
+    cout << "Sorted: ";
+    printLinkedList(head);
+    
+    return 0;
+}
+        </div>
+        
+        <h2 class="section-title">Complexity Analysis</h2>
+        
+        <div class="performance-summary">
+            <h3>Time Complexity</h3>
+            <ul>
+                <li><strong>Best Case:</strong> O(n) - When array is already sorted (with optimization)</li>
+                <li><strong>Average Case:</strong> O(n²) - Random order of elements</li>
+                <li><strong>Worst Case:</strong> O(n²) - When array is sorted in reverse order</li>
+            </ul>
+            
+            <h3>Space Complexity</h3>
+            <ul>
+                <li><strong>Auxiliary Space:</strong> O(1) - Only uses constant extra space</li>
+                <li><strong>In-place:</strong> Yes - Sorts the array without using extra space</li>
+            </ul>
+            
+            <h3>Other Properties</h3>
+            <ul>
+                <li><strong>Stable:</strong> Yes - Equal elements maintain their relative order</li>
+                <li><strong>Adaptive:</strong> Yes - Performs better on partially sorted arrays</li>
+                <li><strong>Online:</strong> No - Needs the entire dataset to work</li>
+            </ul>
+        </div>
+        
+        <h2 class="section-title">Example Walkthrough</h2>
+        
+        <p class="academic-text">
+            Let's trace through bubble sort on array [5, 2, 8, 1, 9]:
+        </p>
+        
+        <div class="code-block">
+Initial: [5, 2, 8, 1, 9]
+
+Pass 1:
+  Compare 5,2: 5>2, swap → [2, 5, 8, 1, 9]
+  Compare 5,8: 5<8, no swap → [2, 5, 8, 1, 9]
+  Compare 8,1: 8>1, swap → [2, 5, 1, 8, 9]
+  Compare 8,9: 8<9, no swap → [2, 5, 1, 8, 9]
+  Largest element (9) is now in correct position
+
+Pass 2:
+  Compare 2,5: 2<5, no swap → [2, 5, 1, 8, 9]
+  Compare 5,1: 5>1, swap → [2, 1, 5, 8, 9]
+  Compare 5,8: 5<8, no swap → [2, 1, 5, 8, 9]
+  Second largest (8) is now in correct position
+
+Pass 3:
+  Compare 2,1: 2>1, swap → [1, 2, 5, 8, 9]
+  Compare 2,5: 2<5, no swap → [1, 2, 5, 8, 9]
+  Third largest (5) is now in correct position
+
+Pass 4:
+  Compare 1,2: 1<2, no swap → [1, 2, 5, 8, 9]
+  No swaps occurred, array is sorted!
+
+Final: [1, 2, 5, 8, 9]
+Total comparisons: 10, Total swaps: 4
+        </div>
+        
+        <h2 class="section-title">Applications</h2>
+        
+        <p class="academic-text">
+            Despite its poor time complexity, bubble sort has some practical applications:
+        </p>
+        
+        <ul>
+            <li><strong>Educational Purposes:</strong> Teaching sorting concepts and algorithm analysis</li>
+            <li><strong>Small Datasets:</strong> When simplicity is more important than efficiency</li>
+            <li><strong>Nearly Sorted Data:</strong> Performs well on data that's already mostly sorted</li>
+            <li><strong>Memory-Constrained Systems:</strong> When auxiliary space is extremely limited</li>
+            <li><strong>Stable Sorting Requirement:</strong> When maintaining relative order of equal elements is crucial</li>
+            <li><strong>Interactive Sorting:</strong> For visualizing how sorting algorithms work</li>
+        </ul>
+        
+        <h2 class="section-title">Optimizations and Variations</h2>
+        
+        <h3>1. Early Termination Optimization</h3>
+        <div class="code-block">
+// Stop early if no swaps occur in a pass
+void optimizedBubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; i++) {
+        bool swapped = false;
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) break;  // Array is sorted
+    }
+}
+        </div>
+        
+        <h3>2. Cocktail Shaker Sort (Bidirectional)</h3>
+        <div class="code-block">
+// Bubble in both directions to move small and large elements faster
+void cocktailSort(vector<int>& arr) {
+    bool swapped = true;
+    int start = 0, end = arr.size() - 1;
+    
+    while (swapped) {
+        swapped = false;
+        
+        // Forward pass
+        for (int i = start; i < end; i++) {
+            if (arr[i] > arr[i + 1]) {
+                swap(arr[i], arr[i + 1]);
+                swapped = true;
+            }
+        }
+        end--;
+        
+        if (!swapped) break;
+        swapped = false;
+        
+        // Backward pass
+        for (int i = end - 1; i >= start; i--) {
+            if (arr[i] > arr[i + 1]) {
+                swap(arr[i], arr[i + 1]);
+                swapped = true;
+            }
+        }
+        start++;
+    }
+}
+        </div>
+        
+        <h3>3. Odd-Even Sort (Parallel Bubble Sort)</h3>
+        <div class="code-block">
+// Can be parallelized for concurrent processing
+void oddEvenSort(vector<int>& arr) {
+    int n = arr.size();
+    bool sorted = false;
+    
+    while (!sorted) {
+        sorted = true;
+        
+        // Odd phase
+        for (int i = 1; i < n - 1; i += 2) {
+            if (arr[i] > arr[i + 1]) {
+                swap(arr[i], arr[i + 1]);
+                sorted = false;
+            }
+        }
+        
+        // Even phase
+        for (int i = 0; i < n - 1; i += 2) {
+            if (arr[i] > arr[i + 1]) {
+                swap(arr[i], arr[i + 1]);
+                sorted = false;
+            }
+        }
+    }
+}
+        </div>
+        
+        <h2 class="section-title">When to Use Bubble Sort</h2>
+        
+        <div class="definition-box">
+            <strong>Use Bubble Sort When:</strong><br>
+            • Dataset is very small (< 10 elements)<br>
+            • Simplicity and readability are more important than performance<br>
+            • Memory is extremely constrained<br>
+            • Data is already nearly sorted<br>
+            • You need a stable sorting algorithm<br>
+            • Teaching or demonstrating sorting concepts<br><br>
+            
+            <strong>Don't Use Bubble Sort When:</strong><br>
+            • Dataset is large (> 50 elements)<br>
+            • Performance is critical<br>
+            • You have access to better sorting algorithms<br>
+            • Working with production systems
+        </div>
+        
+        <h2 class="section-title">Common Pitfalls ⚠️</h2>
+        
+        <ul>
+            <li><strong>Forgetting Optimization:</strong> Always include the early termination check</li>
+            <li><strong>Off-by-One Errors:</strong> Be careful with loop bounds (n-1, n-i-1)</li>
+            <li><strong>Infinite Loops:</strong> Ensure the inner loop bound decreases with each pass</li>
+            <li><strong>Not Handling Edge Cases:</strong> Empty arrays or single-element arrays</li>
+            <li><strong>Using for Large Data:</strong> Don't use bubble sort for large datasets</li>
+        </ul>
+        
+        <h2 class="section-title">Interview Tips 🎯</h2>
+        
+        <ul>
+            <li><strong>Mention Optimization:</strong> Always discuss the early termination optimization</li>
+            <li><strong>Stability:</strong> Emphasize that bubble sort is stable</li>
+            <li><strong>Best Case:</strong> Explain how optimized version achieves O(n) for sorted arrays</li>
+            <li><strong>Variations:</strong> Mention cocktail shaker sort as an improvement</li>
+            <li><strong>Use Cases:</strong> Discuss when bubble sort might actually be appropriate</li>
+            <li><strong>Comparison:</strong> Compare with other O(n²) algorithms like selection and insertion sort</li>
+        </ul>
+        
+        <div class="completion-summary">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Bubble sort is the simplest sorting algorithm to understand and implement</li>
+                <li>Time complexity is O(n²) in average and worst case, O(n) in best case with optimization</li>
+                <li>Space complexity is O(1) - it's an in-place sorting algorithm</li>
+                <li>It's stable and adaptive but not suitable for large datasets</li>
+                <li>Early termination optimization significantly improves performance on nearly sorted data</li>
+                <li>Variations like cocktail shaker sort can provide modest improvements</li>
+                <li>Primarily used for educational purposes and very small datasets</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
